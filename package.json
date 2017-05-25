@@ -1,8 +1,8 @@
 {
-  "name": "elasticsearch-public-api",
+  "name": "cdp-public-api",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "git@github.com:IIP-Design/elasticsearch-public-api.git",
+  "repository": "git@github.com:IIP-Design/cdp-public-api.git",
   "author": "Max Orelus <orelusm@america.gov>",
   "license": "MIT",
   "scripts": {
