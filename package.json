@@ -32,6 +32,7 @@
     "babel-preset-stage-0": "^6.24.1",
     "eslint-config-morelus": "^1.0.3",
     "morgan": "^1.8.1",
+    "nodemon": "^1.11.0",
     "webpack": "^2.3.3",
     "webpack-merge": "^4.1.0",
     "webpack-node-externals": "^1.5.4"
