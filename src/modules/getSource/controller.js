@@ -1,13 +1,7 @@
 import client from '../../services/elasticsearch';
 import * as validate from '../validate';
 
-/**
- * Get a typed JSON document from the index based on its id.
- * @param {object} req
- * @param {object} res
- */
 export const getSource = async (req, res) => {
-  // initial configuration
   let data = { options: {}, error: {}, };
 
   data = validate.stringOrStringArray({
@@ -21,7 +15,6 @@ export const getSource = async (req, res) => {
     id: req.body.id,
   }, data);
 
-  // if there was any error during validation, throw
   if (Object.keys(data.error).length > 0) {
     return res.status(400).json({
       error: true,
@@ -29,7 +22,6 @@ export const getSource = async (req, res) => {
     });
   }
 
-  console.log(JSON.stringify(data.options, null, 4));
   try {
     res.json(await client.getSource(data.options).then(esResponse => esResponse));
   } catch (err) {

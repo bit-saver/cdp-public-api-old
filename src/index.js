@@ -4,11 +4,7 @@ import { middlewareSetup } from './middleware';
 import {
   searchRoutes,
   getRoutes,
-  mGetRoutes,
-  countRoutes,
-  existsRoutes,
   getSourceRoutes,
-  mSearchRoutes
 } from './modules';
 
 const app = express();
@@ -18,11 +14,7 @@ middlewareSetup(app);
 app.use('/v1', [
   searchRoutes,
   getRoutes,
-  getSourceRoutes,
-  mGetRoutes,
-  countRoutes,
-  existsRoutes,
-  mSearchRoutes,
+  getSourceRoutes
 ]);
 
 app.listen(~~process.env.PORT, () => {

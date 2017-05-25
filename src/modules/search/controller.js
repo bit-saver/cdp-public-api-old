@@ -1,14 +1,7 @@
 import client from '../../services/elasticsearch';
 import * as validate from '../validate';
 
-/**
- * Return documents matching a query, aggregations/facets, highlighted snippets,
- * suggestions, and more.
- * @param {object} req
- * @param {object} res
- */
 export const search = async (req, res) => {
-  /* initial configuration */
   let data = {
     options: {
       ignoreUnavailable: true,
@@ -18,7 +11,6 @@ export const search = async (req, res) => {
     error: {}
   };
 
-  /* validate each field in the body */
   data = validate.stringOrStringArray({
     q: req.body.query,
     _sourceExclude: req.body.exclude,
@@ -39,7 +31,6 @@ export const search = async (req, res) => {
     size: req.body.size
   }, data);
 
-  /* return error if any of the properties didn't check out */
   if (Object.keys(data.error).length > 0) {
     return res.status(400).json({
       error: true,
@@ -47,7 +38,6 @@ export const search = async (req, res) => {
     });
   }
 
-  console.log('\n/v1/search:\n', JSON.stringify(data.options, null, 4), '\n');
   try {
     res.json(await client.search(data.options).then(esResponse => esResponse));
   } catch (err) {
