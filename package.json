@@ -1,0 +1,39 @@
+{
+  "name": "elasticsearch-public-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:IIP-Design/elasticsearch-public-api.git",
+  "author": "Max Orelus <orelusm@america.gov>",
+  "license": "MIT",
+  "scripts": {
+    "clear:build": "rm -rf build",
+    "build": "yarn clear:build && webpack --progress --colors",
+    "watch:build": "webpack --progress --colors --watch",
+    "watch:server": "nodemon build/server.js",
+    "start": "node build/server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "bodybuilder": "^2.1.0",
+    "cors": "^2.8.3",
+    "dotenv": "^4.0.0",
+    "elasticsearch": "^13.0.0-rc2",
+    "express": "^4.15.2",
+    "helmet": "^3.6.1",
+    "http-aws-es": "^1.1.3"
+  },
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^6.4.1",
+    "babel-plugin-syntax-async-functions": "^6.13.0",
+    "babel-plugin-transform-regenerator": "^6.24.1",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "eslint-config-morelus": "^1.0.3",
+    "morgan": "^1.8.1",
+    "webpack": "^2.3.3",
+    "webpack-merge": "^4.1.0",
+    "webpack-node-externals": "^1.5.4"
+  }
+}
