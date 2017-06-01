@@ -1,3 +1,4 @@
+require('dotenv').config();
 import elasticsearch from 'elasticsearch';
 
 const Client = elasticsearch.Client({
