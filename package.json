@@ -13,12 +13,12 @@
     "start": "node build/server.js"
   },
   "dependencies": {
-    "body-parser": "^1.17.1",
+    "body-parser": "^1.17.2",
     "bodybuilder": "^2.1.0",
     "cors": "^2.8.3",
     "dotenv": "^4.0.0",
-    "elasticsearch": "^13.0.0-rc2",
-    "express": "^4.15.2",
+    "elasticsearch": "^13.1.1",
+    "express": "^4.15.3",
     "helmet": "^3.6.1",
     "http-aws-es": "^1.1.3"
   },
