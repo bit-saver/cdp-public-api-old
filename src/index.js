@@ -1,8 +1,8 @@
 require('dotenv').config();
 import fs from 'fs';
 import https from 'https';
-const privateKey = fs.readFileSync('./server.key', 'utf8');
-const certificate = fs.readFileSync('./server.crt', 'utf8');
+const privateKey = fs.readFileSync('server.key', 'utf8');
+const certificate = fs.readFileSync('server.crt', 'utf8');
 const credentials = { key: privateKey, cert: certificate };
 
 import express from 'express';
