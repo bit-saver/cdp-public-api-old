@@ -1,4 +1,5 @@
 require('dotenv').config({
+  "methods": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
   optionSuccessStatus: 204,
 });
 import express from 'express';
