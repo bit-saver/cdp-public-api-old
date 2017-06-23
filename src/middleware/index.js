@@ -5,7 +5,10 @@ import helmet from 'helmet';
 
 export const middlewareSetup = app => {
   app.use(helmet());
-  app.use(cors());
+  app.use(cors({
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    optionSuccessStatus: 204,
+  }));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
 

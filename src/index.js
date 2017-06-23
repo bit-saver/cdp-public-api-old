@@ -1,7 +1,4 @@
-require('dotenv').config({
-  "methods": "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-  optionSuccessStatus: 204,
-});
+require('dotenv').config();
 import express from 'express';
 import { middlewareSetup } from './middleware';
 import {
@@ -14,7 +11,7 @@ const app = express();
 
 middlewareSetup(app);
 
-app.use('/v2', [
+app.use('/v1', [
   searchRoutes,
   getRoutes,
   getSourceRoutes
