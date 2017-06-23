@@ -14,7 +14,7 @@ const app = express();
 
 middlewareSetup(app);
 
-app.use('/v1', [
+app.use('/v2', [
   searchRoutes,
   getRoutes,
   getSourceRoutes
