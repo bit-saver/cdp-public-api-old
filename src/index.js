@@ -1,4 +1,6 @@
-require('dotenv').config();
+require('dotenv').config({
+  optionSuccessStatus: 204,
+});
 import express from 'express';
 import { middlewareSetup } from './middleware';
 import {
