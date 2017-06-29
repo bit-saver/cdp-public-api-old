@@ -1,14 +1,8 @@
 require('dotenv').config();
 import elasticsearch from 'elasticsearch';
 
-let hosts;
-if (process.env.NODE_ENV === 'local') {
-  hosts =
-    'https://search-amgov-a37eqx5jbjr36wwcx7lkevophq.us-east-1.es.amazonaws.com';
-}
-
 const Client = elasticsearch.Client({
-  hosts,
+  hosts: process.env.AWS_HOST,
   connectionClass: require('http-aws-es'),
   amazonES: {
     region: process.env.AWS_REGION,
@@ -17,10 +11,10 @@ const Client = elasticsearch.Client({
   }
 });
 
-const ClientDevelopment = elasticsearch.Client({
-  hosts: process.env.HOST,
-  connectionClass: 'http',
-  log: ['error']
-});
+// const ClientDevelopment = elasticsearch.Client({
+//   hosts: process.env.HOST,
+//   connectionClass: 'http',
+//   log: ['error']
+// });
 
 export default Client;
