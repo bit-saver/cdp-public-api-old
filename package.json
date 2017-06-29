@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "clear:build": "rm -rf build",
-    "build": "yarn clear:build && webpack --progress --colors",
+    "build": "npm run clear:build && webpack --progress --colors",
     "watch:build": "webpack --progress --colors --watch",
     "watch:server": "nodemon build/server.js",
     "start": "node build/server.js"
