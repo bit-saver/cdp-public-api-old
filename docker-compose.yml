@@ -1,0 +1,17 @@
+version: '3'
+services:
+  api:
+    build: .
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules  
+    ports:
+      - "8080:8080"
+  
+  # http://elk-docker.readthedocs.io/
+  elk:
+    image: sebp/elk:564
+    ports:
+      - "5601:5601"
+      - "9200:9200"
+      - "5044:5044"

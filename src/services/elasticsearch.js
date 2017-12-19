@@ -11,8 +11,8 @@ const Client = elasticsearch.Client({
   }
 });
 
-// const ClientDevelopment = elasticsearch.Client({
-//   hosts: process.env.HOST,
+// const Client = elasticsearch.Client({
+//   host: process.env.AWS_HOST,
 //   connectionClass: 'http',
 //   log: ['error']
 // });
