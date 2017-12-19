@@ -1,25 +1,26 @@
 # cdp-public-api
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
-- [Getting Started](#getting-started)
-  - [Configuration](#configuration)
-  - [Scripts](#scripts)
-- [Routes](#routes)
-  - [`/v1/search`](#v1search)
-    - [Request](#request)
-    - [Response](#response)
-    - [API Properties](#api-properties)
-  - [`/v1/get`](#v1get)
-    - [Request](#request-1)
-    - [Response](#response-1)
-    - [API Properties](#api-properties-1)
-  - [`/v1/getsource`](#v1getsource)
-    - [Request](#request-2)
-    - [Response](#response-2)
-    - [API Properties](#api-properties-2)
+* [Getting Started](#getting-started)
+  * [Configuration](#configuration)
+  * [Using Docker](#docker)
+  * [Scripts](#scripts)
+* [Routes](#routes)
+  * [`/v1/search`](#v1search)
+    * [Request](#request)
+    * [Response](#response)
+    * [API Properties](#api-properties)
+  * [`/v1/get`](#v1get)
+    * [Request](#request-1)
+    * [Response](#response-1)
+    * [API Properties](#api-properties-1)
+  * [`/v1/getsource`](#v1getsource)
+    * [Request](#request-2)
+    * [Response](#response-2)
+    * [API Properties](#api-properties-2)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -41,6 +42,15 @@ AWS_SECRET_ACCESS_KEY=
 ```
 
 **Important**: If you are connecting to AWS Elasticsearch, set the environment field to `production`. By default, the environment is set to `development`.
+
+### Using Docker
+
+The Dockerfiles bring up a multi container network housing a Node server for the API and an Elastic server housing the ELK stack. To get started:
+
+* Install Docker if it is not already installed. [Docker for Mac](https://www.docker.com/docker-mac) is the fastest and most reliable way to run Docker on a Mac
+* Ensure that you have alloted at least 4.0 GB RAM to Docker as Elasticsearch requires that amount to run. This can be set by going to the 'Preferences' menu of the Docker dropdown and selecting the 'Advanced' tab
+* Follow the confguration instructions above but set the `AWS_HOST` as follows `AWS_HOST=elk:9200`
+* Run `docker-compose up`
 
 ### Scripts
 
@@ -91,28 +101,24 @@ Content-Type: application/json
   "hits": {
     "total": 16016,
     "max_score": 1,
-    "hits": [
-      {},
-      {},
-      {}
-    ]
+    "hits": [{}, {}, {}]
   }
 }
 ```
 
 #### API Properties
 
-| Params  | Description                                                                                                                          |
-|---------|--------------------------------------------------------------------------------------------------------------------------------------|
-| body    | `JSON string, Object{}` - An optional request body, as either JSON or a JSON serializable object.                                                   |
-| exlcude | `String, String[]` -  A list of fields to exclude from the returned _source field                                                     |
-| from    | `number` — Starting offset (default: 0)                                                                                               |
-| include | `String, String[]` - A list of fields to extract and return from the _source field                                                     |
-| index   | `String, String[]` - A comma-separated list of index names to search; use _all or empty string to perform the operation on all indices  |
-| query   | `String, String[]` - A comma-separated list of specific routing values                                                                 |
-| size    | `Number` - Number of hits to return (default: 10)                                                                                      |
-| sort    | `String, String[]` - A comma-separated list of : pairs                                                                                 |
-| type    | `String, String[]` - A comma-separated list of document types to search; leave empty to perform the operation on all types             |
+| Params  | Description                                                                                                                             |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| body    | `JSON string, Object{}` - An optional request body, as either JSON or a JSON serializable object.                                       |
+| exlcude | `String, String[]` -  A list of fields to exclude from the returned \_source field                                                      |
+| from    | `number` — Starting offset (default: 0)                                                                                                 |
+| include | `String, String[]` - A list of fields to extract and return from the \_source field                                                     |
+| index   | `String, String[]` - A comma-separated list of index names to search; use \_all or empty string to perform the operation on all indices |
+| query   | `String, String[]` - A comma-separated list of specific routing values                                                                  |
+| size    | `Number` - Number of hits to return (default: 10)                                                                                       |
+| sort    | `String, String[]` - A comma-separated list of : pairs                                                                                  |
+| type    | `String, String[]` - A comma-separated list of document types to search; leave empty to perform the operation on all types              |
 
 ### `/v1/get`
 
@@ -147,15 +153,16 @@ Cache-Control: no-cache
   "_source": {}
 }
 ```
+
 #### API Properties
 
-| Params  | Description                                                                                                                          |
-|---------|--------------------------------------------------------------------------------------------------------------------------------------|
-| exlcude | `String, String[]` -  A list of fields to exclude from the returned _source field                                                     |
-| include | `String, String[]` -  A list of fields to extract and return from the _source field                                                    |
-| index   | `String` - The name of the index                                                                                                      |
-| type    | `String` -  The type of the document (use _all to fetch the first document matching the ID across all types)                           |
-| id      | `String` -  The document ID
+| Params  | Description                                                                                                   |
+| ------- | ------------------------------------------------------------------------------------------------------------- |
+| exlcude | `String, String[]` -  A list of fields to exclude from the returned \_source field                            |
+| include | `String, String[]` -  A list of fields to extract and return from the \_source field                          |
+| index   | `String` - The name of the index                                                                              |
+| type    | `String` -  The type of the document (use \_all to fetch the first document matching the ID across all types) |
+| id      | `String` -  The document ID                                                                                   |
 
 ### `/v1/getsource`
 
@@ -179,15 +186,17 @@ Cache-Control: no-cache
 #### Response
 
 ```json
-{}
-// object only contains source fields
+{
+  // object only contains source fields
+}
 ```
+
 #### API Properties
 
-| Params  | Description                                                                                                                          |
-|---------|--------------------------------------------------------------------------------------------------------------------------------------|
-| exlcude | `String, String[]` -  A list of fields to exclude from the returned _source field                                                     |
-| id      | `String` -  The document ID
-| include | `String, String[]` -  A list of fields to extract and return from the _source field                                                    |
-| index   | `String` - The name of the index                                                                                                      |
-| type    | `String` -  The type of the document (use _all to fetch the first document matching the ID across all types)                           |
+| Params  | Description                                                                                                   |
+| ------- | ------------------------------------------------------------------------------------------------------------- |
+| exlcude | `String, String[]` -  A list of fields to exclude from the returned \_source field                            |
+| id      | `String` -  The document ID                                                                                   |
+| include | `String, String[]` -  A list of fields to extract and return from the \_source field                          |
+| index   | `String` - The name of the index                                                                              |
+| type    | `String` -  The type of the document (use \_all to fetch the first document matching the ID across all types) |
