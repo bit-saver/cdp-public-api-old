@@ -1,15 +1,23 @@
-const path = require('path');
-const merge = require('webpack-merge');
-const nodeExternals = require('webpack-node-externals');
-const helpers = require('./helpers/webpack.modules');
+const path = require( 'path' );
+const merge = require( 'webpack-merge' );
+const baseConfig = require( './webpack.base.js' );
+const webpackNodeExternals = require( 'webpack-node-externals' );
 
-module.exports = {
+const config = {
   name: 'elasticsearch public api',
+
+  // Inform webpack that we're building a bundle
+  // for nodeJS, rather than for the browser
   target: 'node',
-  entry: ['babel-polyfill', path.resolve(__dirname, 'src/index.js')],
+
+  entry: [ 'babel-polyfill', path.resolve( __dirname, 'src/index.js' ) ],
+
+  // Tell webpack where to put the output file that is generated
   output: {
     filename: 'build/server.js'
   },
-  module: merge(helpers.babelConfig()),
-  externals: [nodeExternals()]
+
+  externals: [ webpackNodeExternals() ]
 };
+
+module.exports = merge( baseConfig, config );

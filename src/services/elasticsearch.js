@@ -1,20 +1,27 @@
-require('dotenv').config();
+require( 'dotenv' ).config();
+// http-aws-es module needs to be updated as it is 3 versions behind
+const httpAwsEs = require( 'http-aws-es' );
+
 import elasticsearch from 'elasticsearch';
 
-const Client = elasticsearch.Client({
-  hosts: process.env.AWS_HOST,
-  connectionClass: require('http-aws-es'),
-  amazonES: {
-    region: process.env.AWS_REGION,
-    accessKey: process.env.AWS_ACCESS_KEY_ID,
-    secretKey: process.env.AWS_SECRET_ACCESS_KEY
-  }
-});
+let connection;
 
-// const Client = elasticsearch.Client({
-//   host: process.env.AWS_HOST,
-//   connectionClass: 'http',
-//   log: ['error']
-// });
+if ( process.env.NODE_ENV === 'production' ) {
+  connection = {
+    hosts: process.env.AWS_HOST,
+    connectionClass: httpAwsEs,
+    amazonES: {
+      region: process.env.AWS_REGION,
+      accessKey: process.env.AWS_ACCESS_KEY_ID,
+      secretKey: process.env.AWS_SECRET_ACCESS_KEY
+    }
+  };
+} else {
+  connection = {
+    host: process.env.AWS_HOST,
+    connectionClass: 'http',
+    log: [ 'error' ]
+  };
+}
 
-export default Client;
+export default elasticsearch.Client( connection );

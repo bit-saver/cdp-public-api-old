@@ -43,6 +43,8 @@ AWS_SECRET_ACCESS_KEY=
 
 **Important**: If you are connecting to AWS Elasticsearch, set the environment field to `production`. By default, the environment is set to `development`.
 
+Follows the [airbnb javascript style guide](https://github.com/airbnb/javascript).
+
 ### Using Docker
 
 The Dockerfiles bring up a multi container network housing a Node server for the API and an Elastic server housing the ELK stack. To get started:
@@ -57,8 +59,9 @@ The Dockerfiles bring up a multi container network housing a Node server for the
 * `npm run start`: Starts the web server normally
 * `npm run clear:build`: Removes the build directory.
 * `npm run build`: Generates build folder/files.
-* `npm run watch:build`: Re-compiles the `build` folder after every change.
-* `npm run watch:server`: Re-starts the server after every change.
+* `npm run dev`: Re-starts the server and re-complies the `build` folder after every change.
+* `npm run dev:build`: Re-compiles the `build` folder after every change.
+* `npm run dev:server`: Re-starts the server after every change.
 
 ## Routes
 
