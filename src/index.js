@@ -1,22 +1,19 @@
 require( 'dotenv' ).config();
 
 import express from 'express';
+import api from './api';
 import middlewareSetup from './middleware';
-
-import searchRoutes from './modules/search/routes';
-import getRoutes from './modules/get/routes';
-import getSourceRoutes from './modules/getSource/routes';
 
 const app = express();
 
+// setup the app middlware
 middlewareSetup( app );
 
-app.use( '/v1', [
-  searchRoutes,
-  getRoutes,
-  getSourceRoutes
-] );
+// setup the api
+app.use( '/v1', api );
 
-app.listen( process.env.PORT, () => {
+const PORT = process.env.PORT || 8080;
+
+app.listen( PORT, () => {
   console.log( `CDP service listening on port: ${process.env.PORT}` );
 } );
