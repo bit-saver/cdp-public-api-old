@@ -5,7 +5,7 @@ services:
     build: .
     volumes:                    
       - .:/usr/app/             # Mount host files into container
-      - /usr/app/node_modules   # Copies Keeps host empty node_moudles from overwriting the container node_moudles folder
+      - /usr/app/node_modules   # Keeps host empty node_moudles from overwriting the container node_moudles folder (mounting happens after build)
     ports:
       - "8080:8080"
   
