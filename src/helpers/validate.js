@@ -1,3 +1,9 @@
+/**
+ *  Verify the state object is in the correct state before going into any logic
+ *
+ * @param {object} object
+ * @param {object} state
+ */
 const baselineValidation = ( object, state ) => {
   if ( typeof object !== 'object' ) {
     throw new Error( '1st param must be an object' );
@@ -17,8 +23,6 @@ const baselineValidation = ( object, state ) => {
   } else {
     throw new Error( '2nd param must be an object' );
   }
-  // the above code is making sure the state object is in the correct state
-  // before going into any logic
 
   const data = { ...state };
 
@@ -72,6 +76,12 @@ export const array = ( object, state ) => {
   return data;
 };
 
+/**
+ * Verify params: query, include, exclude, type, index and sort are strings. If an array passed in,
+ * all array values are strings
+ * @param {object} object
+ * @param {object} state
+ */
 export const stringOrStringArray = ( object, state ) => {
   const data = baselineValidation( object, state );
 
@@ -104,6 +114,13 @@ export const stringOrStringArray = ( object, state ) => {
   return data;
 };
 
+/**
+ * Validate that body.body prop is JSON or a JSON serializable object
+ * This is not working correctly as "[]" fails, "{}" & "{x:2}" pass but valid json does not
+ * and results in an unhandled promise rejection
+ * @param {object} object
+ * @param {object} state
+ */
 export const jsonString = ( object, state ) => {
   const data = baselineValidation( object, state );
 
@@ -130,6 +147,11 @@ export const jsonString = ( object, state ) => {
   return data;
 };
 
+/**
+ * Validate that from and size props are of number type
+ * @param {object} object
+ * @param {object} state
+ */
 export const number = ( object, state ) => {
   const data = baselineValidation( object, state );
 

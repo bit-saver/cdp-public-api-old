@@ -1,5 +1,5 @@
 import client from '../../services/elasticsearch';
-import * as validate from '../validate';
+import * as validate from '../../helpers/validate';
 
 export const search = async ( req, res ) => {
   let data = {
@@ -41,7 +41,8 @@ export const search = async ( req, res ) => {
   try {
     res.json( await client.search( data.options ).then( esResponse => esResponse ) );
   } catch ( err ) {
-    const message = JSON.parse( err.response ).error.caused_by.reason;
+    // const message = JSON.parse( err.response ).error.caused_by.reason;
+    const message = JSON.parse( err.response ).error.reason;
     return res.status( 400 ).json( {
       error: true,
       message

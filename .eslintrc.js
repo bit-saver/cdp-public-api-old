@@ -13,5 +13,8 @@ module.exports = {
             "optionalDependencies": true,
             "peerDependencies": true
         }]
+    },
+    "env": {
+        "mocha": true
     }
 }; 

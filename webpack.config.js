@@ -10,7 +10,7 @@ const config = {
   // for nodeJS, rather than for the browser
   target: 'node',
 
-  entry: [ 'babel-polyfill', path.resolve( __dirname, 'src/index.js' ) ],
+  entry: [ 'babel-polyfill', path.resolve( __dirname, 'src/server.js' ) ],
 
   // Tell webpack where to put the output file that is generated
   output: {
