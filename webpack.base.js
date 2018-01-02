@@ -1,6 +1,13 @@
+const path = require( 'path' );
+
 module.exports = {
   module: {
     rules: [
+      {
+        test: /\.js?$/,
+        include: path.resolve( 'src' ),
+        loader: 'istanbul-instrumenter-loader'
+      },
       {
         test: /\.js?$/,
         enforce: 'pre',

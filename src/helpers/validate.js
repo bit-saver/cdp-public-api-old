@@ -64,7 +64,6 @@ export const array = ( object, state ) => {
         data.error[key] = 'Value must be String or String[]';
       }
       // should an elase clause be here to disallow empty arrays as prop values?
-
       // Every value in the array must be a string
       const isArrayString = value.every( item => typeof item === 'string' );
 
@@ -103,6 +102,7 @@ export const stringOrStringArray = ( object, state ) => {
       if ( value.length === 0 ) {
         data.error[key] = 'Value must be String or String[]';
       }
+      // should an elase clause be here to disallow empty arrays as prop values?
       // Every value in the array must be a string
       const isArrayString = value.every( item => typeof item === 'string' );
 
@@ -119,8 +119,6 @@ export const stringOrStringArray = ( object, state ) => {
 
 /**
  * Validate that body.body prop is JSON or a JSON serializable object
- * This is not working correctly as "[]" fails, "{}" & "{x:2}" pass but valid json does not
- * and results in an unhandled promise rejection
  * @param {object} object
  * @param {object} state
  */

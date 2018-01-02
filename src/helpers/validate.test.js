@@ -58,12 +58,12 @@ describe( 'Validate', () => {
       expect( validate.array( object, state ) ).to.deep.equal( { options: { prop1: [ 'item1', 'item2' ] }, error: {} } );
     } );
 
-    it( 'should return an applicable error is object property is not an array', () => {
+    it( 'should return an applicable error for each object property that is not an array', () => {
       const object = {
         prop1: '3', prop2: 3, prop3: {}, prop4: null, prop5: '', prop6: []
       };
       expect( validate.array( object, state ) ).to.deep.equal( {
-        options: { prop6: [] },  // May need to update function to disallow empty arrays
+        options: { prop6: [] }, // May need to update function to disallow empty arrays
         error: {
           prop1: 'Value must be a String[]',
           prop2: 'Value must be a String[]',
@@ -73,12 +73,75 @@ describe( 'Validate', () => {
       } );
     } );
 
-    it( 'should return an applicable error if array contains non string values', () => {
-      const object = { prop1: [ 'item1', 3 ] }
+    it( 'should return an applicable error and not populate state property if array contains non string values', () => {
+      const object = { prop1: [ 'item1', 3 ] };
       expect( validate.array( object, state ) ).to.deep.equal( {
         options: {},
         error: {}
-      } )
+      } );
+    } );
+  } );
+
+  describe( '#validate.stringOrStringArray()', () => {
+    beforeEach( () => {
+      state = { options: {}, error: {} };
+    } );
+
+    it( 'should return string or array as prop value if either is passed else an applicable error', () => {
+      const object = {
+        prop1: 'item1', prop2: 3, prop3: null, prop4: []
+      };
+      expect( validate.stringOrStringArray( object, state ) ).to.deep.equal( {
+        options: {
+          prop1: 'item1',
+          prop4: []
+        },
+        error: {
+          prop2: 'Value must be String or String[]',
+          prop4: 'Value must be String or String[]'
+        }
+      } );
+    } );
+  } );
+
+  describe( '#validate.jsonString()', () => {
+    beforeEach( () => {
+      state = { options: {}, error: {} };
+    } );
+
+    it( 'test', () => {
+      const object = {
+        prop1: 3,
+        prop2: 'string',
+        prop3: {},
+        prop4: JSON.stringify( { x: 2, y: [ 1, undefined, 'str' ], z: undefined } ),
+        prop5: { x: 2 },
+        prop6: null,
+        prop7: [],
+        prop8: '',
+        prop9: '[]',
+        prop10: '{}',
+        prop11: "{ x: 2, y: [ 1, undefined, 'str' ], z: undefined }",
+        prop12: JSON.stringify( "{ x: 2, y: [ 1, undefined, 'str' ], z: undefined }" ),
+        prop13: [ 1, 'str', undefined, 0, null, '' ]
+      };
+      expect( validate.jsonString( object, state ) ).to.deep.equal( {
+        options: {
+          prop1: 3,
+          prop3: {},
+          prop4: { x: 2, y: [ 1, null, 'str' ] },
+          prop5: { x: 2 },
+          prop7: [],
+          prop9: [],
+          prop10: {},
+          prop12: "{ x: 2, y: [ 1, undefined, 'str' ], z: undefined }",
+          prop13: [ 1, 'str', undefined, 0, null, '' ]
+        },
+        error: {
+          prop2: 'Value must be valid JSON string or Object',
+          prop11: 'Value must be valid JSON string or Object'
+        }
+      } );
     } );
   } );
 } );
