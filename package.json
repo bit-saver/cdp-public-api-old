@@ -1,7 +1,7 @@
 {
   "name": "cdp-public-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "repository": "git@github.com:IIP-Design/cdp-public-api.git",
   "author": "Office of Design <designdevops@america.gov>",
   "license": "MIT",
@@ -12,13 +12,12 @@
     "dev:build": "webpack --progress --colors --watch",
     "dev:server": "nodemon -L build/server.js",
     "start": "node build/server.js",
-    "test": "mocha-webpack src/**/*.test.js",
+    "test":
+      "mocha-webpack --recursive --require babel-polyfill src/**/*.test.js src/api/**/*.test.js src/api/models/**/*.test.js",
     "test:cover": "nyc --reporter=lcov --reporter=text npm test"
   },
   "nyc": {
-    "include": [
-      "src/**/*.js"
-    ],
+    "include": ["src/**/*.js"],
     "instrument": false,
     "sourceMap": false
   },
