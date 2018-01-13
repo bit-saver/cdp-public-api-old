@@ -1,23 +1,52 @@
+const webpack = require( 'webpack' );
 const path = require( 'path' );
-const merge = require( 'webpack-merge' );
-const baseConfig = require( './webpack.base.js' );
-const webpackNodeExternals = require( 'webpack-node-externals' );
+const nodeExternals = require( 'webpack-node-externals' );
+const StartServerPlugin = require( 'start-server-webpack-plugin' );
 
-const config = {
-  name: 'elasticsearch public api',
-
-  // Inform webpack that we're building a bundle
-  // for nodeJS, rather than for the browser
+module.exports = {
+  entry: [ 'webpack/hot/poll?1000', './src/index' ],
+  watch: true,
+  devtool: 'sourcemap',
   target: 'node',
-
-  entry: [ 'babel-polyfill', path.resolve( __dirname, 'src/server.js' ) ],
-
-  // Tell webpack where to put the output file that is generated
-  output: {
-    filename: 'build/server.js'
+  node: {
+    __filename: true,
+    __dirname: true
   },
-
-  externals: [ webpackNodeExternals() ]
+  externals: [ nodeExternals( { whitelist: [ 'webpack/hot/poll?1000' ] } ) ],
+  module: {
+    rules: [
+      // {
+      //   test: /\.js?$/,
+      //   enforce: 'pre',
+      //   loader: 'eslint-loader',
+      //   exclude: /node_modules/,
+      //   options: {
+      //     emitWarning: true
+      //   }
+      // },
+      {
+        test: /\.js?$/,
+        use: [ {
+          loader: 'babel-loader',
+          options: {
+            babelrc: false,
+            presets: [ [ 'env', { modules: false } ], 'stage-0' ],
+            plugins: [ 'transform-regenerator', 'transform-runtime' ]
+          }
+        }
+        ],
+        exclude: /node_modules/
+      } ]
+  },
+  plugins: [
+    new StartServerPlugin( 'server.js' ),
+    new webpack.NamedModulesPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.DefinePlugin( {
+      'process.env': { BUILD_TARGET: JSON.stringify( 'server' ) }
+    } ),
+    new webpack.BannerPlugin( { banner: 'require("source-map-support").install();', raw: true, entryOnly: false } )
+  ],
+  output: { path: path.join( __dirname, 'build' ), filename: 'server.js' }
 };
-
-module.exports = merge( baseConfig, config );

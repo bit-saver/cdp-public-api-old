@@ -8,18 +8,9 @@
   "scripts": {
     "clear:build": "rimraf build",
     "build": "npm run clear:build && webpack --progress --colors",
-    "dev": "npm-run-all --parallel dev:*",
-    "dev:build": "webpack --progress --colors --watch",
-    "dev:server": "nodemon -L build/server.js",
-    "start": "node build/server.js",
-    "test":
-      "mocha-webpack --recursive --require babel-polyfill src/**/*.test.js src/api/**/*.test.js src/api/models/**/*.test.js",
-    "test:cover": "nyc --reporter=lcov --reporter=text npm test"
-  },
-  "nyc": {
-    "include": ["src/**/*.js"],
-    "instrument": false,
-    "sourceMap": false
+    "start": "webpack --colors --progress",
+    "test:unit": "NODE_ENV=testing rm -rf ./tmp/mocha-webpack && mocha-webpack --webpack-config webpack.testing.js \"src/**/*.test.js\" --timeout 10000 --require source-map-support/register || true",
+    "test": "npm run test:unit"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
@@ -36,10 +27,11 @@
     "babel-loader": "^7.1.2",
     "babel-plugin-syntax-async-functions": "^6.13.0",
     "babel-plugin-transform-regenerator": "^6.26.0",
-    "babel-polyfill": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-0": "^6.24.1",
     "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
     "eslint": "^4.14.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-loader": "^1.9.0",
@@ -48,11 +40,9 @@
     "mocha": "^4.1.0",
     "mocha-webpack": "^1.0.1",
     "morgan": "^1.9.0",
-    "nodemon": "^1.14.5",
-    "npm-run-all": "^4.1.2",
-    "nyc": "^11.4.1",
+    "raw-loader": "^0.5.1",
     "rimraf": "^2.6.2",
-    "supertest": "^3.0.0",
+    "start-server-webpack-plugin": "^2.2.0",
     "webpack": "^3.10.0",
     "webpack-merge": "^4.1.1",
     "webpack-node-externals": "^1.5.4"

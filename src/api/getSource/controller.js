@@ -1,5 +1,5 @@
 import client from '../../services/elasticsearch';
-import * as validate from '../../helpers/validate';
+import * as validate from '../helpers/validate';
 
 export const getSource = async ( req, res ) => {
   let data = { options: {}, error: {} };

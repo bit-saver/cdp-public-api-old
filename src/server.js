@@ -1,7 +1,18 @@
-import app from './app';
+import express from 'express';
+import middlewareSetup from './middleware';
+import routes from './api';
 
-const PORT = process.env.PORT || 8080;
+// Declare an app from express
+const app = express();
 
-app.listen( PORT, () => {
-  console.log( `CDP service listening on port: ${PORT}` );
+// setup the app middlware
+middlewareSetup( app );
+
+app.use( '/v1', routes );
+
+// catch all
+app.all( '*', ( req, res ) => {
+  res.json( { ok: true } );
 } );
+
+export default app;
