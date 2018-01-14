@@ -13,7 +13,7 @@ server.listen( PORT, () => {
 } );
 
 if ( module.hot ) {
-  module.hot.accept( [ './server' ], () => {
+  module.hot.accept( ['./server'], () => {
     server.removeListener( 'request', currentApp );
     server.on( 'request', app );
     currentApp = app;

@@ -22,7 +22,7 @@ if ( process.env.NODE_ENV === 'production' ) {
     host: process.env.AWS_HOST,
     apiVersion: process.env.ES_API_VERSION,
     connectionClass: 'http',
-    log: [ 'error' ]
+    log: ['error']
   };
 }
 
