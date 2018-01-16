@@ -3,12 +3,14 @@ const esQuery = ( client, index, type ) => ( {
     return client.index( { index, type, body } );
   },
 
-  updateDocument( id, body ) {
-    return client.index( {
+  // update method requires doc prop.
+  // doc prop contains part of or complete doc to update
+  updateDocument( id, doc ) {
+    return client.update( {
       id,
       index,
       type,
-      body
+      body: { doc }
     } );
   },
 

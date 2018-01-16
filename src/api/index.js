@@ -2,11 +2,9 @@ import { Router } from 'express';
 import apiErrorHandler from './modules/errorHandler';
 
 import adminRoutes from './admin/routes';
-
 import getRoutes from './get/routes';
 import getSourceRoutes from './getSource/routes';
 import searchRoutes from './search/routes';
-
 import videoRoutes from './resources/video/routes';
 
 const router = new Router();
