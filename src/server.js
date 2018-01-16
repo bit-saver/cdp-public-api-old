@@ -8,6 +8,7 @@ const app = express();
 // setup the app middlware
 middlewareSetup( app );
 
+// set up routes
 app.use( '/v1', routes );
 
 // catch all

@@ -1,18 +1,27 @@
 import { Router } from 'express';
+import apiErrorHandler from './modules/errorHandler';
+
+import adminRoutes from './admin/routes';
 
 import getRoutes from './get/routes';
 import getSourceRoutes from './getSource/routes';
 import searchRoutes from './search/routes';
 
-// import videoRoutes from './models/video/routes';
+import videoRoutes from './resources/video/routes';
 
-const routes = new Router();
+const router = new Router();
+
+// admin routes
+router.use( '/admin', adminRoutes );
 
 // routes.use looks for routes /v1/get, /v1/search, etc., v1 comes from app.use in index.js
-routes.use( '/get', getRoutes );
-routes.use( '/getSource', getSourceRoutes );
-routes.use( '/search', searchRoutes );
+router.use( '/get', getRoutes );
+router.use( '/getSource', getSourceRoutes );
+router.use( '/search', searchRoutes );
 
-// routes.use( '/models/video', videoRoutes );
+router.use( '/video', videoRoutes );
 
-export default routes;
+// Catch all errors
+router.use( apiErrorHandler );
+
+export default router;

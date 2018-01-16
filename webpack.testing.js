@@ -9,24 +9,28 @@ module.exports = {
     devtoolModuleFilenameTemplate: '[absolute-resource-path]',
     devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]'
   },
-  resolve: { alias: {
-    '~/helpers.test': path.resolve( __dirname, 'test/helpers.test' ),
-    '~helpers.test': path.resolve( __dirname, 'test/helpers.test' ),
-    '~api.test': path.resolve( __dirname, 'test/api.test' ),
-    '~/api.test': path.resolve( __dirname, 'test/api.test' )
-  } },
-  devtool: 'cheap-module-source-map',
-  externals: [ nodeExternals() ],
-  module: { rules: [
-    {
-      test: /\.js?$/,
-      use: [ 'babel-loader' ],
-      exclude: /node_modules/
-    },
-    {
-      test: /\.html$/,
-      exclude: /node_modules/,
-      use: { loader: 'raw-loader' }
+  resolve: {
+    alias: {
+      '~/helpers.test': path.resolve( __dirname, 'test/helpers.test' ),
+      '~helpers.test': path.resolve( __dirname, 'test/helpers.test' ),
+      '~api.test': path.resolve( __dirname, 'test/api.test' ),
+      '~/api.test': path.resolve( __dirname, 'test/api.test' )
     }
-  ] }
+  },
+  devtool: 'cheap-module-source-map',
+  externals: [nodeExternals()],
+  module: {
+    rules: [
+      {
+        test: /\.js?$/,
+        use: ['babel-loader'],
+        exclude: /node_modules/
+      },
+      {
+        test: /\.html$/,
+        exclude: /node_modules/,
+        use: { loader: 'raw-loader' }
+      }
+    ]
+  }
 };

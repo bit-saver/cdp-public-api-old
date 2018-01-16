@@ -4,6 +4,7 @@ module.exports = {
     'space-in-parens': ['warn', 'always'],
     'array-bracket-newline': ['warn', { multiline: true, minItems: 3 }],
     'comma-dangle': ['warn', 'never'],
+    'no-underscore-dangle': 0,
     'import/first': 0,
     'no-console': 0,
     'import/prefer-default-export': 0,
@@ -19,5 +20,13 @@ module.exports = {
   },
   env: {
     mocha: true
-  }
+  },
+  overrides: [
+    {
+      files: '*.test.js',
+      rules: {
+        'no-unused-expressions': 'off'
+      }
+    }
+  ]
 };

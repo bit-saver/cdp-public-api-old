@@ -1,13 +1,13 @@
 # https://docs.docker.com/compose/overview/
 version: '3'
 services:
-  api:
-    build: .
-    volumes:                    
-      - .:/usr/app/             # Mount host files into container
-      - /usr/app/node_modules   # Keeps host empty node_moudles from overwriting the container node_moudles folder (mounting happens after build)
-    ports:
-      - "8080:8080"
+  # api:
+  #   build: .
+  #   volumes:                    
+  #     - .:/usr/app/             # Mount host files into container
+  #     - /usr/app/node_modules   # Keeps host empty node_moudles from overwriting the container node_moudles folder (mounting happens after build)
+  #   ports:
+  #     - "8080:8080"
   
   # http://elk-docker.readthedocs.io/
   elk:

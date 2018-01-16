@@ -1,5 +1,5 @@
 import client from '../../services/elasticsearch';
-import * as validate from '../helpers/validate';
+import * as validate from '../modules/validate';
 
 export const search = async ( req, res ) => {
   let data = {
@@ -24,10 +24,7 @@ export const search = async ( req, res ) => {
   );
 
   if ( req.body.body ) {
-    data = validate.jsonString(
-      { body: req.body.body },
-      data
-    );
+    data = validate.jsonString( { body: req.body.body }, data );
   }
 
   data = validate.number(
