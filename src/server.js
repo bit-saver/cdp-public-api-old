@@ -12,8 +12,8 @@ middlewareSetup( app );
 app.use( '/v1', routes );
 
 // catch all
-app.all( '*', ( req, res ) => {
-  res.json( { ok: true } );
-} );
+// app.all( '*', ( req, res ) => {
+//   res.json( { ok: true } );
+// } );
 
 export default app;
