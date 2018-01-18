@@ -7,6 +7,7 @@ module.exports = {
     'no-underscore-dangle': 0,
     'import/first': 0,
     'no-console': 0,
+    'no-unused-vars': ['warn', { argsIgnorePattern: 'next' }],
     'import/prefer-default-export': 0,
     'consistent-return': 0,
     'import/no-extraneous-dependencies': [
