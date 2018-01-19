@@ -4,6 +4,7 @@ import apiErrorHandler from './modules/errorHandler';
 import adminRoutes from './admin/routes';
 import searchRoutes from './search/routes';
 import videoRoutes from './resources/video/routes';
+import postRoutes from './resources/post/routes';
 
 const router = new Router();
 
@@ -15,6 +16,7 @@ router.use( '/search', searchRoutes );
 
 // resources
 router.use( '/video', videoRoutes );
+router.use( '/post', postRoutes );
 
 // Catch all errors
 router.use( apiErrorHandler );
