@@ -1,3 +1,8 @@
+/*
+  The Data Access Layer (DAL) provides the controllers for making
+  requests against the database (currently ElasticSearch).
+ */
+
 import controllers from './elastic/controller';
 
 // POST v1/[resource]

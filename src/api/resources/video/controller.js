@@ -1,5 +1,5 @@
-import { generateControllers } from '../../modules/query';
-import esQueryFactory from '../../modules/esDocumentQuery';
+import { generateControllers } from '../../modules/dataAccessLayer';
+import esQueryFactory from '../../modules/elastic/query';
 
 const controller = ( client, index, type ) => {
   const esQuery = esQueryFactory( client, index, type );

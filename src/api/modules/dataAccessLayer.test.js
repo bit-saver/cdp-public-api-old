@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { controllers } from './query';
+import { controllers } from './dataAccessLayer';
 
 describe( 'Modules', () => {
   describe( 'query', () => {

@@ -2,8 +2,9 @@ import { Router } from 'express';
 import client from '../../../services/elasticsearch';
 import controllerFactory from './controller';
 
-export const INDEX = 'video.america.gov';
-export const TYPE = 'video';
+// export const INDEX = 'video.america.gov';
+export const INDEX = 'shakespeare';
+export const TYPE = 'doc';
 
 const router = new Router();
 const controller = controllerFactory( client, INDEX, TYPE );
