@@ -7,24 +7,25 @@ import client from '../src/services/elasticsearch';
 chai.use( chaiHttp );
 
 const createApiTest = ( index, type, body ) => {
-  describe.only( `/v1/${type}`, () => {
-    let result;
+  describe( `/v1/${type}`, () => {
     const esQuery = esQueryFactory( client, index, type );
-
-    after( () => {
-      // remove document after test
-      esQuery.deleteDocument( result.body.id );
-    } );
 
     // INDEX (CREATE)  POST v1/[resource]
     describe( `POST /${type}`, () => {
-      it( `should create a ${type}`, async () => {
+      let result;
+
+      // remove document after test
+      after( () => {
+        esQuery.deleteDocument( result.body.id ); // TODO: need to resolve this promise
+      } );
+
+      it( `responds with Created and returns a ${type}`, async () => {
         result = await chai
           .request( app )
           .post( `/v1/${type}` )
           .send( body );
 
-        // check for status, content type and correct json
+        // Check for status, content type and correct json
         expect( result ).to.have.status( 201 );
         expect( result ).to.be.json;
       } );
