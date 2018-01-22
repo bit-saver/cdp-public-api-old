@@ -11,7 +11,13 @@ export default {
   // },
 
   parseCreateResult( doc ) {
-    return result => ( { id: result._id, ...doc } );
+    return result =>
+      new Promise( ( resolve, reject ) => {
+        if ( result.result && result.result === 'created' ) {
+          return resolve( { id: result._id, ...doc } );
+        }
+        reject( doc );
+      } );
   },
 
   parseGetResult( id ) {
@@ -27,7 +33,7 @@ export default {
   parseUpdateResult( id, doc ) {
     return result =>
       new Promise( ( resolve, reject ) => {
-        if ( result._id ) {
+        if ( result.result && result.result === 'updated' ) {
           return resolve( { id: result._id, ...doc } );
         }
         reject( id );
@@ -37,7 +43,7 @@ export default {
   parseDeleteResult( id ) {
     return result =>
       new Promise( ( resolve, reject ) => {
-        if ( result.found ) {
+        if ( result.result && result.result === 'deleted' ) {
           return resolve( id );
         }
         reject( id );
