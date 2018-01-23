@@ -1,9 +1,11 @@
 const nodeExternals = require( 'webpack-node-externals' );
 const path = require( 'path' );
+const merge = require( 'webpack-merge' );
+const baseConfig = require( './webpack.base' );
 
 process.env.NODE_ENV = 'testing';
 
-module.exports = {
+const config = {
   target: 'node',
   output: {
     devtoolModuleFilenameTemplate: '[absolute-resource-path]',
@@ -18,19 +20,7 @@ module.exports = {
     }
   },
   devtool: 'cheap-module-source-map',
-  externals: [nodeExternals()],
-  module: {
-    rules: [
-      {
-        test: /\.js?$/,
-        use: ['babel-loader'],
-        exclude: /node_modules/
-      },
-      {
-        test: /\.html$/,
-        exclude: /node_modules/,
-        use: { loader: 'raw-loader' }
-      }
-    ]
-  }
+  externals: [nodeExternals()]
 };
+
+module.exports = merge( baseConfig, config );
