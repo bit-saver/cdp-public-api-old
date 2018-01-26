@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import download from '../modules/download';
-import aws from '../modules/amazon/aws';
+import aws from '../../services/amazon-aws';
 
 const router = new Router();
 
@@ -18,8 +18,9 @@ router.post( '/', async ( req, res ) => {
     res.status( 500 ).send( err.message || err.toString() ) );
   const filename = req.body.title;
 
-  const result = await aws.upload( filename, file.options.ext, file.content ).catch( err => err );
-  res.json( result );
+  const result = await aws.upload( filename, file.props.ext, file.content ).catch( err => err );
+  res.json( { props: file.props, result } );
+  // res.json( file.props );
 } );
 
 export default router;

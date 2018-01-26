@@ -1,8 +1,8 @@
-import http from 'http';
-import https from 'https';
 import URL from 'url';
 import Mime from 'mime-types';
 import Path from 'path';
+import Request from 'request';
+import md5 from 'md5';
 
 /**
  * Downloads content for the given URL.  Returns an object containing
@@ -13,38 +13,34 @@ import Path from 'path';
  */
 export default function download( url ) {
   return new Promise( ( resolve, reject ) => {
-    const options = URL.parse( url );
+    const args = URL.parse( url );
+    const props = {};
 
-    const handleRequest = ( res ) => {
-      let data = '';
-      res.on( 'data', ( chunk ) => {
-        data += chunk;
-      } );
-
-      res.on( 'end', () => {
-        options.filename = options.path.split( '/' ).pop();
-
-        options.contentType = res.headers['content-type'];
-        // Getting the extension this way could be erroneous
-        options.ext = Path.extname( options.filename );
-        // Cross check ext against known extensions for this content type
-        if ( Mime.extensions[options.contentType].indexOf( options.ext.replace( '.', '' ) ) < 0 ) {
-          // extension does not exist so use the default extension
-          options.ext = `.${Mime.extension( options.contentType )}`;
+    Request.get(
+      {
+        url,
+        resolveWithFullResponse: true,
+        encoding: null
+      },
+      ( error, res, body ) => {
+        if ( error ) {
+          reject( error );
+          return;
         }
+        props.filename = args.path.split( '/' ).pop();
 
-        resolve( { options, content: data } );
-      } );
-    };
+        props.contentType = res.headers['content-type'];
+        // Getting the extension this way could be erroneous
+        props.ext = Path.extname( props.filename );
+        // Cross check ext against known extensions for this content type
+        if ( Mime.extensions[props.contentType].indexOf( props.ext.replace( '.', '' ) ) < 0 ) {
+          // extension does not exist so use the default extension
+          props.ext = `.${Mime.extension( props.contentType )}`;
+        }
+        props.checksum = md5( body );
 
-    let request;
-    if ( options.protocol === 'https:' ) request = https.request( options, handleRequest );
-    else request = http.request( options, handleRequest );
-
-    request.on( 'error', ( e ) => {
-      reject( e );
-    } );
-
-    request.end();
+        resolve( { props, content: body } );
+      }
+    );
   } );
 }
