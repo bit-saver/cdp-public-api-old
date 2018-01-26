@@ -9,7 +9,7 @@
     "clear:build": "rimraf build",
     "build": "npm run clear:build && webpack --progress --colors",
     "start": "node build/server.js",
-    "dev:start": "webpack --config webpack.develop.js --colors --progress",
+    "dev": "webpack --config webpack.develop.js --colors --progress",
     "test:unit":
       "NODE_ENV=testing rm -rf ./tmp/mocha-webpack && mocha-webpack --webpack-config webpack.testing.js \"src/**/*.test.js\" --timeout 10000 --require source-map-support/register || true",
     "test": "npm run test:unit"

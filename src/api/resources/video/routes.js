@@ -11,7 +11,7 @@ const controller = controllerFactory( client, INDEX, TYPE );
 // Route: /v1/video
 router.route( '/' ).post( controller.indexDocument );
 
-// Route: /v1/video/6eaQ_GABU8PIJVQqPddr
+// Route: /v1/video/[id]
 router
   .route( '/:id' )
   .get( controller.getDocument )
