@@ -37,7 +37,7 @@ const checkExists = ( bucket, key ) =>
 
 /**
  * Upload a file to Amazon S3.
- * Checks for existing files first using title+ext and
+ * If replace is false: hecks for existing files first using title+ext and
  * increments the filename until finding a configuration
  * that does not exist.
  *
@@ -45,22 +45,27 @@ const checkExists = ( bucket, key ) =>
  * @param ext
  * @param content
  * @param bucket
+ * @param replace
  * @returns {Promise<any>}
  */
-const upload = ( title, ext, content, bucket = 'cdp-video-tst' ) =>
+const upload = ( {
+  title, ext, content, bucket = 'cdp-video-tst', replace = true
+} ) =>
   new Promise( async ( resolve, reject ) => {
     const base = sanitizeStr( title );
     let key = `${base}${ext}`;
     let exists = await checkExists( bucket, key );
 
-    let index = 0;
-    while ( exists ) {
-      index += 1;
-      if ( index > 5 ) {
-        reject( new Error( `S3 Upload: File already exists (attempted: ${index})` ) );
+    if ( !replace ) {
+      let index = 0;
+      while ( exists ) {
+        index += 1;
+        if ( index > 5 ) {
+          reject( new Error( `S3 Upload: File already exists (attempted: ${index})` ) );
+        }
+        key = `${base}-${index}${ext}`;
+        exists = await checkExists( bucket, key ); // eslint-disable-line no-await-in-loop
       }
-      key = `${base}-${index}${ext}`;
-      exists = await checkExists( bucket, key ); // eslint-disable-line no-await-in-loop
     }
 
     const params = {
@@ -74,7 +79,7 @@ const upload = ( title, ext, content, bucket = 'cdp-video-tst' ) =>
       if ( err ) {
         reject( err );
       } else {
-        resolve( data );
+        resolve( { filename: key, ...data } );
       }
     } );
   } );

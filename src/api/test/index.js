@@ -18,8 +18,10 @@ router.post( '/', async ( req, res ) => {
     res.status( 500 ).send( err.message || err.toString() ) );
   const filename = req.body.title;
 
-  const result = await aws.upload( filename, file.props.ext, file.content ).catch( err => err );
-  res.json( { props: file.props, result } );
+  const result = await aws
+    .upload( { title: filename, ext: file.props.ext, content: file.content } )
+    .catch( err => err );
+  res.json( { props: file.props, ...result } );
   // res.json( file.props );
 } );
 
