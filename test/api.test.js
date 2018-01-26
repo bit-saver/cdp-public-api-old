@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../src/server';
-import esQueryFactory from '../src/api/modules/esDocumentQuery';
+import esQueryFactory from '../src/api/modules/elastic/query';
 import client from '../src/services/elasticsearch';
 
 chai.use( chaiHttp );

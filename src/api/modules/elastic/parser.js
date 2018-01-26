@@ -1,3 +1,8 @@
+/*
+  Parser is responsible for formatting the raw ElasticSearch data
+  in an easier to manage format
+ */
+
 // Need to determin is the result prop should be sent back
 export default {
   // parseSearchResult( result ) {
@@ -9,13 +14,14 @@ export default {
     return result => ( { id: result._id, ...doc } );
   },
 
-  parseGetResult( result ) {
-    return new Promise( ( resolve, reject ) => {
-      if ( result.found ) {
-        return resolve( { id: result._id, ...result._source } );
-      }
-      reject( result._id );
-    } );
+  parseGetResult( id ) {
+    return result =>
+      new Promise( ( resolve, reject ) => {
+        if ( result.found ) {
+          return resolve( { id: result._id, ...result._source } );
+        }
+        reject( id );
+      } );
   },
 
   parseUpdateResult( id, doc ) {

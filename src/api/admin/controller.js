@@ -1,4 +1,4 @@
-import esQueryFactory from '../modules/esAdminQuery';
+import esQueryFactory from '../modules/elastic/queryAdmin';
 
 const controller = ( client ) => {
   const esQuery = esQueryFactory( client );
