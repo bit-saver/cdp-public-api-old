@@ -4,7 +4,7 @@ import apiErrorHandler from './modules/errorHandler';
 import adminRoutes from './admin/routes';
 import searchRoutes from './search/routes';
 import videoRoutes from './resources/video/routes';
-import testRoutes from './testing';
+import testRoutes from './test';
 
 const router = new Router();
 
