@@ -25,6 +25,34 @@ export default ( client, index, type ) => ( {
 
   deleteDocument( id ) {
     return client.delete( { id, index, type } );
+  },
+
+  findDocument( doc ) {
+    return client.search( {
+      index,
+      body: {
+        query: {
+          bool: {
+            must: [
+              {
+                match: {
+                  type
+                }
+              },
+              {
+                match: {
+                  site: doc.site
+                }
+              },
+              {
+                match: {
+                  post_id: doc.post_id
+                }
+              }
+            ]
+          }
+        }
+      }
+    } );
   }
 } );
-

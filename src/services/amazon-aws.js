@@ -1,3 +1,4 @@
+import fs from 'fs';
 import AWS from 'aws-sdk';
 
 AWS.config.update( {
@@ -16,7 +17,7 @@ const s3 = new AWS.S3();
  * @returns {string}
  */
 function sanitizeStr( str ) {
-  return str.replace( /[^0-9a-zA-Z\s]/g, '' ).replace( /\s/g, '-' );
+  return str.replace( /[^/0-9a-zA-Z\s]/g, '' ).replace( /\s/g, '-' );
 }
 
 /**
@@ -36,20 +37,20 @@ const checkExists = ( bucket, key ) =>
   } );
 
 /**
- * Upload a file to Amazon S3.
- * If replace is false: hecks for existing files first using title+ext and
+ * Upload a file (referenced as a tmp object aka temporary file) to Amazon S3.
+ * If replace is false: checks for existing files first using title+ext and
  * increments the filename until finding a configuration
  * that does not exist.
  *
  * @param title
  * @param ext
- * @param content
+ * @param tmpObj
  * @param bucket
  * @param replace
  * @returns {Promise<any>}
  */
 const upload = ( {
-  title, ext, content, bucket = 'cdp-video-tst', replace = true
+  title, ext, tmpObj: tmpObj = null, bucket = 'cdp-video-tst', replace = true
 } ) =>
   new Promise( async ( resolve, reject ) => {
     const base = sanitizeStr( title );
@@ -68,20 +69,33 @@ const upload = ( {
       }
     }
 
+    const body = fs.createReadStream( tmpObj.name );
+
     const params = {
       Bucket: bucket,
       Key: key,
-      Body: Buffer.from( content ),
+      Body: body,
       ACL: 'private' // TODO: Switch back to 'public-read' for any kind of non-test based functionality
     };
 
-    s3.putObject( params, ( err, data ) => {
-      if ( err ) {
-        reject( err );
-      } else {
+    const manager = s3.upload( params );
+    manager
+      .on( 'httpUploadProgress', ( progress ) => {
+        // console.log( 'progress', progress );
+        // { loaded: 4915, total: 192915, part: 1, key: 'foo.jpg' }
+        // eslint-disable-next-line no-mixed-operators
+        const percent = ( progress.loaded / progress.total * 100 ).toFixed( 0 );
+        console.info( `${key}: ${percent}%` );
+      } )
+      .promise()
+      .then( ( data ) => {
+        tmpObj.removeCallback();
         resolve( { filename: key, ...data } );
-      }
-    } );
+      } )
+      .catch( ( err ) => {
+        tmpObj.removeCallback();
+        return reject( err );
+      } );
   } );
 
 export default {

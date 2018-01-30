@@ -40,12 +40,15 @@ export const getDocument = model => ( req, res, next ) => {
     .catch( err => next( err ) );
 };
 
+export const findDocument = model => docToFind => controllers.findDocument( model, docToFind );
+
 export const generateControllers = ( model, overrides = {} ) => {
   const defaults = {
     indexDocument: indexDocument( model ),
     updateDocument: updateDocument( model ),
     deleteDocument: deleteDocument( model ),
-    getDocument: getDocument( model )
+    getDocument: getDocument( model ),
+    findDocument: findDocument( model )
   };
 
   return { ...defaults, ...overrides };

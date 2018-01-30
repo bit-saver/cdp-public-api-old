@@ -2,11 +2,24 @@ import URL from 'url';
 import Mime from 'mime-types';
 import Path from 'path';
 import Request from 'request';
-import md5 from 'md5';
+import fs from 'fs';
+import tmp from 'tmp';
+import crypto from 'crypto';
+
+const checksum = path =>
+  new Promise( ( resolve, reject ) => {
+    const hash = crypto.createHash( 'md5' );
+    const rs = fs.createReadStream( path );
+    rs.on( 'error', reject );
+    rs.on( 'data', chunk => hash.update( chunk ) );
+    rs.on( 'end', () => resolve( hash.digest( 'hex' ) ) );
+  } );
 
 /**
  * Downloads content for the given URL.  Returns an object containing
  * properties inferred from the URL and the response's Content Type.
+ *
+ * REMEMBER TO DELETE TEMP FILE! (tmpObj.removeCallback())
  *
  * @param url
  * @returns {Promise<any>}
@@ -16,20 +29,20 @@ export default function download( url ) {
     const args = URL.parse( url );
     const props = {};
 
-    Request.get(
-      {
-        url,
-        resolveWithFullResponse: true,
-        encoding: null
-      },
-      ( error, res, body ) => {
-        if ( error ) {
-          reject( error );
-          return;
-        }
+    tmp.setGracefulCleanup();
+
+    const tmpObj = tmp.fileSync();
+    // TODO: REFACTOR TO HANDLE GZIP FILES
+    // (response will be compressed, request is uncompressed but needs special handling)
+    Request.get( {
+      url,
+      gzip: true
+    } )
+      .on( 'error', error => reject( error ) )
+      .on( 'response', ( response ) => {
         props.basename = args.path.split( '/' ).pop();
 
-        props.contentType = res.headers['content-type'];
+        props.contentType = response.headers['content-type'];
         // Getting the extension this way could be erroneous
         props.ext = Path.extname( props.basename );
         // Cross check ext against known extensions for this content type
@@ -37,10 +50,17 @@ export default function download( url ) {
           // extension does not exist so use the default extension
           props.ext = `.${Mime.extension( props.contentType )}`;
         }
-        props.checksum = md5( body );
-
-        resolve( { props, content: body } );
-      }
-    );
+      } )
+      .on( 'end', () => {
+        // Ensure that temporary file gets deleted
+        // setTimeout( tmpObj.removeCallback, 10000 );
+        checksum( tmpObj.name )
+          .then( ( result ) => {
+            props.checksum = result;
+            resolve( { props, tmpObj } );
+          } )
+          .catch( err => reject( err ) );
+      } )
+      .pipe( fs.createWriteStream( tmpObj.name ) );
   } );
 }

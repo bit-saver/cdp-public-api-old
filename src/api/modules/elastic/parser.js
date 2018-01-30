@@ -24,6 +24,17 @@ export default {
       } );
   },
 
+  parseFindResult() {
+    return result =>
+      new Promise( ( resolve, reject ) => {
+        if ( result.hits && result.hits.total > 0 ) {
+          const hits = result.hits.hits.map( video => ( { id: video._id, ...video._source } ) );
+          return resolve( hits );
+        }
+        reject( new Error( 'Not found.' ) );
+      } );
+  },
+
   parseUpdateResult( id, doc ) {
     return result =>
       new Promise( ( resolve, reject ) => {

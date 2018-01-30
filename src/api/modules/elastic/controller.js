@@ -19,5 +19,9 @@ export default {
 
   getDocument( model, docToGet ) {
     return model.getDocument( docToGet ).then( esParser.parseGetResult( docToGet ) );
+  },
+
+  findDocument( model, docToFind ) {
+    return model.findDocument( docToFind ).then( esParser.parseFindResult() );
   }
 };
