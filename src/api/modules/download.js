@@ -6,7 +6,7 @@ import fs from 'fs';
 import tmp from 'tmp';
 import crypto from 'crypto';
 
-const checksum = path =>
+const md5hash = path =>
   new Promise( ( resolve, reject ) => {
     const hash = crypto.createHash( 'md5' );
     const rs = fs.createReadStream( path );
@@ -54,9 +54,9 @@ export default function download( url ) {
       .on( 'end', () => {
         // Ensure that temporary file gets deleted
         // setTimeout( tmpObj.removeCallback, 10000 );
-        checksum( tmpObj.name )
+        md5hash( tmpObj.name )
           .then( ( result ) => {
-            props.checksum = result;
+            props.md5 = result;
             resolve( { props, tmpObj } );
           } )
           .catch( err => reject( err ) );

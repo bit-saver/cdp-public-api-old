@@ -16,7 +16,7 @@ const controller = ( client, index, type ) => {
    * @param ctrl
    * @returns {function(*=, *=, *=)}
    */
-  const transferCtrl = ctrl => async ( req, res, next ) => {
+  const generateTransferCtrl = ctrl => async ( req, res, next ) => {
     let document = await controllers.findDocument( req.body ).catch( () => null );
     if ( document && document.length > 0 ) [document] = document;
     else document = null;
@@ -25,8 +25,7 @@ const controller = ( client, index, type ) => {
 
     /**
      * Downloads the file to a temp file.
-     * Does a checksum.
-     * TODO: Cross check checksums on UPDATE
+     * Does a md5 checksum.
      * Uploads to S3 and resolves on success.
      * Reject on any failure.
      *
@@ -39,23 +38,22 @@ const controller = ( client, index, type ) => {
       const download = await Download( src.downloadUrl ).catch( err => err );
       return new Promise( ( resolve, reject ) => {
         console.log( 'download result', download );
-        let checksumMatch = false;
+        let md5Match = false;
         // first verify invalid checksums (if valid no need to do transfer)
         if (
           document &&
           document.unit.length > unitIndex &&
           document.unit[unitIndex].source.length > srcIndex
         ) {
-          checksumMatch =
-            document.unit[unitIndex].source[srcIndex].checksum === download.props.checksum;
+          md5Match = document.unit[unitIndex].source[srcIndex].md5 === download.props.md5;
         }
-        if ( checksumMatch ) {
-          console.log( 'checksum match, update not required' );
+        if ( md5Match ) {
+          console.log( 'md5 match, update not required' );
           // We do not need to reupload
           // but the request still needs to be updated to match the ES doc
           req.body.unit[unitIndex].source[srcIndex].downloadUrl =
             document.unit[unitIndex].source[srcIndex].downloadUrl;
-          req.body.unit[unitIndex].source[srcIndex].checksum = download.props.checksum;
+          req.body.unit[unitIndex].source[srcIndex].md5 = download.props.md5;
           resolve( { message: 'Update not required.' } );
         } else {
           aws
@@ -69,7 +67,7 @@ const controller = ( client, index, type ) => {
               // Modify the original request by:
               // replacing the downloadUrl and adding a checksum
               req.body.unit[unitIndex].source[srcIndex].downloadUrl = result.Location;
-              req.body.unit[unitIndex].source[srcIndex].checksum = download.props.checksum;
+              req.body.unit[unitIndex].source[srcIndex].md5 = download.props.md5;
               resolve( result );
             } )
             .catch( err => reject( err ) );
@@ -97,7 +95,8 @@ const controller = ( client, index, type ) => {
       .catch( err => res.status( 500 ).json( err ) );
   };
 
-  controllers.indexDocument = transferCtrl( controllers.indexDocument );
+  controllers.indexDocument = generateTransferCtrl( controllers.indexDocument );
+  controllers.updateDocument = generateTransferCtrl( controllers.updateDocument );
 
   return controllers;
   /*
