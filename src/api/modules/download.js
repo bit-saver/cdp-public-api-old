@@ -31,9 +31,7 @@ export default function download( url ) {
 
     tmp.setGracefulCleanup();
 
-    const tmpObj = tmp.fileSync();
-    // TODO: REFACTOR TO HANDLE GZIP FILES
-    // (response will be compressed, request is uncompressed but needs special handling)
+    const tmpObj = tmp.fileSync( undefined );
     Request.get( {
       url,
       gzip: true
