@@ -9,14 +9,31 @@ import Download from '../../modules/download';
  * succeed.
  *
  * @param controllers
- * @returns {function(*=, *=, *=)}
  */
 const generateTransferCtrl = controllers => async ( req, res, next ) => {
   let document = await controllers.findDocument( req.body ).catch( () => null );
-  if ( document && document.length > 0 ) [document] = document;
-  else document = null;
+  const esAssets = [];
+  if ( document && document.length > 0 ) {
+    [document] = document;
+    document.unit.forEach( ( unit, unitIndex ) => {
+      unit.source.forEach( ( src, srcIndex ) => {
+        esAssets.push( {
+          downloadUrl: src.downloadUrl,
+          md5: src.md5,
+          unitIndex,
+          srcIndex
+        } );
+      } );
+    } );
+    console.log( 'esAssets', esAssets );
+
+    // Since we found a document, add the ID to the request body
+    req.body.id = document.id;
+  } else document = null;
   // Promise array (holds all download/upload processes)
   const transfers = [];
+
+  const reqAssets = [];
 
   /**
    * Downloads the file to a temp file.
@@ -31,29 +48,24 @@ const generateTransferCtrl = controllers => async ( req, res, next ) => {
    */
   const getSource = async ( src, unitIndex, srcIndex ) => {
     const download = await Download( src.downloadUrl ).catch( err => err );
+    reqAssets.push( download.props.md5 );
+
     return new Promise( ( resolve, reject ) => {
       console.log( 'download result', download );
-      let md5Match = false;
-      // first verify invalid checksums (if valid no need to do transfer)
-      if (
-        document &&
-        document.unit.length > unitIndex &&
-        document.unit[unitIndex].source.length > srcIndex
-      ) {
-        md5Match = document.unit[unitIndex].source[srcIndex].md5 === download.props.md5;
-      }
-      if ( md5Match ) {
+
+      // Attempt to find matching asset in ES document
+      const asset = esAssets.find( ass => ass.md5 === download.props.md5 ) !== undefined;
+      if ( asset ) {
         console.log( 'md5 match, update not required' );
         // We do not need to reupload
         // but the request still needs to be updated to match the ES doc
-        req.body.unit[unitIndex].source[srcIndex].downloadUrl =
-          document.unit[unitIndex].source[srcIndex].downloadUrl;
-        req.body.unit[unitIndex].source[srcIndex].md5 = download.props.md5;
+        req.body.unit[unitIndex].source[srcIndex].downloadUrl = asset.downloadUrl;
+        req.body.unit[unitIndex].source[srcIndex].md5 = asset.md5;
         resolve( { message: 'Update not required.' } );
       } else {
         aws
           .upload( {
-            title: `${req.body.site}/video/${req.body.post_id}/u${unitIndex}s${srcIndex}`,
+            title: `${req.body.site}/video/${req.body.post_id}/${download.props.md5}`,
             ext: download.props.ext,
             tmpObj: download.tmpObj
           } )
@@ -82,6 +94,13 @@ const generateTransferCtrl = controllers => async ( req, res, next ) => {
   // Once all promises resolve, pass request onto ES controller
   Promise.all( transfers )
     .then( ( results ) => {
+      // Now clean up S3 by removing any unused assets
+      esAssets.forEach( ( ass ) => {
+        if ( reqAssets.indexOf( ass.md5 ) < 0 ) {
+          aws.remove( { url: ass.downloadUrl } );
+        }
+      } );
+
       console.log( 'transfer results', results );
       console.log( 'req.body', JSON.stringify( req.body, undefined, 2 ) );
       // res.json( req.body );

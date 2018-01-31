@@ -5,12 +5,23 @@
 
 export default ( client, index, type ) => ( {
   indexDocument( body ) {
+    // if the body has an ID, let's make this an update since we
+    // found the actual document
+    if ( body.id ) {
+      console.log( 'found id, UPDATING ELASTICSEARCH' );
+      const doc = { ...body };
+      delete doc.id;
+      return this.updateDocument( body.id, doc );
+    }
+
+    console.log( 'INSERTING ELASTICSEARCH' );
     return client.index( { index, type, body } );
   },
 
   // update method requires doc prop.
   // doc prop contains part of or complete doc to update
   updateDocument( id, doc ) {
+    console.log( 'UPDATING ELASTICSEARCH' );
     return client.update( {
       id,
       index,

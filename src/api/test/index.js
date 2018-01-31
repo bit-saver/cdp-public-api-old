@@ -13,19 +13,21 @@ router.get( '/', async ( req, res ) => {
   //   if ( err ) throw new Error( err.message );
   //   else res.status( 201 ).json( data );
   // } );
-  const esQuery = esQueryFactory( client, 'videos', 'video' );
-
-  const result = await controllers
-    .findDocument( esQuery, {
-      post_id: 1500,
-      type: 'video',
-      site: 'cdp.local'
-    } )
-    .catch( () => null );
-  // .then( result => res.json( result ) )
-  // .catch( err => res.status( 500 ).json( { error: true, message: err.message } ) );
-  console.log( 'result', result );
-  res.json( result );
+  // const esQuery = esQueryFactory( client, 'videos', 'video' );
+  //
+  // const result = await controllers
+  //   .findDocument( esQuery, {
+  //     post_id: 1500,
+  //     type: 'video',
+  //     site: 'cdp.local'
+  //   } )
+  //   .catch( () => null );
+  // // .then( result => res.json( result ) )
+  // // .catch( err => res.status( 500 ).json( { error: true, message: err.message } ) );
+  // console.log( 'result', result );
+  // res.json( result );
+  aws.remove( { url: 'imagetest.jpg' } );
+  res.json( { message: 'cool' } );
 } );
 
 // Post {url: '', title: ''} to upload the file located at URL to S3

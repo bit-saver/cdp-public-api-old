@@ -1,5 +1,6 @@
 import fs from 'fs';
 import AWS from 'aws-sdk';
+import URL from 'url';
 
 AWS.config.update( {
   accessKeyId: process.env.AWS_S3_ACCESS_KEY,
@@ -10,17 +11,6 @@ AWS.config.update( {
 const s3 = new AWS.S3();
 
 /**
- * Sanitizes potential file names by removing all non-alphanumeric
- * characters and replacing spaces with dashes.
- *
- * @param str
- * @returns {string}
- */
-function sanitizeStr( str ) {
-  return str.replace( /[^/0-9a-zA-Z\s]/g, '' ).replace( /\s/g, '-' );
-}
-
-/**
  * Checks to see if key exists in bucket. Returns a promise
  * that resolves to true or false.
  *
@@ -28,9 +18,9 @@ function sanitizeStr( str ) {
  * @param key
  * @returns {Promise<any>}
  */
-const checkExists = ( bucket, key ) =>
+const checkExists = ( bucket = process.env.AWS_S3_BUCKET, key ) =>
   new Promise( ( resolve ) => {
-    s3.headObject( { Bucket: 'cdp-video-tst', Key: key }, ( err ) => {
+    s3.headObject( { Bucket: bucket, Key: key }, ( err ) => {
       if ( err && err.code === 'NotFound' ) resolve( false );
       else resolve( true );
     } );
@@ -50,11 +40,14 @@ const checkExists = ( bucket, key ) =>
  * @returns {Promise<any>}
  */
 const upload = ( {
-  title, ext, tmpObj: tmpObj = null, bucket = 'cdp-video-tst', replace = true
+  title,
+  ext,
+  tmpObj: tmpObj = null,
+  bucket = process.env.AWS_S3_BUCKET,
+  replace = true
 } ) =>
   new Promise( async ( resolve, reject ) => {
-    const base = sanitizeStr( title );
-    let key = `${base}${ext}`;
+    let key = `${title}${ext}`;
     let exists = await checkExists( bucket, key );
 
     if ( !replace ) {
@@ -64,7 +57,7 @@ const upload = ( {
         if ( index > 5 ) {
           reject( new Error( `S3 Upload: File already exists (attempted: ${index})` ) );
         }
-        key = `${base}-${index}${ext}`;
+        key = `${title}-${index}${ext}`;
         exists = await checkExists( bucket, key ); // eslint-disable-line no-await-in-loop
       }
     }
@@ -98,7 +91,23 @@ const upload = ( {
       } );
   } );
 
+/**
+ * Remove (delete) an object from S3 given a path OR full URL.
+ *
+ * @param url
+ * @param bucket (optional)
+ */
+const remove = ( { url, bucket = process.env.AWS_S3_BUCKET } ) => {
+  const args = URL.parse( url );
+  // Regex on path simply removes the preceeding '/' if any
+  s3.deleteObject( { Key: args.path.replace( /^\/+(.*)$/g, '$1' ), Bucket: bucket }, ( err, data ) => {
+    if ( err ) console.error( 'aws remove error', url, err );
+    else console.log( 'aws remove', url, data );
+  } );
+};
+
 export default {
   s3,
-  upload
+  upload,
+  remove
 };

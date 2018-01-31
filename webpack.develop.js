@@ -20,7 +20,7 @@ const config = {
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.DefinePlugin( { 'process.env': { BUILD_TARGET: JSON.stringify( 'server' ) } } ),
+    // new webpack.DefinePlugin( { 'process.env': { BUILD_TARGET: JSON.stringify( 'server' ) } } ),
     new webpack.BannerPlugin( {
       banner: 'require("source-map-support").install();',
       raw: true,
