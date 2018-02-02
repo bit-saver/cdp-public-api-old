@@ -4,7 +4,7 @@
  */
 
 export default ( client, index, type ) => ( {
-  indexDocument( body ) {
+  async indexDocument( body ) {
     // if the body has an ID, let's make this an update since we
     // found the actual document
     if ( body.id ) {

@@ -99,6 +99,7 @@ const upload = ( {
  */
 const remove = ( { url, bucket = process.env.AWS_S3_BUCKET } ) => {
   const args = URL.parse( url );
+  if ( args.hostname && args.hostname.indexOf( 'amazonaws' ) < 0 ) return;
   // Regex on path simply removes the preceeding '/' if any
   s3.deleteObject( { Key: args.path.replace( /^\/+(.*)$/g, '$1' ), Bucket: bucket }, ( err, data ) => {
     if ( err ) console.error( 'aws remove error', url, err );
