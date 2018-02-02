@@ -10,8 +10,7 @@
     "build": "npm run clear:build && webpack --progress --colors",
     "start": "node build/server.js",
     "dev": "webpack --config webpack.develop.js --colors --progress",
-    "test:unit":
-      "NODE_ENV=testing rm -rf ./tmp/mocha-webpack && mocha-webpack --webpack-config webpack.testing.js \"src/**/*.test.js\" --timeout 10000 --require source-map-support/register || true",
+    "test:unit": "NODE_ENV=testing rm -rf ./tmp/mocha-webpack && mocha-webpack --webpack-config webpack.testing.js \"src/**/*.test.js\" --timeout 10000 --require source-map-support/register || true",
     "test": "npm run test:unit"
   },
   "dependencies": {
@@ -24,9 +23,9 @@
     "express": "^4.16.2",
     "helmet": "^3.9.0",
     "http-aws-es": "^1.1.3",
-    "md5": "^2.2.1",
     "mime-types": "^2.1.17",
-    "request": "^2.83.0"
+    "request": "^2.83.0",
+    "tmp": "0.0.33"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
