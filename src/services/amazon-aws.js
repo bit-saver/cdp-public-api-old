@@ -74,11 +74,9 @@ const upload = ( {
     const manager = s3.upload( params );
     manager
       .on( 'httpUploadProgress', ( progress ) => {
-        // console.log( 'progress', progress );
-        // { loaded: 4915, total: 192915, part: 1, key: 'foo.jpg' }
         // eslint-disable-next-line no-mixed-operators
         const percent = ( progress.loaded / progress.total * 100 ).toFixed( 0 );
-        console.info( `${key}: ${percent}%` );
+        console.info( `Uploading - ${key}: ${percent}%` );
       } )
       .promise()
       .then( ( data ) => {
