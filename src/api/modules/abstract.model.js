@@ -34,3 +34,5 @@ class ContentModel {
     throw new Error( 'Method not implemented: putAsset' );
   }
 }
+
+export default ContentModel;
