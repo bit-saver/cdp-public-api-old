@@ -31,7 +31,7 @@ class Video extends ContentModel {
    * the asset would have been iterated over using the objects obtained from
    * the getAssets method above.
    *
-   * @param asset
+   * @param asset { downloadUrl, md5, unitIndex, srcIndex }
    */
   putAsset( asset ) {
     this.json.unit[asset.unitIndex].source[asset.srcIndex].downloadUrl = asset.downloadUrl;
