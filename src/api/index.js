@@ -9,15 +9,19 @@ import testRoutes from './test';
 
 const router = new Router();
 
+// resources
+router.use( '/video', videoRoutes );
+router.use( '/post', postRoutes );
+
+router.route( '/types' ).get( ( req, res, next ) => {
+  res.json( ['video', 'post'] );
+} );
+
 // admin routes
 router.use( '/admin', adminRoutes );
 
 // search -- /v1/search, etc., v1 comes from app.use in index.js
 router.use( '/search', searchRoutes );
-
-// resources
-router.use( '/video', videoRoutes );
-router.use( '/post', postRoutes );
 
 // test
 router.use( '/test', testRoutes );

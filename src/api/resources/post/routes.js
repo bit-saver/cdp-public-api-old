@@ -4,7 +4,7 @@ import controllerFactory from './controller';
 import transferCtrl from '../../../middleware/transfer';
 import Post from './post.model';
 
-export const INDEX = 'post.america.gov';
+export const INDEX = 'posts';
 export const TYPE = 'post';
 
 const router = new Router();
