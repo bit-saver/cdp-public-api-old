@@ -34,11 +34,26 @@ export default ( client, index, type ) => ( {
     return client.get( { id, index, type } );
   },
 
-  deleteDocument( id ) {
+  async deleteDocument( id ) {
+    if ( id.indexOf( '_' ) > -1 ) {
+      const args = id.split( '_' );
+      const site = args[0].replace( /-/g, '.' );
+      const result = await this.findDocument( {
+        site,
+        post_id: args[1]
+      } ).catch( ( err ) => {
+        throw err;
+      } );
+      if ( result.hits && result.hits.total > 0 ) {
+        return client.delete( { id: result.hits.hits[0]._id, index, type } );
+      }
+      throw new Error( `Document not found with UUID: ${id} ${site} ${args[1]}` );
+    }
     return client.delete( { id, index, type } );
   },
 
   findDocument( doc ) {
+    console.log( 'finding doc', doc );
     return client.search( {
       index,
       body: {
