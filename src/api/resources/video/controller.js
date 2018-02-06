@@ -1,17 +1,12 @@
-import esQueryFactory from '../../modules/elastic/query';
 import { generateControllers } from '../../modules/dataAccessLayer';
+import VideoModel from './video.model';
 
-const controller = ( client, index, type ) => {
-  const esQuery = esQueryFactory( client, index, type );
+export default generateControllers( new VideoModel() );
 
-  return generateControllers( esQuery );
-  /*
-    NOTE: Generic controller methods can be overidden:
-      const getDocument = ( req, res, next ) => {
-      res.json( { prop: 'example' } );
-    };
-    export default generateControllers( esQuery, { getDocument } );
-  */
-};
-
-export default controller;
+/*
+  NOTE: Generic controller methods can be overidden:
+    const getDocument = ( req, res, next ) => {
+    res.json( { prop: 'example' } );
+  };
+  export default generateControllers( new VideoModel(), { getDocument } );
+*/

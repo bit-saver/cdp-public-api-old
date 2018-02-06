@@ -18,7 +18,7 @@ export const updateDocument = model => async ( req, res, next ) => {
   const docToUpdate = req.params.id;
   const data = req.body;
 
-  return controllers
+  controllers
     .updateDocument( model, docToUpdate, data )
     .then( doc => res.status( 201 ).json( doc ) )
     .catch( err => next( err ) );
