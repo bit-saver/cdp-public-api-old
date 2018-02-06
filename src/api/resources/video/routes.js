@@ -2,6 +2,7 @@ import { Router } from 'express';
 import client from '../../../services/elasticsearch';
 import controllerFactory from './controller';
 import transferCtrl from '../../../middleware/transfer';
+import asyncResponse from '../../../middleware/asyncResponse';
 import Video from './video.model';
 
 export const INDEX = 'videos';
@@ -11,7 +12,7 @@ const router = new Router();
 const controller = controllerFactory( client, INDEX, TYPE );
 
 // Route: /v1/video
-router.route( '/' ).post( transferCtrl( controller, Video ), controller.indexDocument );
+router.route( '/' ).post( asyncResponse, transferCtrl( controller, Video ), controller.indexDocument );
 
 // Route: /v1/video/[id]
 router

@@ -26,8 +26,9 @@ router.get( '/', async ( req, res ) => {
   // // .catch( err => res.status( 500 ).json( { error: true, message: err.message } ) );
   // console.log( 'result', result );
   // res.json( result );
-  aws.remove( { url: 'imagetest.jpg' } );
-  res.json( { message: 'cool' } );
+  // aws.remove( { url: 'imagetest.jpg' } );
+  console.log( req.headers );
+  res.json( { message: req.headers.callback ? req.headers.callback : 'nope' } );
 } );
 
 // Post {url: '', title: ''} to upload the file located at URL to S3

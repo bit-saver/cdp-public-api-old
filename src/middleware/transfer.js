@@ -1,4 +1,5 @@
 import aws from '../services/amazon-aws';
+import Request from 'request';
 import Download from '../api/modules/download';
 
 /**
@@ -95,7 +96,23 @@ const generateTransferCtrl = ( controllers, Model ) => async ( req, res, next ) 
       console.log( 'req.body', JSON.stringify( req.body, undefined, 2 ) );
       next();
     } )
-    .catch( err => res.status( 500 ).json( err ) );
+    .catch( ( err ) => {
+      if ( req.headers.callback ) {
+        console.log( 'sending callback error' );
+        Request.post(
+          {
+            url: req.headers.callback,
+            json: true,
+            body: {
+              error: 1,
+              message: err.message,
+              request: req.body
+            }
+          },
+          () => {}
+        );
+      } else res.status( 500 ).json( err );
+    } );
 };
 
 export default generateTransferCtrl;
