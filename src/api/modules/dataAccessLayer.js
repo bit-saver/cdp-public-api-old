@@ -17,7 +17,7 @@ export const indexDocument = model => ( req, res, next ) => {
 export const deleteDocument = model => ( req, res, next ) => {
   controllers
     .deleteDocumentByQuery( model, req.body )
-    .then( doc => res.status( 201 ).json( doc ) )
+    .then( doc => res.status( 200 ).json( doc ) )
     .catch( err => next( err ) );
 };
 
@@ -41,7 +41,7 @@ export const updateDocumentById = model => async ( req, res, next ) => {
 export const deleteDocumentById = model => async ( req, res, next ) => {
   controllers
     .deleteDocumentById( model, req.params.id )
-    .then( doc => res.status( 201 ).json( doc ) )
+    .then( doc => res.status( 200 ).json( doc ) )
     .catch( err => next( err ) );
 };
 
