@@ -105,7 +105,7 @@ const generateTransferCtrl = ( controllers, Model ) => async ( req, res, next ) 
             json: true,
             body: {
               error: 1,
-              message: err.message,
+              message: err,
               request: req.body
             }
           },

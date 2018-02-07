@@ -4,7 +4,7 @@
 const asyncResponse = ( req, res, next ) => {
   if ( req.headers.callback ) {
     console.log( 'sending async response' );
-    res.json( { message: 'Sync in progress.' } );
+    res.json( { message: 'Sync in progress.', req: req.body } );
   }
   next();
 };
