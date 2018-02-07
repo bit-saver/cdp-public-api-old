@@ -4,7 +4,7 @@ import client from '../../services/elasticsearch';
  * Content Model abstraction ensures that the required methods
  * are implemented.
  */
-class ContentModel {
+class AbstractModel {
   constructor( index = 'video.index', type = 'video' ) {
     // this.json = data;
     this.index = index;
@@ -87,4 +87,4 @@ class ContentModel {
   }
 }
 
-export default ContentModel;
+export default AbstractModel;

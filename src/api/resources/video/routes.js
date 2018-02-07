@@ -4,8 +4,6 @@ import transferCtrl from '../../../middleware/transfer';
 
 const router = new Router();
 
-// router.param( 'id', controller.findByParam )
-
 // Route: /v1/video
 router
   .route( '/' )

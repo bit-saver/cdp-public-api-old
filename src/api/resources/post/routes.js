@@ -4,15 +4,18 @@ import transferCtrl from '../../../middleware/transfer';
 
 const router = new Router();
 
-// Route: /v1/video
-router.route( '/' ).post( controller.indexDocument );
-// router.route( '/' ).post( transferCtrl( controller, Post ), controller.indexDocument );
+// Route: /v1/post
+router
+  .route( '/' )
+  .post( controller.indexDocument )
+  .get( controller.getDocument )
+  .delete( controller.deleteDocument );
 
-// Route: /v1/video/[id]
+// Route: /v1/post/[id]
 router
   .route( '/:id' )
-  .get( controller.getDocument )
-  .post( controller.updateDocument )
-  .delete( controller.deleteDocument );
+  .put( controller.updateDocumentById )
+  .get( controller.getDocumentById )
+  .delete( controller.deleteDocumentById );
 
 export default router;

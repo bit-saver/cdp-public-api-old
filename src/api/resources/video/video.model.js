@@ -1,9 +1,9 @@
-import ContentModel from '../../modules/abstract.model';
+import AbstractModel from '../../modules/abstract.model';
 
 /**
  * Video Content Model helps in managing assets within JSON.
  */
-class Video extends ContentModel {
+class Video extends AbstractModel {
   /**
    * Returns an array of asssets retrieved by iterating over the JSON
    * unit > sources.
