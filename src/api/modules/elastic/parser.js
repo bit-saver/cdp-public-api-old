@@ -5,13 +5,31 @@
 
 // Need to determin is the result prop should be sent back
 export default {
-  // parseSearchResult( result ) {
-  //   return res.hits.hits.map( hit => merge( hit._source, { id: hit._id } ) );
-  //   return map( res.hits.hits, hit => merge( hit._source, { id: hit._id } ) );
-  // },
+  parseUniqueDocExists() {
+    return result =>
+      new Promise( ( resolve, reject ) => {
+        if ( result.hits ) {
+          const { total } = result.hits;
+          if ( !total ) {
+            return resolve( null );
+          }
+          if ( total === 1 ) {
+            return resolve( result.hits.hits[0]._id );
+          }
+          reject( new Error( 'Multiple results exist.' ) );
+        }
+      } );
+  },
 
-  parseCreateResult( doc ) {
-    return result => ( { id: result._id, ...doc } );
+  parseFindResult() {
+    return result =>
+      new Promise( ( resolve, reject ) => {
+        if ( result.hits && result.hits.total > 0 ) {
+          const hits = result.hits.hits.map( hit => ( { id: hit._id, ...hit._source } ) );
+          return resolve( hits );
+        }
+        reject( new Error( 'Not found.' ) );
+      } );
   },
 
   parseGetResult( id ) {
@@ -24,15 +42,8 @@ export default {
       } );
   },
 
-  parseFindResult() {
-    return result =>
-      new Promise( ( resolve, reject ) => {
-        if ( result.hits && result.hits.total > 0 ) {
-          const hits = result.hits.hits.map( video => ( { id: video._id, ...video._source } ) );
-          return resolve( hits );
-        }
-        reject( new Error( 'Not found.' ) );
-      } );
+  parseCreateResult( doc ) {
+    return result => ( { id: result._id, ...doc } );
   },
 
   parseUpdateResult( id, doc ) {

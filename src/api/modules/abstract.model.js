@@ -1,5 +1,4 @@
 import client from '../../services/elasticsearch';
-import document from './elastic/document';
 
 /**
  * Content Model abstraction ensures that the required methods
@@ -60,11 +59,29 @@ class ContentModel {
     return result;
   }
 
-  async findDocumentById( body ) {
+  async deleteDocument( id ) {
+    const result = await client.delete( {
+      index: this.index,
+      type: this.type,
+      id
+    } );
+    return result;
+  }
+
+  async findDocumentById( id ) {
+    const result = await client.get( {
+      index: this.index,
+      type: this.type,
+      id
+    } );
+    return result;
+  }
+
+  async findDocumentByQuery( query ) {
     const result = await client.search( {
       index: this.index,
       type: this.type,
-      q: `id:${body.id} OR (site:${body.site} AND post_id:${body.post_id})`
+      q: `site:${query.site} AND post_id:${query.post_id}`
     } );
     return result;
   }

@@ -13,42 +13,54 @@ export const indexDocument = model => ( req, res, next ) => {
     .catch( error => next( error ) );
 };
 
-// POST v1/[resource]/:id
-export const updateDocument = model => async ( req, res, next ) => {
-  const docToUpdate = req.params.id;
-  const data = req.body;
-
+// DELETE v1/[resource]/
+export const deleteDocument = model => ( req, res, next ) => {
   controllers
-    .updateDocument( model, docToUpdate, data )
+    .deleteDocumentByQuery( model, req.body )
     .then( doc => res.status( 201 ).json( doc ) )
     .catch( err => next( err ) );
 };
 
-// DELETE v1/[resource]/:id
-export const deleteDocument = model => ( req, res, next ) => {
+// GET v1/[resource]/?site-[site]&post_id=[post_id]
+export const getDocument = model => ( req, res, next ) => {
   controllers
-    .deleteDocument( model, req.params.id )
+    .getDocument( model, req.query )
+    .then( doc => res.status( 200 ).json( doc ) )
+    .catch( err => next( err ) );
+};
+
+// PUT v1/[resource]/:id
+export const updateDocumentById = model => async ( req, res, next ) => {
+  controllers
+    .updateDocumentById( model, req.body, req.params.id )
+    .then( doc => res.status( 201 ).json( doc ) )
+    .catch( err => next( err ) );
+};
+
+// DELTE v1/[resource]/:id
+export const deleteDocumentById = model => async ( req, res, next ) => {
+  controllers
+    .deleteDocumentById( model, req.params.id )
     .then( doc => res.status( 201 ).json( doc ) )
     .catch( err => next( err ) );
 };
 
 // GET v1/[resource]/:id
-export const getDocument = model => ( req, res, next ) => {
+export const getDocumentById = model => ( req, res, next ) => {
   controllers
-    .getDocument( model, req.params.id )
+    .getDocumentById( model, req.params.id )
     .then( doc => res.status( 200 ).json( doc ) )
     .catch( err => next( err ) );
 };
 
-export const findDocument = model => docToFind => controllers.findDocument( model, docToFind );
-
 export const generateControllers = ( model, overrides = {} ) => {
   const defaults = {
     indexDocument: indexDocument( model ),
-    updateDocument: updateDocument( model ),
+    updateDocumentById: updateDocumentById( model ),
     deleteDocument: deleteDocument( model ),
+    deleteDocumentById: deleteDocumentById( model ),
     getDocument: getDocument( model ),
-    findDocument: findDocument( model )
+    getDocumentById: getDocumentById( model )
   };
 
   return { ...defaults, ...overrides };
