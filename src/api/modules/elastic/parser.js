@@ -14,7 +14,7 @@ export default {
             return resolve( null );
           }
           if ( total === 1 ) {
-            return resolve( result.hits.hits[0]._id );
+            return resolve( result.hits.hits[0] );
           }
           reject( new Error( 'Multiple results exist.' ) );
         }

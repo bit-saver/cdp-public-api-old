@@ -6,7 +6,6 @@ import client from '../../services/elasticsearch';
  */
 class AbstractModel {
   constructor( index = 'video.index', type = 'video' ) {
-    // this.json = data;
     this.index = index;
     this.type = type;
   }
@@ -18,6 +17,10 @@ class AbstractModel {
    */
   getJson() {
     return this.json;
+  }
+
+  setJson( json ) {
+    this.json = json;
   }
 
   set id( id ) {

@@ -3,7 +3,10 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import helmet from 'helmet';
 
+// var compression = require('compression')
+
 const middlewareSetup = ( app ) => {
+  // app.use(compression())
   app.use( helmet() );
   app.use( cors() );
   app.use( bodyParser.json() );

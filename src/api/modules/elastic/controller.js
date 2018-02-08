@@ -4,9 +4,9 @@ import parser from './parser';
 // It will make it easier to integrate a db if we decide to do so
 export default {
   async indexDocument( model, body ) {
-    const id = await this.findDocument( model, body );
-    if ( id ) {
-      return this.updateDocument( model, body, id );
+    const doc = await this.findDocument( model, body );
+    if ( doc && doc._id ) {
+      return this.updateDocument( model, body, doc._id );
     }
     return model.indexDocument( body ).then( parser.parseCreateResult( body ) );
   },
@@ -26,9 +26,9 @@ export default {
   async deleteDocumentByQuery( model, body ) {
     // could use client.deleteByQuery but that would delete all that match the query
     // prefer to have check for unique value before deleting
-    const id = await this.findDocument( model, body );
-    if ( id ) {
-      return this.deleteDocument( model, id );
+    const doc = await this.findDocument( model, body );
+    if ( doc && doc._id ) {
+      return this.deleteDocument( model, doc._id );
     }
     throw new Error( 'Not found.' );
   },
@@ -48,8 +48,8 @@ export default {
   // Note, not using body id prop, if client has access to id prop use /:id route
   async findDocument( model, body ) {
     if ( body.site && body.post_id ) {
-      const id = await model.findDocumentByQuery( body ).then( parser.parseUniqueDocExists() );
-      return id;
+      const doc = await model.findDocumentByQuery( body ).then( parser.parseUniqueDocExists() );
+      return doc;
     }
     throw new Error( 'Body must have both site and post_id props' );
   }

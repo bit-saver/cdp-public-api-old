@@ -41,12 +41,18 @@ export default function download( url ) {
         props.basename = args.path.split( '/' ).pop();
 
         props.contentType = response.headers['content-type'];
+
         // Getting the extension this way could be erroneous
         props.ext = Path.extname( props.basename );
+
         // Cross check ext against known extensions for this content type
-        if ( Mime.extensions[props.contentType].indexOf( props.ext.replace( '.', '' ) ) < 0 ) {
-          // extension does not exist so use the default extension
-          props.ext = `.${Mime.extension( props.contentType )}`;
+        // verify returned exts as text/html; charset=UTF-8' (i.e. 403 error)  threw error
+        const typeExts = Mime.extensions[props.contentType];
+        if ( typeExts ) {
+          if ( typeExts.indexOf( props.ext.replace( '.', '' ) ) < 0 ) {
+            // extension does not exist so use the default extension
+            props.ext = `.${Mime.extension( props.contentType )}`;
+          }
         }
       } )
       .on( 'end', () => {
