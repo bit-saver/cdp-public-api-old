@@ -1,4 +1,4 @@
-import AbstractModel from '../../modules/abstract.model';
+import AbstractModel from '../../modules/abstractModel';
 
 /**
  * Video Content Model helps in managing assets within JSON.

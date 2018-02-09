@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import controller from './controller';
-import PostModel from './post.model';
+import PostModel from './postModel';
 import transferCtrl from '../../../middleware/transfer';
 
 const router = new Router();

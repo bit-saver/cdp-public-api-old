@@ -1,5 +1,5 @@
-import { generateControllers } from '../../modules/dataAccessLayer';
-import VideoModel from './video.model';
+import { generateControllers } from '../../modules/generateControllers';
+import VideoModel from './videoModel';
 
 export default generateControllers( new VideoModel() );
 

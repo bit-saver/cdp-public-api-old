@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import controller from './controller';
-import VideoModel from './video.model';
+import VideoModel from './videoModel';
 import transferCtrl from '../../../middleware/transfer';
 
 const router = new Router();

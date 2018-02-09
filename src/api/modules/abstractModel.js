@@ -23,12 +23,12 @@ class AbstractModel {
     this.json = json;
   }
 
-  set id( id ) {
-    this.json.id = id;
+  getDocument() {
+    return this.document;
   }
 
-  get id() {
-    return this.json.id;
+  setDocument( json ) {
+    this.document = json;
   }
 
   // eslint-disable-next-line class-methods-use-this

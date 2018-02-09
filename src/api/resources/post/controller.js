@@ -1,5 +1,5 @@
-import { generateControllers } from '../../modules/dataAccessLayer';
-import PostModel from './post.model';
+import { generateControllers } from '../../modules/generateControllers';
+import PostModel from './postModel';
 
 export default generateControllers( new PostModel() );
 
