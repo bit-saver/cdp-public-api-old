@@ -1,16 +1,5 @@
 import aws from '../services/amazon-aws';
 import Download from '../api/modules/download';
-import parser from '../api/modules/elastic/parser';
-
-const getDocument = async ( model, body ) => {
-  const doc = await model.findDocumentByQuery( body ).then( parser.parseUniqueDocExists() );
-  return doc;
-};
-
-const populateAssets = ( model, body ) => {
-  model.setJson( body );
-  return model.getAssets();
-};
 
 const downloadAsset = async ( url ) => {
   const download = await Download( url ).catch( ( err ) => {
@@ -19,8 +8,31 @@ const downloadAsset = async ( url ) => {
   return download;
 };
 
-const uploadAsset = async () => {
-  console.log( 'uploadAsset' );
+const uploadAsset = async ( site, postId, download ) => {
+  const result = await aws.upload( {
+    title: `${site}/video/${postId}/${download.props.md5}`,
+    ext: download.props.ext,
+    tmpObj: download.tmpObj
+  } );
+
+  return result;
+};
+
+const updateAsset = ( model, asset, result, md5 ) => {
+  // Modify the original request by:
+  // replacing the downloadUrl and adding a checksum
+  model.putAsset( {
+    ...asset,
+    downloadUrl: result.Location,
+    md5
+  } );
+};
+
+const deleteAssets = async ( assets ) => {
+  console.log( `assets ${assets}` );
+  assets.forEach( ( asset ) => {
+    aws.remove( asset );
+  } );
 };
 
 const transferAsset = async ( model, asset ) => {
@@ -29,39 +41,23 @@ const transferAsset = async ( model, asset ) => {
   // TODO: only download if ext is one we want to process
   const download = await downloadAsset( asset.downloadUrl );
   model.putAsset( { ...asset, md5: download.props.md5 } );
-  // return new Promise( ( resolve, reject ) => {
-  //   // Attempt to find matching asset in ES document
-  //   const esAsset = esAssets.find( ass => ass.md5 === download.props.md5 );
-  //   if ( esAsset ) {
-  //     console.log( 'md5 match, update not required' );
-  //     // We do not need to reupload
-  //     // but the request still needs to be updated to match the ES doc
-  //     reqModel.putAsset( {
-  //       ...asset,
-  //       downloadUrl: esAsset.downloadUrl,
-  //       md5: esAsset.md5
-  //     } );
-  //     resolve( { message: 'Update not required.' } );
-  //   } else {
-  //     aws
-  //       .upload( {
-  //         title: `${req.body.site}/video/${req.body.post_id}/${download.props.md5}`,
-  //         ext: download.props.ext,
-  //         tmpObj: download.tmpObj
-  //       } )
-  //       .then( ( result ) => {
-  //         // Modify the original request by:
-  //         // replacing the downloadUrl and adding a checksum
-  //         reqModel.putAsset( {
-  //           ...asset,
-  //           downloadUrl: result.Location,
-  //           md5: download.props.md5
-  //         } );
-  //         resolve( result );
-  //       } )
-  //       .catch( err => reject( err ) );
-  //   }
-  // } );
+
+  return new Promise( ( resolve, reject ) => {
+    // Attempt to find matching asset in ES document
+    const updatedNeeded = model.updateIfNeeded( asset, download.props.md5 );
+    if ( !updatedNeeded ) {
+      console.log( 'md5 match, update not required' );
+      resolve( { message: 'Update not required.' } );
+    } else {
+      console.log( 'need to update' );
+      uploadAsset( model.json.site, model.json.post_id, download )
+        .then( ( result ) => {
+          updateAsset( model, asset, result, download.props.md5 );
+          resolve( result );
+        } )
+        .catch( err => reject( err ) );
+    }
+  } );
 };
 
 /**
@@ -75,57 +71,32 @@ const transferAsset = async ( model, asset ) => {
  * @param Model AbstractModel
  */
 const generateTransferCtrl = Model => async ( req, res, next ) => {
+  let reqAssets = [];
   const transfers = []; // Promise array (holds all download/upload processes)
 
-  const esModel = new Model();
-  const reqModel = new Model();
-
-  const reqAssets = populateAssets( reqModel, req.body );
-
-  let document;
-
-  // Verify that we have a single unique doc, if more than 1 returns exit with err
-  // need 'return' in front of next as next will NOT stop current execution
+  const model = new Model();
   try {
-    document = await getDocument( esModel, req.body );
-    if ( document ) {
-      const esAssets = populateAssets( esModel, document._source );
-      reqModel.id = document._id;
-    }
+    // verify that we on operasting on a single, unique document
+    reqAssets = await model.prepareDocumentForUpdate( req.body );
   } catch ( err ) {
+    // need 'return' in front of next as next will NOT stop current execution
     return next( err );
   }
 
   reqAssets.forEach( ( asset ) => {
-    transfers.push( transferAsset( reqModel, asset ) );
+    transfers.push( transferAsset( model, asset ) );
   } );
 
-  next();
-
   // Once all promises resolve, pass request onto ES controller
-  // Promise.all( transfers )
-  //   .then( ( results ) => {
-  //     // reassign reqAssets to account for changes
-  //     reqAssets = reqModel.getAssets();
-  //     // Now clean up S3 by removing any unused assets
-  //     esAssets.forEach( ( ass ) => {
-  //       if ( !reqAssets.find( val => val.md5 === ass.md5 ) ) {
-  //         aws.remove( { url: ass.downloadUrl } );
-  //       }
-  //     } );
-  //     req.body = reqModel.getJson();
-
-  //     console.log( 'transfer results', results );
-  //     console.log( 'req.body', JSON.stringify( req.body, undefined, 2 ) );
-  //     next();
-  //   } )
-  //   .catch( err => res.status( 500 ).json( err ) );
+  Promise.all( transfers )
+    .then( ( results ) => {
+      const s3FilesToDelete = model.getFilesToRemove();
+      if ( s3FilesToDelete.length ) deleteAssets( s3FilesToDelete );
+      console.log( 'transfer results', results );
+      console.log( 'req.body', JSON.stringify( req.body, undefined, 2 ) );
+      next();
+    } )
+    .catch( err => res.status( 500 ).json( err ) );
 };
 
 export default generateTransferCtrl;
-
-// console.log( '---- START REQ ASSETS----' );
-// console.log( reqAssets );
-// console.log( '---- START ES ASSETS----' );
-// console.log( esAssets );
-// console.log( '---- END ----' );

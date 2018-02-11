@@ -1,4 +1,5 @@
 import client from '../../services/elasticsearch';
+import parser from '../modules/elastic/parser';
 
 /**
  * Content Model abstraction ensures that the required methods
@@ -9,28 +10,6 @@ class AbstractModel {
     this.index = index;
     this.type = type;
   }
-
-  /**
-   * Returns the JSON representation (used in all requests and responses)
-   *
-   * @returns JSON
-   */
-  getJson() {
-    return this.json;
-  }
-
-  setJson( json ) {
-    this.json = json;
-  }
-
-  getDocument() {
-    return this.document;
-  }
-
-  setDocument( json ) {
-    this.document = json;
-  }
-
   // eslint-disable-next-line class-methods-use-this
   getAssets() {
     throw new Error( 'Method not implemented: getAssets' );
@@ -39,6 +18,48 @@ class AbstractModel {
   // eslint-disable-next-line class-methods-use-this
   putAsset() {
     throw new Error( 'Method not implemented: putAsset' );
+  }
+
+  async prepareDocumentForUpdate( json ) {
+    const docFromES = await this.findDocumentByQuery( json ).then( parser.parseUniqueDocExists() );
+    if ( docFromES ) {
+      this.esAssets = this.getAssets( docFromES._source );
+      this.id = docFromES._id;
+    }
+
+    this.reqAssets = this.getAssets( json );
+    this.json = json;
+
+    return this.reqAssets;
+  }
+
+  updateIfNeeded( asset, md5 ) {
+    if ( !this.esAssets ) return true;
+
+    const esAsset = this.esAssets.find( ass => ass.md5 === md5 );
+    if ( !esAsset ) return true;
+
+    this.putAsset( {
+      ...asset,
+      downloadUrl: esAsset.downloadUrl,
+      md5: esAsset.md5
+    } );
+
+    return false;
+  }
+
+  getFilesToRemove() {
+    const filesToRemove = [];
+    if ( !this.esAssets ) return filesToRemove;
+
+    this.reqAssets = this.getAssets( this.json );
+    this.esAssets.forEach( ( ass ) => {
+      if ( !this.reqAssets.find( val => val.md5 === ass.md5 ) ) {
+        filesToRemove.push( { url: ass.downloadUrl } );
+      }
+    } );
+
+    return filesToRemove;
   }
 
   async indexDocument( body ) {

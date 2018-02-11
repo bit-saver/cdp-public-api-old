@@ -10,9 +10,11 @@ class Video extends AbstractModel {
    *
    * @returns {Array}
    */
-  getAssets() {
+  // eslint-disable-next-line class-methods-use-this
+  getAssets( json ) {
+    // this could have urls to process from various nodes in json doc
     const assets = [];
-    this.json.unit.forEach( ( unit, unitIndex ) => {
+    json.unit.forEach( ( unit, unitIndex ) => {
       unit.source.forEach( ( src, srcIndex ) => {
         assets.push( {
           downloadUrl: src.downloadUrl,
