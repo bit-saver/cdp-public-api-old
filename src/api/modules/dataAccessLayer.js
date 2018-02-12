@@ -43,7 +43,7 @@ export const updateDocument = model => async ( req, res, next ) => {
 // DELETE v1/[resource]/:id
 export const deleteDocument = model => ( req, res, next ) => {
   controllers
-    .deleteDocument( model, req.params.id )
+    .deleteDocument( model, req.params.uuid )
     .then( doc => res.status( 201 ).json( doc ) )
     .catch( err => next( err ) );
 };

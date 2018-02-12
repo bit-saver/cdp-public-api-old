@@ -2,6 +2,28 @@ import aws from '../services/amazon-aws';
 import Request from 'request';
 import Download from '../api/modules/download';
 
+export const generateDeleteCtrl = ( controllers, Model ) => async ( req, res, next ) => {
+  if ( req.params.uuid.indexOf( '_' ) > -1 ) {
+    const args = req.params.uuid.split( '_' );
+    const site = args[0].replace( /-/g, '.' );
+    const doc = {
+      site,
+      post_id: args[1]
+    };
+    let document = await controllers.findDocument( doc ).catch( () => null );
+    let esModel = null;
+    if ( document && document.length > 0 ) {
+      [document] = document;
+      esModel = new Model( document );
+      esModel.getAssets().forEach( ( asset ) => {
+        if ( asset.downloadUrl ) aws.remove( { url: asset.downloadUrl } );
+      } );
+      req.params.id = document.id;
+    }
+  }
+  next();
+};
+
 /**
  * Generates a "transfer" middleware that serves as an intermediary
  * between an index/update request and the actual ES action.
@@ -12,7 +34,7 @@ import Download from '../api/modules/download';
  * @param controllers
  * @param Model ContentModel
  */
-const generateTransferCtrl = ( controllers, Model ) => async ( req, res, next ) => {
+export const generateTransferCtrl = ( controllers, Model ) => async ( req, res, next ) => {
   let document = await controllers.findDocument( req.body ).catch( () => null );
   let esModel = null;
   if ( document && document.length > 0 ) {
@@ -114,5 +136,3 @@ const generateTransferCtrl = ( controllers, Model ) => async ( req, res, next ) 
       } else res.status( 500 ).json( err );
     } );
 };
-
-export default generateTransferCtrl;

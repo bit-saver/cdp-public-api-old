@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import client from '../../../services/elasticsearch';
 import controllerFactory from './controller';
-import transferCtrl from '../../../middleware/transfer';
+import { generateDeleteCtrl, generateTransferCtrl } from '../../../middleware/transfer';
 import asyncResponse from '../../../middleware/asyncResponse';
 import Video from './video.model';
 
@@ -12,13 +12,15 @@ const router = new Router();
 const controller = controllerFactory( client, INDEX, TYPE );
 
 // Route: /v1/video
-router.route( '/' ).post( asyncResponse, transferCtrl( controller, Video ), controller.indexDocument );
+router
+  .route( '/' )
+  .post( asyncResponse, generateTransferCtrl( controller, Video ), controller.indexDocument );
 
 // Route: /v1/video/[id]
 router
-  .route( '/:id' )
+  .route( '/:uuid' )
   .get( controller.getDocument )
-  .post( transferCtrl( controller, Video ), controller.updateDocument )
-  .delete( controller.deleteDocument );
+  .post( generateTransferCtrl( controller, Video ), controller.updateDocument )
+  .delete( generateDeleteCtrl( controller, Video ), controller.deleteDocument );
 
 export default router;
