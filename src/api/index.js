@@ -15,6 +15,10 @@ router.use( '/admin', adminRoutes );
 // search -- /v1/search, etc., v1 comes from app.use in index.js
 router.use( '/search', searchRoutes );
 
+router.route( '/types' ).get( ( req, res, next ) => {
+  res.json( ['video', 'post'] );
+} );
+
 // resources
 router.use( '/video', videoRoutes );
 router.use( '/post', postRoutes );

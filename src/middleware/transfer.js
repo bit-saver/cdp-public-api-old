@@ -1,5 +1,6 @@
 import aws from '../services/amazon-aws';
 import Download from '../api/modules/download';
+import Request from 'request';
 
 const downloadAsset = async ( url ) => {
   const download = await Download( url ).catch( ( err ) => {
@@ -28,7 +29,7 @@ const updateAsset = ( model, asset, result, md5 ) => {
   } );
 };
 
-const deleteAssets = async ( assets ) => {
+const deleteAssets = ( assets ) => {
   assets.forEach( ( asset ) => {
     aws.remove( asset );
   } );
@@ -63,10 +64,7 @@ const transferAsset = async ( model, asset ) => {
  * Generates a "transfer" middleware that serves as an intermediary
  * between an index/update request and the actual ES action.
  * This step downloads the file and uploads it to S3.
- * It takes a controller to pass the request onto if all functions
- * succeed.
  *
- * @param controllers
  * @param Model AbstractModel
  */
 const generateTransferCtrl = Model => async ( req, res, next ) => {
@@ -96,7 +94,23 @@ const generateTransferCtrl = Model => async ( req, res, next ) => {
       console.log( 'req.body', JSON.stringify( req.body, undefined, 2 ) );
       next();
     } )
-    .catch( err => res.status( 500 ).json( err ) );
+    .catch( ( err ) => {
+      if ( req.headers.callback ) {
+        console.log( 'sending callback error' );
+        Request.post(
+          {
+            url: req.headers.callback,
+            json: true,
+            body: {
+              error: 1,
+              message: err,
+              request: req.body
+            }
+          },
+          () => {}
+        );
+      } else res.status( 500 ).json( err );
+    } );
 };
 
 export default generateTransferCtrl;
