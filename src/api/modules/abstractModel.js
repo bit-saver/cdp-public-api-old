@@ -10,17 +10,31 @@ class AbstractModel {
     this.index = index;
     this.type = type;
   }
+
+  // TODO: add correct signature, i.e. json param
+  // need to disable eslint rule for this method
+  // eslint-disable-next-line class-methods-use-this
+  validateSchema() {
+    throw new Error( 'Method not implemented: validateSchema' );
+  }
+
+  // TODO: add correct signature, i.e. json param
+  // need to disable eslint rule for this method
   // eslint-disable-next-line class-methods-use-this
   getAssets() {
     throw new Error( 'Method not implemented: getAssets' );
   }
 
+  // TODO: add correct signature, i.e. asset param
+  // need to disable eslint rule for this method
   // eslint-disable-next-line class-methods-use-this
   putAsset() {
     throw new Error( 'Method not implemented: putAsset' );
   }
 
   async prepareDocumentForUpdate( json ) {
+    // this.validateSchema( json );
+
     const docFromES = await this.findDocumentByQuery( json ).then( parser.parseUniqueDocExists() );
     if ( docFromES ) {
       this.esAssets = this.getAssets( docFromES._source );

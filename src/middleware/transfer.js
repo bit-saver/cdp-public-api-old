@@ -29,7 +29,6 @@ const updateAsset = ( model, asset, result, md5 ) => {
 };
 
 const deleteAssets = async ( assets ) => {
-  console.log( `assets ${assets}` );
   assets.forEach( ( asset ) => {
     aws.remove( asset );
   } );
@@ -75,6 +74,7 @@ const generateTransferCtrl = Model => async ( req, res, next ) => {
   const transfers = []; // Promise array (holds all download/upload processes)
 
   const model = new Model();
+
   try {
     // verify that we on operasting on a single, unique document
     reqAssets = await model.prepareDocumentForUpdate( req.body );

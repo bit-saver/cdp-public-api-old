@@ -4,6 +4,12 @@ import AbstractModel from '../../modules/abstractModel';
  * Video Content Model helps in managing assets within JSON.
  */
 class Video extends AbstractModel {
+  // TODO: validate incoming model props for existence and proper data types
+  // eslint-disable-next-line class-methods-use-this
+  validateSchema( json ) {
+    console.log( `validateSchema: ${json}` );
+  }
+
   /**
    * Returns an array of asssets retrieved by iterating over the JSON
    * unit > sources.
