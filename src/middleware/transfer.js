@@ -50,7 +50,7 @@ const transferAsset = async ( model, asset ) => {
       resolve( { message: 'Update not required.' } );
     } else {
       console.log( 'need to update' );
-      uploadAsset( model.json.site, model.json.post_id, download )
+      uploadAsset( model.body.site, model.body.post_id, download )
         .then( ( result ) => {
           updateAsset( model, asset, result, download.props.md5 );
           resolve( result );
@@ -67,15 +67,15 @@ const transferAsset = async ( model, asset ) => {
  *
  * @param Model AbstractModel
  */
-const generateTransferCtrl = Model => async ( req, res, next ) => {
+export const transferCtrl = Model => async ( req, res, next ) => {
   let reqAssets = [];
   const transfers = []; // Promise array (holds all download/upload processes)
 
   const model = new Model();
 
   try {
-    // verify that we on operasting on a single, unique document
-    reqAssets = await model.prepareDocumentForUpdate( req.body );
+    // verify that we are operating on a single, unique document
+    reqAssets = await model.prepareDocumentForUpdate( req );
   } catch ( err ) {
     // need 'return' in front of next as next will NOT stop current execution
     return next( err );
@@ -90,6 +90,7 @@ const generateTransferCtrl = Model => async ( req, res, next ) => {
     .then( ( results ) => {
       const s3FilesToDelete = model.getFilesToRemove();
       if ( s3FilesToDelete.length ) deleteAssets( s3FilesToDelete );
+      else console.log( 'no s3 files to delete' );
       console.log( 'transfer results', results );
       console.log( 'req.body', JSON.stringify( req.body, undefined, 2 ) );
       next();
@@ -103,7 +104,7 @@ const generateTransferCtrl = Model => async ( req, res, next ) => {
             json: true,
             body: {
               error: 1,
-              message: err,
+              message: JSON.stringify( err ),
               request: req.body
             }
           },
@@ -113,4 +114,20 @@ const generateTransferCtrl = Model => async ( req, res, next ) => {
     } );
 };
 
-export default generateTransferCtrl;
+export const deleteCtrl = Model => async ( req, res, next ) => {
+  const model = new Model();
+  let esAssets = [];
+
+  try {
+    // verify that we are operating on a single, unique document
+    esAssets = await model.prepareDocumentForDelete( req );
+  } catch ( err ) {
+    // need 'return' in front of next as next will NOT stop current execution
+    return next( err );
+  }
+  const urlsToRemove = esAssets.map( asset => ( {
+    url: asset.downloadUrl
+  } ) );
+  deleteAssets( urlsToRemove );
+  next();
+};

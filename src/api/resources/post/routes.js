@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import controller from './controller';
 import PostModel from './postModel';
-import transferCtrl from '../../../middleware/transfer';
+import { transferCtrl, deleteCtrl } from '../../../middleware/transfer';
 import asyncResponse from '../../../middleware/asyncResponse';
 
 const router = new Router();
@@ -11,7 +11,7 @@ router
   .route( '/' )
   .post( asyncResponse, transferCtrl( PostModel ), controller.indexDocument )
   .get( controller.getDocument )
-  .delete( controller.deleteDocument );
+  .delete( deleteCtrl( PostModel ), controller.deleteDocument );
 
 // Route: /v1/post/[id]
 router

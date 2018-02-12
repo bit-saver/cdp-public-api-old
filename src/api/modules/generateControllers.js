@@ -11,6 +11,7 @@ export const indexDocument = model => ( req, res, next ) => {
   controllers
     .indexDocument( model, req.body )
     .then( ( doc ) => {
+      // TODO: Perhaps find a better way to handle the callback?
       if ( req.headers.callback ) {
         console.log( 'sending callback', req.headers.callback );
         Request.post(
@@ -32,7 +33,7 @@ export const indexDocument = model => ( req, res, next ) => {
 // DELETE v1/[resource]/
 export const deleteDocument = model => ( req, res, next ) => {
   controllers
-    .deleteDocumentByQuery( model, req.body )
+    .deleteDocumentByQuery( model, req )
     .then( doc => res.status( 200 ).json( doc ) )
     .catch( err => next( err ) );
 };

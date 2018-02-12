@@ -42,8 +42,8 @@ class Video extends AbstractModel {
    * @param asset { downloadUrl, md5, unitIndex, srcIndex }
    */
   putAsset( asset ) {
-    this.json.unit[asset.unitIndex].source[asset.srcIndex].downloadUrl = asset.downloadUrl;
-    this.json.unit[asset.unitIndex].source[asset.srcIndex].md5 = asset.md5;
+    this.body.unit[asset.unitIndex].source[asset.srcIndex].downloadUrl = asset.downloadUrl;
+    this.body.unit[asset.unitIndex].source[asset.srcIndex].md5 = asset.md5;
   }
 }
 

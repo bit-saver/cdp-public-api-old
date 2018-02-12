@@ -32,19 +32,33 @@ class AbstractModel {
     throw new Error( 'Method not implemented: putAsset' );
   }
 
-  async prepareDocumentForUpdate( json ) {
+  async prepareDocumentForUpdate( req ) {
     // this.validateSchema( json );
 
-    const docFromES = await this.findDocumentByQuery( json ).then( parser.parseUniqueDocExists() );
+    const docFromES = await this.findDocumentByQuery( req.body ).then( parser.parseUniqueDocExists() ); // eslint-disable-line max-len
     if ( docFromES ) {
       this.esAssets = this.getAssets( docFromES._source );
-      this.id = docFromES._id;
+      req._id = docFromES._id;
     }
 
-    this.reqAssets = this.getAssets( json );
-    this.json = json;
+    this.reqAssets = this.getAssets( req.body );
+    this.body = req.body;
 
     return this.reqAssets;
+  }
+
+  async prepareDocumentForDelete( req ) {
+    console.log( 'preparing for delete' );
+
+    const docFromES = await this.findDocumentByQuery( req.body ).then( parser.parseUniqueDocExists() ); // eslint-disable-line max-len
+    if ( docFromES ) {
+      console.log( 'got doc', docFromES );
+      this.esAssets = this.getAssets( docFromES._source );
+      req._id = docFromES._id;
+      this.body = docFromES._source;
+    }
+
+    return this.esAssets;
   }
 
   updateIfNeeded( asset, md5 ) {
@@ -66,7 +80,7 @@ class AbstractModel {
     const filesToRemove = [];
     if ( !this.esAssets ) return filesToRemove;
 
-    this.reqAssets = this.getAssets( this.json );
+    this.reqAssets = this.getAssets( this.body );
     this.esAssets.forEach( ( ass ) => {
       if ( !this.reqAssets.find( val => val.md5 === ass.md5 ) ) {
         filesToRemove.push( { url: ass.downloadUrl } );
@@ -116,11 +130,13 @@ class AbstractModel {
   }
 
   async findDocumentByQuery( query ) {
-    const result = await client.search( {
-      index: this.index,
-      type: this.type,
-      q: `site:${query.site} AND post_id:${query.post_id}`
-    } );
+    const result = await client
+      .search( {
+        index: this.index,
+        type: this.type,
+        q: `site:${query.site} AND post_id:${query.post_id}`
+      } )
+      .catch( err => err );
     return result;
   }
 }

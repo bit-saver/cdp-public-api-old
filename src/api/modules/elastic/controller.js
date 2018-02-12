@@ -23,10 +23,13 @@ export default {
     return model.deleteDocument( id ).then( parser.parseDeleteResult( id ) );
   },
 
-  async deleteDocumentByQuery( model, body ) {
+  async deleteDocumentByQuery( model, req ) {
+    if ( req._id ) {
+      return this.deleteDocumentById( model, req._id );
+    }
     // could use client.deleteByQuery but that would delete all that match the query
     // prefer to have check for unique value before deleting
-    const doc = await this.findDocument( model, body );
+    const doc = await this.findDocument( model, req.body );
     if ( doc && doc._id ) {
       return this.deleteDocument( model, doc._id );
     }
