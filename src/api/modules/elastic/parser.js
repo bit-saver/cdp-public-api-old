@@ -50,8 +50,8 @@ export default {
   parseUpdateResult( id, doc ) {
     return result =>
       new Promise( ( resolve, reject ) => {
-        if ( result._id ) {
-          return resolve( { id: result._id, ...doc } );
+        if ( result._id || result.id ) {
+          return resolve( { id: result._id || result.id, ...doc } );
         }
         reject( id );
       } );

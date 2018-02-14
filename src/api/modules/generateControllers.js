@@ -47,21 +47,34 @@ export const getDocument = model => ( req, res, next ) => {
 };
 
 // PUT v1/[resource]/:uuid
-export const updateDocumentById = model => async ( req, res, next ) => {
+export const updateDocumentById = model => async ( req, res, next ) =>
   controllers
-    .updateDocumentById( model, req.body, req.params.id )
-    .then( doc => res.status( 201 ).json( doc ) )
+    .updateDocumentById( model, req )
+    .then( ( doc ) => {
+      // TODO: Perhaps find a better way to handle the callback?
+      if ( req.headers.callback ) {
+        console.log( 'sending callback', req.headers.callback );
+        Request.post(
+          {
+            url: req.headers.callback,
+            json: true,
+            form: {
+              error: 0,
+              doc
+            }
+          },
+          () => {}
+        );
+      } else res.status( 201 ).json( doc );
+    } )
     .catch( err => next( err ) );
-};
 
 // DELTE v1/[resource]/:uuid
-export const deleteDocumentById = model => async ( req, res, next ) => {
-  const id = req.esDoc ? req.esDoc.id : null;
-  return controllers
-    .deleteDocumentById( model, id )
+export const deleteDocumentById = model => async ( req, res, next ) =>
+  controllers
+    .deleteDocumentById( model, req )
     .then( doc => res.status( 200 ).json( doc || req.esDoc ) )
     .catch( err => next( err ) );
-};
 
 // GET v1/[resource]/:uuid
 export const getDocumentById = model => ( req, res, next ) => {

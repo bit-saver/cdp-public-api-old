@@ -18,8 +18,11 @@ export default {
     return model.updateDocument( id, body ).then( parser.parseUpdateResult( id, body ) );
   },
 
-  updateDocumentById( model, body, id ) {
-    return this.updateDocument( model, body, id );
+  updateDocumentById( model, req ) {
+    if ( req.esDoc ) {
+      return this.updateDocument( model, req.body, req.esDoc.id );
+    }
+    return this.updateDocument( model, req.body, req.params.id );
   },
 
   deleteDocument( model, id ) {
@@ -39,8 +42,11 @@ export default {
     throw new Error( 'Not found.' );
   },
 
-  deleteDocumentById( model, id ) {
-    return this.deleteDocument( model, id );
+  deleteDocumentById( model, req ) {
+    if ( req.esDoc ) {
+      return this.deleteDocumentById( model, req.esDoc.id );
+    }
+    return this.deleteDocument( model, req.params.id );
   },
 
   getDocument( model, query ) {

@@ -18,7 +18,7 @@ router
 // Route: /v1/video/[uuid]
 router
   .route( '/:uuid' )
-  .put( controller.updateDocumentById )
+  .put( asyncResponse, transferCtrl( VideoModel ), controller.updateDocumentById )
   .get( controller.getDocumentById )
   .delete( deleteCtrl( VideoModel ), controller.deleteDocumentById );
 

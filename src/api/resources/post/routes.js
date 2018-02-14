@@ -18,7 +18,7 @@ router
 // Route: /v1/post/[uuid]
 router
   .route( '/:id' )
-  .put( controller.updateDocumentById )
+  .put( asyncResponse, transferCtrl( PostModel ), controller.updateDocumentById )
   .get( controller.getDocumentById )
   .delete( deleteCtrl( PostModel ), controller.deleteDocumentById );
 
