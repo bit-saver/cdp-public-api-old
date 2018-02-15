@@ -4,28 +4,14 @@
  */
 
 import controllers from './elastic/controller';
-import Request from 'request';
+import callback from './callbackResponse';
 
 // POST v1/[resource]
 export const indexDocument = model => ( req, res, next ) => {
   controllers
     .indexDocument( model, req )
     .then( ( doc ) => {
-      // TODO: Perhaps find a better way to handle the callback?
-      if ( req.headers.callback ) {
-        console.log( 'sending callback', req.headers.callback );
-        Request.post(
-          {
-            url: req.headers.callback,
-            json: true,
-            form: {
-              error: 0,
-              doc
-            }
-          },
-          () => {}
-        );
-      } else res.status( 201 ).json( doc );
+      if ( !callback( req, { doc } ) ) res.status( 201 ).json( doc );
     } )
     .catch( error => next( error ) );
 };
@@ -51,21 +37,7 @@ export const updateDocumentById = model => async ( req, res, next ) =>
   controllers
     .updateDocumentById( model, req )
     .then( ( doc ) => {
-      // TODO: Perhaps find a better way to handle the callback?
-      if ( req.headers.callback ) {
-        console.log( 'sending callback', req.headers.callback );
-        Request.post(
-          {
-            url: req.headers.callback,
-            json: true,
-            form: {
-              error: 0,
-              doc
-            }
-          },
-          () => {}
-        );
-      } else res.status( 201 ).json( doc );
+      if ( !callback( req, { doc } ) ) res.status( 201 ).json( doc );
     } )
     .catch( err => next( err ) );
 
