@@ -62,8 +62,6 @@ class AbstractModel {
   }
 
   async prepareDocumentForUpdate( req ) {
-    // this.validateSchema( json );
-
     if ( req.esDoc ) {
       this.esAssets = this.getAssets( req.esDoc );
     } else {
@@ -76,6 +74,8 @@ class AbstractModel {
 
     this.reqAssets = this.getAssets( req.body );
     this.body = req.body;
+
+    this.validateSchema();
 
     return this.reqAssets;
   }
