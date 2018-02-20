@@ -6,7 +6,7 @@ import AbstractModel from '../../modules/abstractModel';
 class Video extends AbstractModel {
   // TODO: validate incoming model props for existence and proper data types
   validateSchema() {
-    console.log( 'validateSchema:', this.body );
+    // console.log( 'validateSchema:', this.body );
     if ( !this.body ) throw new Error( 'Missing request body.' );
     // check each level
     // level 1
@@ -62,7 +62,7 @@ class Video extends AbstractModel {
         'burnedInCaptions', 'downloadUrl', 'md5', 'streamUrl', 'filetype', 'size'
       ],
       size: [
-        'width', 'height', 'filesize', 'birate'
+        'width', 'height', 'filesize', 'bitrate'
       ],
       transcript: [
         'srcUrl', 'md5', 'text'
@@ -70,7 +70,7 @@ class Video extends AbstractModel {
       srt: ['srcUrl', 'md5']
     };
 
-    const arrays = ['unit', 'source'];
+    const objectArrays = ['unit', 'source'];
 
     const filterLevel = ( primaryKey, raw ) => {
       // If we have a key for this property AND a non empty value
@@ -84,7 +84,7 @@ class Video extends AbstractModel {
           .reduce( ( obj, key ) => {
             const ret = obj;
             // If this key holds an array of objects, we need to iterate each one
-            if ( arrays.includes( key ) ) {
+            if ( objectArrays.includes( key ) ) {
               if ( raw[key] instanceof Array ) {
                 const replace = [];
                 raw[key].forEach( ( unit ) => {
@@ -94,12 +94,15 @@ class Video extends AbstractModel {
               } else {
                 ret[key] = [];
               }
-            } else if ( allowed[key] ) ret[key] = filterLevel( key, obj );
-            else ret[key] = raw[key];
+            } else if ( allowed[key] ) {
+              ret[key] = filterLevel( key, raw[key] );
+            } else ret[key] = raw[key];
             return ret;
           }, {} );
       }
     };
+
+    return filterLevel( 'body', this.body );
   }
 
   /**
