@@ -9,11 +9,7 @@ const router = new Router();
 router.param( 'uuid', controller.setRequestDoc );
 
 // Route: /v1/post
-router
-  .route( '/' )
-  .post( asyncResponse, transferCtrl( PostModel ), controller.indexDocument )
-  .get( controller.getDocument )
-  .delete( deleteCtrl( PostModel ), controller.deleteDocument );
+router.route( '/' ).post( asyncResponse, transferCtrl( PostModel ), controller.indexDocument );
 
 // Route: /v1/post/[uuid]
 router

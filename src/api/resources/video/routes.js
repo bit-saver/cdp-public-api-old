@@ -9,11 +9,7 @@ const router = new Router();
 router.param( 'uuid', controller.setRequestDoc );
 
 // Route: /v1/video
-router
-  .route( '/' )
-  .post( asyncResponse, transferCtrl( VideoModel ), controller.indexDocument )
-  .get( controller.getDocument )
-  .delete( deleteCtrl( VideoModel ), controller.deleteDocument );
+router.route( '/' ).post( asyncResponse, transferCtrl( VideoModel ), controller.indexDocument );
 
 // Route: /v1/video/[uuid]
 router
