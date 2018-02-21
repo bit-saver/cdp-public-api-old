@@ -5,8 +5,8 @@ export default generateControllers( new VideoModel() );
 
 /*
   NOTE: Generic controller methods can be overidden:
-    const getDocument = ( req, res, next ) => {
+    const getDocumentById = ( req, res, next ) => {
     res.json( { prop: 'example' } );
   };
-  export default generateControllers( new VideoModel(), { getDocument } );
+  export default generateControllers( new VideoModel(), { getDocumentById } );
 */
