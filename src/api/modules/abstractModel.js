@@ -44,7 +44,7 @@ class AbstractModel {
     if ( req.params.uuid ) {
       const args = req.params.uuid.split( '_' );
       if ( args.length === 2 ) {
-        const site = args[0].replace( /-/g, '.' ).trim();
+        const site = args[0];
         const postID = args[1];
         const esDoc = await this.findDocumentByQuery( {
           site,
