@@ -6,7 +6,7 @@ import parser from '../modules/elastic/parser';
  * are implemented.
  */
 class AbstractModel {
-  constructor( index = 'video.index', type = 'video' ) {
+  constructor( index, type ) {
     this.index = index;
     this.type = type;
   }
