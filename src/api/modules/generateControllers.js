@@ -4,7 +4,6 @@
  */
 
 import controllers from './elastic/controller';
-import callback from './callbackResponse';
 import * as utils from '../utils';
 
 // POST v1/[resource]
@@ -12,7 +11,7 @@ export const indexDocument = model => ( req, res, next ) => {
   controllers
     .indexDocument( model, req )
     .then( ( doc ) => {
-      if ( !callback( req, { doc } ) ) res.status( 201 ).json( doc );
+      if ( !utils.callback( req, { doc } ) ) res.status( 201 ).json( doc );
     } )
     .catch( error => next( error ) );
 };
@@ -22,7 +21,7 @@ export const updateDocumentById = model => async ( req, res, next ) =>
   controllers
     .updateDocumentById( model, req )
     .then( ( doc ) => {
-      if ( !callback( req, { doc } ) ) res.status( 201 ).json( doc );
+      if ( !utils.callback( req, { doc } ) ) res.status( 201 ).json( doc );
     } )
     .catch( err => next( err ) );
 
