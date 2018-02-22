@@ -1,6 +1,6 @@
 import aws from '../services/amazon-aws';
 import Download from '../api/modules/download';
-import callback from '../api/modules/callbackResponse';
+import * as utils from '../api/utils';
 
 const downloadAsset = async ( url ) => {
   const download = await Download( url ).catch( ( err ) => {
@@ -100,7 +100,7 @@ export const transferCtrl = Model => async ( req, res, next ) => {
     .catch( ( err ) => {
       console.log( 'sending transfer error' );
       if (
-        !callback( req, {
+        !utils.callback( req, {
           error: 1,
           message: JSON.stringify( err ),
           request: req.body
