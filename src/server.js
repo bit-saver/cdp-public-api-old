@@ -12,6 +12,8 @@ middlewareSetup( app );
 app.use( '/v1', routes );
 
 // catch all
+// Probably need to add a "route not found" error or something like
+// that to let clients know when a process failed, i.e. DELETE /v1/video
 app.all( '*', ( req, res ) => {
   res.json( { ok: true } );
 } );

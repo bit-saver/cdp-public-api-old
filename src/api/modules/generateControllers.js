@@ -5,6 +5,7 @@
 
 import controllers from './elastic/controller';
 import Request from 'request';
+import * as utils from '../utils';
 
 // POST v1/[resource]
 export const indexDocument = model => ( req, res, next ) => {
@@ -54,30 +55,31 @@ export const updateDocumentById = model => async ( req, res, next ) =>
     .catch( err => next( err ) );
 
 // DELETE v1/[resource]/:uuid
-export const deleteDocumentById = model => async ( req, res, next ) =>
+export const deleteDocumentById = model => ( req, res, next ) =>
   controllers
     .deleteDocumentById( model, req )
-    .then( doc => res.status( 200 ).json( doc || req.esDoc ) )
+    .then( doc => res.status( 200 ).json( doc ) )
     .catch( err => next( err ) );
 
 // GET v1/[resource]/:uuid
-export const getDocumentById = model => ( req, res, next ) => {
+export const getDocumentById = () => ( req, res, next ) => {
   if ( req.esDoc ) {
     res.status( 200 ).json( req.esDoc );
   } else {
     return next( new Error( `Document not found with UUID: ${req.params.uuid}` ) );
   }
-  // controllers
-  //   .getDocumentById( model, req.params.id )
-  //   .then( doc => res.status( 200 ).json( doc ) )
-  //   .catch( err => next( err ) );
 };
 
-// Populates req.esDoc with the document specified by /:uuid if any.
-export const setRequestDoc = model => async ( req, res, next, uuid ) => {
-  if ( uuid ) await model.prepareDocument( req ).catch( err => next( err ) );
-  next();
-};
+export const setRequestDoc = model => ( req, res, next, uuid ) =>
+  controllers
+    .findDocument( model, utils.getQueryFromUuid( uuid ) )
+    .then( ( doc ) => {
+      if ( doc ) req.esDoc = doc;
+      next();
+    } )
+    .catch( ( error ) => {
+      next( error );
+    } );
 
 export const generateControllers = ( model, overrides = {} ) => {
   const defaults = {

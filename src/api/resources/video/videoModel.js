@@ -4,7 +4,7 @@ import AbstractModel from '../../modules/abstractModel';
  * Video Content Model helps in managing assets within JSON.
  */
 class Video extends AbstractModel {
-  constructor( index = 'video.index', type = 'video' ) {
+  constructor( index = 'videos', type = 'video' ) {
     super( index, type );
   }
   // TODO: validate incoming model props for existence and proper data types

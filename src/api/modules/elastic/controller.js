@@ -39,14 +39,14 @@ export default {
     if ( doc && doc._id ) {
       return this.deleteDocument( model, doc._id );
     }
-    throw new Error( 'Not found.' );
+    throw new Error( 'Document Not found.' );
   },
 
   deleteDocumentById( model, req ) {
-    if ( req.esDoc ) {
-      return this.deleteDocumentById( model, req.esDoc.id );
+    if ( req.esDoc && req.esDoc.id ) {
+      return this.deleteDocument( model, req.esDoc.id );
     }
-    return this.deleteDocument( model, req.params.id );
+    throw new Error( `Document not found with UUID: ${req.params.uuid}` );
   },
 
   getDocument( model, query ) {

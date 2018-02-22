@@ -91,19 +91,11 @@ class AbstractModel {
   }
 
   async prepareDocumentForDelete( req ) {
-    console.log( 'preparing for delete' );
     this.esAssets = [];
 
     if ( req.esDoc ) {
       this.body = req.esDoc;
       this.esAssets = this.getAssets( this.body );
-    } else if ( req.body ) {
-      const docFromES = await this.findDocumentByQuery( req.body ).then( parser.parseUniqueDocExists() ); // eslint-disable-line max-len
-      if ( docFromES ) {
-        this.esAssets = this.getAssets( docFromES );
-        this.body = docFromES._source;
-        req.esDoc = docFromES;
-      }
     }
     return this.esAssets;
   }
@@ -130,7 +122,7 @@ class AbstractModel {
     this.reqAssets = this.getAssets( this.body );
     this.esAssets.forEach( ( ass ) => {
       if ( !this.reqAssets.find( val => val.md5 === ass.md5 ) ) {
-        filesToRemove.push( { url: ass.downloadUrl } );
+        if ( ass.downloadUrl ) filesToRemove.push( { url: ass.downloadUrl } );
       }
     } );
 

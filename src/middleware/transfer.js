@@ -4,6 +4,7 @@ import Request from 'request';
 
 const downloadAsset = async ( url ) => {
   const download = await Download( url ).catch( ( err ) => {
+    console.dir( err );
     throw err;
   } );
   return download;
@@ -36,28 +37,29 @@ const deleteAssets = ( assets ) => {
 };
 
 const transferAsset = async ( model, asset ) => {
-  console.info( 'downloading', asset.downloadUrl );
+  if ( asset.downloadUrl ) {
+    console.info( 'downloading', asset.downloadUrl );
+    // TODO: only download if ext is one we want to process
+    const download = await downloadAsset( asset.downloadUrl );
+    model.putAsset( { ...asset, md5: download.props.md5 } );
 
-  // TODO: only download if ext is one we want to process
-  const download = await downloadAsset( asset.downloadUrl );
-  model.putAsset( { ...asset, md5: download.props.md5 } );
-
-  return new Promise( ( resolve, reject ) => {
-    // Attempt to find matching asset in ES document
-    const updatedNeeded = model.updateIfNeeded( asset, download.props.md5 );
-    if ( !updatedNeeded ) {
-      console.log( 'md5 match, update not required' );
-      resolve( { message: 'Update not required.' } );
-    } else {
-      console.log( 'need to update' );
-      uploadAsset( model.body.site, model.body.post_id, download )
-        .then( ( result ) => {
-          updateAsset( model, asset, result, download.props.md5 );
-          resolve( result );
-        } )
-        .catch( err => reject( err ) );
-    }
-  } );
+    return new Promise( ( resolve, reject ) => {
+      // Attempt to find matching asset in ES document
+      const updatedNeeded = model.updateIfNeeded( asset, download.props.md5 );
+      if ( !updatedNeeded ) {
+        console.log( 'md5 match, update not required' );
+        resolve( { message: 'Update not required.' } );
+      } else {
+        console.log( 'need to update' );
+        uploadAsset( model.body.site, model.body.post_id, download )
+          .then( ( result ) => {
+            updateAsset( model, asset, result, download.props.md5 );
+            resolve( result );
+          } )
+          .catch( err => reject( err ) );
+      }
+    } );
+  }
 };
 
 /**
@@ -125,9 +127,11 @@ export const deleteCtrl = Model => async ( req, res, next ) => {
     // need 'return' in front of next as next will NOT stop current execution
     return next( err );
   }
-  const urlsToRemove = esAssets.map( asset => ( {
-    url: asset.downloadUrl
-  } ) );
+
+  const urlsToRemove = esAssets
+    .filter( asset => asset.downloadUrl )
+    .map( asset => ( { url: asset.downloadUrl } ) );
+
   deleteAssets( urlsToRemove );
   next();
 };
