@@ -105,7 +105,8 @@ class Video extends AbstractModel {
       }
     };
 
-    return filterLevel( 'body', this.body );
+    this.body = filterLevel( 'body', this.body );
+    return this.body;
   }
 
   /**

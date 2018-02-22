@@ -8,6 +8,7 @@ class Course extends AbstractModel {
     super( index, type );
   }
 
+  // eslint-disable-next-line class-methods-use-this
   validateSchema() {}
 
   /**
