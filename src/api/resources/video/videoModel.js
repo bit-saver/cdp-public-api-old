@@ -79,6 +79,8 @@ class Video extends AbstractModel {
       // If we have a key for this property AND a non empty value
       // then we must filter out anything not specified
       if ( allowed[primaryKey] ) {
+        if ( !raw ) return raw; // no further processing required
+
         // Check for empty value and simply return the values if so
         if ( allowed[primaryKey].length < 1 ) return raw;
         // Non empty so let's filter out the non specified properties
