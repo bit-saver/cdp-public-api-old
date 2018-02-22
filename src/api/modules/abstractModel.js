@@ -33,6 +33,16 @@ class AbstractModel {
   }
 
   /**
+   * Set instance body parameter with argument json.
+   * Mainly needed for testing.
+   *
+   * @param json
+   */
+  setBody( json ) {
+    this.body = json;
+  }
+
+  /**
    * Populate the request with a document retreived from ElasticSearch
    * (if any) based on UUID in the request param. Do not fail if not found
    * as it can be handled by controllers.
@@ -62,8 +72,6 @@ class AbstractModel {
   }
 
   async prepareDocumentForUpdate( req ) {
-    // this.validateSchema( json );
-
     if ( req.esDoc ) {
       this.esAssets = this.getAssets( req.esDoc );
     } else {
@@ -76,6 +84,8 @@ class AbstractModel {
 
     this.reqAssets = this.getAssets( req.body );
     this.body = req.body;
+
+    this.validateSchema();
 
     return this.reqAssets;
   }

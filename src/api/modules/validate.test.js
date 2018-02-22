@@ -10,16 +10,25 @@ describe( 'Validate', () => {
     } );
 
     it( 'should update the state to reflect the new props: query == state', () => {
-      expect( validate.string( { prop1: 'index', prop2: 'id' }, state ) ).to.deep.equal( { options: { prop1: 'index', prop2: 'id' }, error: {} } );
+      expect( validate.string( { prop1: 'index', prop2: 'id' }, state ) ).to.deep.equal( {
+        options: { prop1: 'index', prop2: 'id' },
+        error: {}
+      } );
     } );
 
     it( 'should not return object property on state if object property value does not exist', () => {
-      expect( validate.string( { prop1: 'index', prop2: undefined }, state ) ).to.deep.equal( { options: { prop1: 'index' }, error: {} } );
+      expect( validate.string( { prop1: 'index', prop2: undefined }, state ) ).to.deep.equal( {
+        options: { prop1: 'index' },
+        error: {}
+      } );
     } );
 
     it( 'should return an error object with applicable error message if non string value is present', () => {
       const object = {
-        prop1: 'index', prop2: 3, prop3: {}, prop4: []
+        prop1: 'index',
+        prop2: 3,
+        prop3: {},
+        prop4: []
       };
       expect( validate.string( object, state ) ).to.deep.equal( {
         options: { prop1: 'index' },
@@ -54,13 +63,21 @@ describe( 'Validate', () => {
     } );
 
     it( 'should return a property with array value', () => {
-      const object = { prop1: [ 'item1', 'item2' ] };
-      expect( validate.array( object, state ) ).to.deep.equal( { options: { prop1: [ 'item1', 'item2' ] }, error: {} } );
+      const object = { prop1: ['item1', 'item2'] };
+      expect( validate.array( object, state ) ).to.deep.equal( {
+        options: { prop1: ['item1', 'item2'] },
+        error: {}
+      } );
     } );
 
     it( 'should return an applicable error for each object property that is not an array', () => {
       const object = {
-        prop1: '3', prop2: 3, prop3: {}, prop4: null, prop5: '', prop6: []
+        prop1: '3',
+        prop2: 3,
+        prop3: {},
+        prop4: null,
+        prop5: '',
+        prop6: []
       };
       expect( validate.array( object, state ) ).to.deep.equal( {
         options: { prop6: [] }, // May need to update function to disallow empty arrays
@@ -74,7 +91,7 @@ describe( 'Validate', () => {
     } );
 
     it( 'should return an applicable error and not populate state property if array contains non string values', () => {
-      const object = { prop1: [ 'item1', 3 ] };
+      const object = { prop1: ['item1', 3] };
       expect( validate.array( object, state ) ).to.deep.equal( {
         options: {},
         error: {}
@@ -89,7 +106,10 @@ describe( 'Validate', () => {
 
     it( 'should return string or array as prop value if either is passed else an applicable error', () => {
       const object = {
-        prop1: 'item1', prop2: 3, prop3: null, prop4: []
+        prop1: 'item1',
+        prop2: 3,
+        prop3: null,
+        prop4: []
       };
       expect( validate.stringOrStringArray( object, state ) ).to.deep.equal( {
         options: {
@@ -114,7 +134,13 @@ describe( 'Validate', () => {
         prop1: 3,
         prop2: 'string',
         prop3: {},
-        prop4: JSON.stringify( { x: 2, y: [ 1, undefined, 'str' ], z: undefined } ),
+        prop4: JSON.stringify( {
+          x: 2,
+          y: [
+            1, undefined, 'str'
+          ],
+          z: undefined
+        } ),
         prop5: { x: 2 },
         prop6: null,
         prop7: [],
@@ -123,19 +149,28 @@ describe( 'Validate', () => {
         prop10: '{}',
         prop11: "{ x: 2, y: [ 1, undefined, 'str' ], z: undefined }",
         prop12: JSON.stringify( "{ x: 2, y: [ 1, undefined, 'str' ], z: undefined }" ),
-        prop13: [ 1, 'str', undefined, 0, null, '' ]
+        prop13: [
+          1, 'str', undefined, 0, null, ''
+        ]
       };
       expect( validate.jsonString( object, state ) ).to.deep.equal( {
         options: {
           prop1: 3,
           prop3: {},
-          prop4: { x: 2, y: [ 1, null, 'str' ] },
+          prop4: {
+            x: 2,
+            y: [
+              1, null, 'str'
+            ]
+          },
           prop5: { x: 2 },
           prop7: [],
           prop9: [],
           prop10: {},
           prop12: "{ x: 2, y: [ 1, undefined, 'str' ], z: undefined }",
-          prop13: [ 1, 'str', undefined, 0, null, '' ]
+          prop13: [
+            1, 'str', undefined, 0, null, ''
+          ]
         },
         error: {
           prop2: 'Value must be valid JSON string or Object',
