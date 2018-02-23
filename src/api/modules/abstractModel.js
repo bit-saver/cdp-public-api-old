@@ -14,13 +14,6 @@ class AbstractModel {
   // TODO: add correct signature, i.e. json param
   // need to disable eslint rule for this method
   // eslint-disable-next-line class-methods-use-this
-  validateSchema() {
-    throw new Error( 'Method not implemented: validateSchema' );
-  }
-
-  // TODO: add correct signature, i.e. json param
-  // need to disable eslint rule for this method
-  // eslint-disable-next-line class-methods-use-this
   getAssets() {
     throw new Error( 'Method not implemented: getAssets' );
   }
@@ -61,7 +54,6 @@ class AbstractModel {
           post_id: postID
         } ).then( parser.parseUniqueDocExists() );
         if ( esDoc ) {
-          console.log( esDoc );
           this.esAssets = this.getAssets( esDoc );
           this.body = req.body;
           req.esDoc = esDoc;
@@ -84,8 +76,6 @@ class AbstractModel {
 
     this.reqAssets = this.getAssets( req.body );
     this.body = req.body;
-
-    this.validateSchema();
 
     return this.reqAssets;
   }
