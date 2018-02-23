@@ -30,3 +30,10 @@ export const callback = ( req, data ) => {
   }
   return false;
 };
+
+export const getFormatTypes = () => {
+  const types = [];
+  const imageExts = [
+    'png', 'jpg', 'jpeg', 'gif', 'svg', 'mp4', 'mov', 'mp3'
+  ];
+};
