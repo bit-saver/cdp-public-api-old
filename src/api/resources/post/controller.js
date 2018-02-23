@@ -1,5 +1,5 @@
 import { generateControllers } from '../../modules/generateControllers';
-import PostModel from './postModel';
+import PostModel from './model';
 
 export default generateControllers( new PostModel() );
 

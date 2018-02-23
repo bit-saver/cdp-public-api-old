@@ -1,5 +1,5 @@
 import { generateControllers } from '../../modules/generateControllers';
-import VideoModel from './videoModel';
+import VideoModel from './model';
 
 export default generateControllers( new VideoModel() );
 

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import controller from './controller';
-import VideoModel from './videoModel';
+import VideoModel from './model';
+import { validate } from '../../../middleware/validateSchema';
 import { transferCtrl, deleteCtrl } from '../../../middleware/transfer';
 import asyncResponse from '../../../middleware/asyncResponse';
 
@@ -9,12 +10,16 @@ const router = new Router();
 router.param( 'uuid', controller.setRequestDoc );
 
 // Route: /v1/video
-router.route( '/' ).post( asyncResponse, transferCtrl( VideoModel ), controller.indexDocument );
+router
+  .route( '/' )
+  // eslint-disable-next-line max-len
+  .post( validate( VideoModel ), asyncResponse, transferCtrl( VideoModel ), controller.indexDocument );
 
 // Route: /v1/video/[uuid]
 router
   .route( '/:uuid' )
-  .put( asyncResponse, transferCtrl( VideoModel ), controller.updateDocumentById )
+  // eslint-disable-next-line max-len
+  .put( validate( VideoModel ), asyncResponse, transferCtrl( VideoModel ), controller.updateDocumentById )
   .get( controller.getDocumentById )
   .delete( deleteCtrl( VideoModel ), controller.deleteDocumentById );
 

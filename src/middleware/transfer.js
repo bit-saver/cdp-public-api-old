@@ -4,7 +4,6 @@ import Request from 'request';
 
 const downloadAsset = async ( url ) => {
   const download = await Download( url ).catch( ( err ) => {
-    console.dir( err );
     throw err;
   } );
   return download;

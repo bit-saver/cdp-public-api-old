@@ -5,7 +5,7 @@
 
 import controllers from './elastic/controller';
 import Request from 'request';
-import * as utils from '../utils';
+import * as utils from './utils';
 
 // POST v1/[resource]
 export const indexDocument = model => ( req, res, next ) => {
