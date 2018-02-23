@@ -1,5 +1,5 @@
 import { generateControllers } from '../../modules/generateControllers';
-import CourseModel from './courseModel';
+import CourseModel from './model';
 
 export default generateControllers( new CourseModel() );
 

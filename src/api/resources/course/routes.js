@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import controller from './controller';
-import CourseModel from './courseModel';
+import CourseModel from './model';
 import { transferCtrl, deleteCtrl } from '../../../middleware/transfer';
 import asyncResponse from '../../../middleware/asyncResponse';
 
