@@ -35,14 +35,36 @@ const deleteAssets = ( assets ) => {
   } );
 };
 
+/**
+ * Uses the Content-Type defined in the header of a response
+ * from the provided URL. If the Content-Type found in the header
+ * is in the list of allowed content types then true is returned.
+ *
+ * @param url
+ * @returns {Promise<boolean>}
+ */
+const isTypeAllowed = async ( url ) => {
+  const allowedTypes = utils.getContentTypes();
+  const contentType = await utils.getTypeFromUrl( url );
+  if ( !contentType ) return false;
+  return allowedTypes.includes( contentType );
+};
+
 const transferAsset = async ( model, asset ) => {
   if ( asset.downloadUrl ) {
+    let download = null;
     console.info( 'downloading', asset.downloadUrl );
-    // TODO: only download if ext is one we want to process
-    const download = await downloadAsset( asset.downloadUrl );
-    model.putAsset( { ...asset, md5: download.props.md5 } );
+
+    const allowed = await isTypeAllowed( asset.downloadUrl );
+    if ( allowed ) {
+      download = await downloadAsset( asset.downloadUrl );
+      model.putAsset( { ...asset, md5: download.props.md5 } );
+    }
 
     return new Promise( ( resolve, reject ) => {
+      if ( !allowed ) {
+        return reject( new Error( `Content type not allowed for asset: ${asset.downloadUrl}` ) );
+      }
       // Attempt to find matching asset in ES document
       const updatedNeeded = model.updateIfNeeded( asset, download.props.md5 );
       if ( !updatedNeeded ) {
@@ -97,15 +119,15 @@ export const transferCtrl = Model => async ( req, res, next ) => {
       next();
     } )
     .catch( ( err ) => {
-      console.log( 'sending transfer error' );
+      console.log( 'sending transfer error', err );
       if (
         !utils.callback( req, {
           error: 1,
-          message: JSON.stringify( err ),
+          message: err.message || err,
           request: req.body
         } )
       ) {
-        res.status( 400 ).json( err );
+        res.status( 400 ).json( err.message || err );
       }
     } );
 };
