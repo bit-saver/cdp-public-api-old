@@ -99,7 +99,7 @@ class Video extends AbstractModel {
 
     // 'useDefaults' adds a default value during validation if it is listed
     // 'removeAdditional' removes any properties during validation that are not in the schema
-    const ajv = new Ajv( { useDefaults: true, removeAdditional: 'all' } );
+    const ajv = new Ajv( { useDefaults: true, removeAdditional: 'all', coerceTypes: true } );
     Video.validate = ajv.compile( schema );
   }
 
