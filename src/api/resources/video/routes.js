@@ -13,13 +13,13 @@ router.param( 'uuid', controller.setRequestDoc );
 router
   .route( '/' )
   // eslint-disable-next-line max-len
-  .post( validate( VideoModel ), asyncResponse, transferCtrl( VideoModel ), controller.indexDocument );
+  .post( asyncResponse, transferCtrl( VideoModel ), controller.indexDocument );
 
 // Route: /v1/video/[uuid]
 router
   .route( '/:uuid' )
   // eslint-disable-next-line max-len
-  .put( validate( VideoModel ), asyncResponse, transferCtrl( VideoModel ), controller.updateDocumentById )
+  .put( asyncResponse, transferCtrl( VideoModel ), controller.updateDocumentById )
   .get( controller.getDocumentById )
   .delete( deleteCtrl( VideoModel ), controller.deleteDocumentById );
 
