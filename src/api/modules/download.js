@@ -46,10 +46,12 @@ export default function download( url ) {
         props.ext = Path.extname( props.basename );
 
         // Cross check ext against known extensions for this content type
-        // verify returned exts as text/html; charset=UTF-8' (i.e. 403 error)  threw error
         const typeExts = Mime.extensions[props.contentType];
         if ( typeExts ) {
-          if ( typeExts.indexOf( props.ext.replace( '.', '' ) ) < 0 ) {
+          if (
+            props.ext.replace( '.', '' ) !== 'srt' && // do not remove srt extension
+            typeExts.indexOf( props.ext.replace( '.', '' ) ) < 0
+          ) {
             // extension does not exist so use the default extension
             props.ext = `.${Mime.extension( props.contentType )}`;
           }

@@ -119,9 +119,29 @@ class Video extends AbstractModel {
           downloadUrl: src.downloadUrl,
           md5: src.md5 ? src.md5 : null,
           unitIndex,
-          srcIndex
+          srcIndex,
+          assetType: 'source'
         } );
       } );
+      if ( unit.transcript ) {
+        const trans = unit.transcript;
+        assets.push( {
+          downloadUrl: trans.srcUrl,
+          md5: trans.md5 ? trans.md5 : null,
+          unitIndex,
+          srcIndex: -1,
+          assetType: 'transcript'
+        } );
+      }
+      if ( unit.srt ) {
+        assets.push( {
+          downloadUrl: unit.srt.srcUrl,
+          md5: unit.srt.md5 ? unit.srt.md5 : null,
+          unitIndex,
+          srcIndex: -1,
+          assetType: 'srt'
+        } );
+      }
     } );
     return assets;
   }
@@ -132,11 +152,16 @@ class Video extends AbstractModel {
    * the asset would have been iterated over using the objects obtained from
    * the getAssets method above.
    *
-   * @param asset { downloadUrl, md5, unitIndex, srcIndex }
+   * @param asset { downloadUrl, md5, unitIndex, srcIndex, assetType }
    */
   putAsset( asset ) {
-    this.body.unit[asset.unitIndex].source[asset.srcIndex].downloadUrl = asset.downloadUrl;
-    this.body.unit[asset.unitIndex].source[asset.srcIndex].md5 = asset.md5;
+    if ( asset.assetType === 'source' ) {
+      this.body.unit[asset.unitIndex].source[asset.srcIndex].downloadUrl = asset.downloadUrl;
+      this.body.unit[asset.unitIndex].source[asset.srcIndex].md5 = asset.md5;
+    } else {
+      this.body.unit[asset.unitIndex][asset.assetType].srcUrl = asset.downloadUrl;
+      this.body.unit[asset.unitIndex][asset.assetType].md5 = asset.md5;
+    }
   }
 }
 
