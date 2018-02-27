@@ -64,7 +64,7 @@ class Video extends AbstractModel {
                     filetype: { type: 'string' },
                     md5: { type: 'string' },
                     size: {
-                      type: 'object',
+                      type: ['object', 'null'],
                       properties: {
                         width: { type: 'number' },
                         height: { type: 'number' },
@@ -99,6 +99,7 @@ class Video extends AbstractModel {
 
     // 'useDefaults' adds a default value during validation if it is listed
     // 'removeAdditional' removes any properties during validation that are not in the schema
+    // 'coerceTypes' will coerce to appropriate type.  using to coerce string number to number
     const ajv = new Ajv( { useDefaults: true, removeAdditional: 'all', coerceTypes: true } );
     Video.validate = ajv.compile( schema );
   }
