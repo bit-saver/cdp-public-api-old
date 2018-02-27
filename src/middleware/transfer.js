@@ -52,22 +52,26 @@ const isTypeAllowed = async ( url ) => {
 
 const transferAsset = async ( model, asset ) => {
   if ( asset.downloadUrl ) {
-    let download = null;
-    console.info( 'downloading', asset.downloadUrl );
+    return new Promise( async ( resolve, reject ) => {
+      let download = null;
+      let updateNeeded = false;
+      console.info( 'downloading', asset.downloadUrl );
 
-    const allowed = await isTypeAllowed( asset.downloadUrl );
-    if ( allowed ) {
-      download = await downloadAsset( asset.downloadUrl );
-      model.putAsset( { ...asset, md5: download.props.md5 } );
-    }
-
-    return new Promise( ( resolve, reject ) => {
-      if ( !allowed ) {
-        return reject( new Error( `Content type not allowed for asset: ${asset.downloadUrl}` ) );
+      const allowed = await isTypeAllowed( asset.downloadUrl );
+      if ( allowed && asset.md5 ) {
+        // Since we have an md5 in the request, check to see if is already present
+        // in the ES model assets and if so, no update needed.
+        updateNeeded = model.updateIfNeeded( asset, asset.md5 );
+        if ( !updateNeeded ) return resolve( { message: 'Update not required (md5 pre match).' } );
       }
+      if ( allowed ) {
+        download = await downloadAsset( asset.downloadUrl );
+        model.putAsset( { ...asset, md5: download.props.md5 } );
+      } else return reject( new Error( `Content type not allowed for asset: ${asset.downloadUrl}` ) );
+
       // Attempt to find matching asset in ES document
-      const updatedNeeded = model.updateIfNeeded( asset, download.props.md5 );
-      if ( !updatedNeeded ) {
+      if ( !updateNeeded ) updateNeeded = model.updateIfNeeded( asset, download.props.md5 );
+      if ( !updateNeeded ) {
         console.log( 'md5 match, update not required' );
         resolve( { message: 'Update not required.' } );
       } else {
