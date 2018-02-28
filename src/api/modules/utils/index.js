@@ -56,9 +56,13 @@ export const getContentTypes = () => {
     'jpeg',
     'gif',
     'svg',
+    // video extensions
     'mp4',
     'mov',
+    // audio extension
     'mp3',
+    // captions extension
+    'srt',
     // document extensions
     'pdf',
     'txt',
@@ -87,6 +91,10 @@ export const getTypeFromUrl = async ( url ) => {
   const result = await new Promise( ( resolve ) => {
     Request.head( url, ( error, response ) => {
       if ( response && response.headers && response.headers['content-type'] ) {
+        if ( response.headers['content-type'].toLowerCase() === 'application/octet-stream' ) {
+          // Missing legitimate content type so use extension instead
+          return resolve( Mime.lookup( url ) || null );
+        }
         return resolve( response.headers['content-type'] );
       }
       resolve( null );
