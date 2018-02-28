@@ -1,12 +1,14 @@
 {"index":{"_index":"taxonomy","_type": "term", "_id":0}}
 {"en": {"name": "Technology"}, "parent": null}
 {"index":{"_index":"taxonomy","_type": "term", "_id":1}}
-{"en": {"name": "Development"}, "parent": 0}
+{"en": {"name": "Development"}, "parent": "0"}
+{"index":{"_index":"taxonomy","_type": "term", "_id":2}}
+{"en": {"name": "Consumer"}, "parent": "0"}
 {"index":{"_index":"taxonomy","_type": "term", "_id":3}}
-{"en": {"name": "Consumer"}, "parent": 0}
+{"en": {"name": "Electronics"}, "parent": "2"}
 {"index":{"_index":"taxonomy","_type": "term", "_id":4}}
 {"en": {"name": "Politics"}, "parent": null}
 {"index":{"_index":"taxonomy","_type": "term", "_id":5}}
-{"en": {"name": "World"}, "parent": 4}
+{"en": {"name": "World"}, "parent": "4"}
 {"index":{"_index":"taxonomy","_type": "term", "_id":6}}
-{"en": {"name": "America"}, "parent": 4}
+{"en": {"name": "America"}, "parent": "4"}

@@ -6,8 +6,9 @@ const parseAllResult = result =>
   new Promise( ( resolve ) => {
     if ( result.hits && result.hits.total > 0 ) {
       const terms = result.hits.hits.reduce( ( acc, val ) => {
-        acc.push( val._source );
-      } );
+        acc.push( { _id: val._id, ...val._source, children: [] } );
+        return acc;
+      }, [] );
       resolve( terms );
     }
     resolve( {} );
@@ -16,7 +17,7 @@ const parseAllResult = result =>
 // elastic/controller
 const controllers = {
   async getAllDocuments( model ) {
-    return model.getAllDocuments();
+    return model.getAllDocuments().then( parseAllResult );
   }
 };
 
@@ -25,7 +26,8 @@ const getAllDocuments = model => async ( req, res, next ) =>
   controllers
     .getAllDocuments( model )
     .then( ( docs ) => {
-      if ( !utils.callback( req, { docs } ) ) res.status( 201 ).json( docs );
+      const tree = TaxonomyModel.constructTree( docs );
+      if ( !utils.callback( req, tree ) ) res.status( 201 ).json( tree );
     } )
     .catch( err => next( err ) );
 
