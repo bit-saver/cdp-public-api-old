@@ -6,6 +6,7 @@ import searchRoutes from './search/routes';
 import videoRoutes from './resources/video/routes';
 import postRoutes from './resources/post/routes';
 import courseRoutes from './resources/course/routes';
+import taxonomyRoutes from './resources/taxonomy/routes';
 import testRoutes from './test';
 
 const router = new Router();
@@ -20,6 +21,7 @@ router.use( '/search', searchRoutes );
 router.use( '/video', videoRoutes );
 router.use( '/post', postRoutes );
 router.use( '/course', courseRoutes );
+router.use( '/taxonomy', taxonomyRoutes );
 
 // test
 router.use( '/test', testRoutes );

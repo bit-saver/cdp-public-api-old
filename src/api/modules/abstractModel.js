@@ -172,6 +172,16 @@ class AbstractModel {
       .catch( err => err );
     return result;
   }
+
+  async getAllDocuments() {
+    const result = await client
+      .search( {
+        index: this.index,
+        type: this.type
+      } )
+      .catch( err => err );
+    return result;
+  }
 }
 
 export default AbstractModel;
