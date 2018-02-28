@@ -49,10 +49,29 @@ export const callback = ( req, data ) => {
 export const getContentTypes = () => {
   const types = Object.values( Mime.types ).filter( type => type.indexOf( 'audio/' ) === 0 || type.indexOf( 'video/' ) === 0 );
 
-  const exts = [
-    'png', 'jpg', 'jpeg', 'gif', 'svg', 'mp4', 'mov', 'mp3', 'txt'
+  const allowedExts = [
+    // image extensions
+    'png',
+    'jpg',
+    'jpeg',
+    'gif',
+    'svg',
+    'mp4',
+    'mov',
+    'mp3',
+    // document extensions
+    'pdf',
+    'txt',
+    'doc',
+    'docx',
+    'odt',
+    'rtf',
+    'wks',
+    'wps',
+    'wpd',
+    'html'
   ];
-  exts.forEach( ( ext ) => {
+  allowedExts.forEach( ( ext ) => {
     types.push( Mime.types[ext] );
   } );
   return types;
