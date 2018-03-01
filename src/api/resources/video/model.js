@@ -35,6 +35,11 @@ class Video extends AbstractModel {
         owner: { type: 'string' },
         author: { type: 'string' },
         duration: { type: 'number' },
+        categories: {
+          type: 'array',
+          default: [],
+          items: { type: 'string' }
+        },
         unit: {
           type: 'array',
           default: [{ source: [] }],
