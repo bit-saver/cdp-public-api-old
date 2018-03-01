@@ -14,12 +14,12 @@ class Taxonomy extends AbstractModel {
    */
   static constructTree( terms ) {
     const tree = [];
-    terms.filter( term => term.parent !== null ).forEach( ( term ) => {
-      const found = terms.find( val => val._id === `${term.parent}` );
+    terms.filter( term => !term.primary ).forEach( ( term ) => {
+      const found = terms.find( val => term.parents.includes( val._id ) );
       if ( found ) found.children.push( term );
     } );
     terms.forEach( ( term ) => {
-      if ( term.parent === null ) tree.push( term );
+      if ( term.primary ) tree.push( term );
     } );
     return tree;
   }

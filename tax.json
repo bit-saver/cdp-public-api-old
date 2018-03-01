@@ -1,14 +1,14 @@
 {"index":{"_index":"taxonomy","_type": "term", "_id":0}}
-{"en": {"name": "Technology"}, "parent": null}
+{"primary": true, "parents": [], "synonymMapping": [], "language": {"en": "Technology"}}
 {"index":{"_index":"taxonomy","_type": "term", "_id":1}}
-{"en": {"name": "Development"}, "parent": "0"}
+{"primary": false, "parents": ["0"], "synonymMapping": [], "language": {"en": "Development"}}
 {"index":{"_index":"taxonomy","_type": "term", "_id":2}}
-{"en": {"name": "Consumer"}, "parent": "0"}
+{"primary": false, "parents": ["0"], "synonymMapping": [], "language": {"en": "Consumer"}}
 {"index":{"_index":"taxonomy","_type": "term", "_id":3}}
-{"en": {"name": "Electronics"}, "parent": "2"}
+{"primary": false, "parents": ["2"], "synonymMapping": [], "language": {"en": "Electronics"}}
 {"index":{"_index":"taxonomy","_type": "term", "_id":4}}
-{"en": {"name": "Politics"}, "parent": null}
+{"primary": true, "parents": [], "synonymMapping": [], "language": {"en": "Politics"}}
 {"index":{"_index":"taxonomy","_type": "term", "_id":5}}
-{"en": {"name": "World"}, "parent": "4"}
+{"primary": false, "parents": ["4"], "synonymMapping": [], "language": {"en": "World"}}
 {"index":{"_index":"taxonomy","_type": "term", "_id":6}}
-{"en": {"name": "America"}, "parent": "4"}
+{"primary": false, "parents": ["4"], "synonymMapping": [], "language": {"en": "America"}}
