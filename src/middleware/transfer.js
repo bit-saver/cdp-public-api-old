@@ -35,7 +35,7 @@ const deleteAssets = ( assets ) => {
   } );
 };
 
-/**
+/** //Test
  * Uses the Content-Type defined in the header of a response
  * from the provided URL. If the Content-Type found in the header
  * is in the list of allowed content types then true is returned.
