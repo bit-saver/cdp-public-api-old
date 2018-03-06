@@ -46,7 +46,6 @@ const deleteAssets = ( assets ) => {
 const isTypeAllowed = async ( url ) => {
   const allowedTypes = utils.getContentTypes();
   const contentType = await utils.getTypeFromUrl( url );
-  console.log( ` -----  CONTENT TYPE -----${contentType}` );
   if ( !contentType ) return false;
   return allowedTypes.includes( contentType );
 };
