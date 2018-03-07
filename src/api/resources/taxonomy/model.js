@@ -12,16 +12,19 @@ class Taxonomy extends AbstractModel {
    * @param terms
    * @returns {Array}
    */
-  static constructTree( terms ) {
+  static constructTree( terms, root = null ) {
     const tree = [];
+    let ret = tree;
     terms.filter( term => !term.primary ).forEach( ( term ) => {
       const found = terms.find( val => term.parents.includes( val._id ) );
       if ( found ) found.children.push( term );
     } );
     terms.forEach( ( term ) => {
-      if ( term.primary ) tree.push( term );
+      if ( root ) {
+        if ( root === term._id ) ret = term;
+      } else if ( term.primary ) tree.push( term );
     } );
-    return tree;
+    return ret;
   }
 }
 

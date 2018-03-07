@@ -35,34 +35,6 @@ class AbstractModel {
     this.body = json;
   }
 
-  /**
-   * Populate the request with a document retreived from ElasticSearch
-   * (if any) based on UUID in the request param. Do not fail if not found
-   * as it can be handled by controllers.
-   *
-   * @param req
-   * @returns {Promise<null>}
-   */
-  async prepareDocument( req ) {
-    if ( req.params.uuid ) {
-      const args = req.params.uuid.split( '_' );
-      if ( args.length === 2 ) {
-        const site = args[0];
-        const postID = args[1];
-        const esDoc = await this.findDocumentByQuery( {
-          site,
-          post_id: postID
-        } ).then( parser.parseUniqueDocExists() );
-        if ( esDoc ) {
-          this.esAssets = this.getAssets( esDoc );
-          this.body = req.body;
-          req.esDoc = esDoc;
-        }
-      }
-    }
-    return null;
-  }
-
   async prepareDocumentForUpdate( req ) {
     if ( req.esDoc ) {
       this.esAssets = this.getAssets( req.esDoc );
@@ -154,11 +126,13 @@ class AbstractModel {
   }
 
   async findDocumentById( id ) {
+    console.log( 'finding doc by id', id );
     const result = await client.get( {
       index: this.index,
       type: this.type,
       id
     } );
+    console.log( 'result', result );
     return result;
   }
 

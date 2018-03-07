@@ -9,16 +9,21 @@ export default {
     return result =>
       new Promise( ( resolve, reject ) => {
         if ( result.hits ) {
+          console.info( 'has hits' );
           const { total } = result.hits;
           if ( !total ) {
             return resolve( null );
           }
           if ( total === 1 ) {
+            console.info( ' got hit' );
             const hit = result.hits.hits[0];
-            return resolve( { id: hit._id, ...hit._source } );
+            return resolve( { _id: hit._id, ...hit._source } );
           }
           reject( new Error( 'Multiple results exist.' ) );
-        } else resolve( null );
+        } else {
+          console.warn( ' no hits ' );
+          resolve( null );
+        }
       } );
   },
 
@@ -26,7 +31,7 @@ export default {
     return result =>
       new Promise( ( resolve, reject ) => {
         if ( result.hits && result.hits.total > 0 ) {
-          const hits = result.hits.hits.map( hit => ( { id: hit._id, ...hit._source } ) );
+          const hits = result.hits.hits.map( hit => ( { _id: hit._id, ...hit._source } ) );
           return resolve( hits );
         }
         reject( new Error( 'Not found.' ) );
@@ -37,21 +42,21 @@ export default {
     return result =>
       new Promise( ( resolve, reject ) => {
         if ( result.found ) {
-          return resolve( { id: result._id, ...result._source } );
+          return resolve( { _id: result._id, ...result._source } );
         }
         reject( id );
       } );
   },
 
   parseCreateResult( doc ) {
-    return result => ( { id: result._id, ...doc } );
+    return result => ( { _id: result._id, ...doc } );
   },
 
   parseUpdateResult( id, doc ) {
     return result =>
       new Promise( ( resolve, reject ) => {
         if ( result._id || result.id ) {
-          return resolve( { id: result._id || result.id, ...doc } );
+          return resolve( { _id: result._id || result.id, ...doc } );
         }
         reject( id );
       } );
