@@ -3,6 +3,11 @@ import VideoModel from './model';
 
 const model = new VideoModel();
 
+// eslint-disable-next-line no-unused-vars
+const con = ( obj ) => {
+  console.log( JSON.stringify( obj, null, 2 ) );
+};
+
 describe.only( 'Models', () => {
   describe( 'video', () => {
     describe( 'validateSchema(json)', () => {
@@ -10,16 +15,16 @@ describe.only( 'Models', () => {
         const json = {
           post_id: 1
         };
-        model.setBody( json );
-        expect( model.validateSchema ).to.throw();
+        const result = VideoModel.validateSchema( json );
+        expect( result.valid ).to.be.false;
       } );
 
       it( 'should throw error if missing post_id', () => {
         const json = {
           site: 'america.gov'
         };
-        model.setBody( json );
-        expect( model.validateSchema ).to.throw();
+        const result = VideoModel.validateSchema( json );
+        expect( result.valid ).to.be.false;
       } );
 
       it( 'should remove unspecified properties and keep specified', () => {
@@ -50,8 +55,9 @@ describe.only( 'Models', () => {
           duration: 60,
           unit: []
         };
-        model.setBody( json );
-        expect( model.validateSchema() ).to.deep.equals( check );
+        const result = VideoModel.validateSchema( json );
+        expect( result.valid ).to.be.true;
+        expect( json ).to.deep.equals( check );
       } );
 
       it( 'should convert properties to arrays if not and expected as such', () => {
@@ -68,8 +74,9 @@ describe.only( 'Models', () => {
           type: 'video',
           unit: []
         };
-        model.setBody( json );
-        expect( model.validateSchema() ).to.deep.equals( check );
+        const result = VideoModel.validateSchema( json );
+        expect( result.valid ).to.be.true;
+        expect( json ).to.deep.equals( check );
       } );
 
       it( 'should keep everything in the categories and tags arrays', () => {
@@ -82,13 +89,15 @@ describe.only( 'Models', () => {
               categories: [
                 'cat', 'cat2', 'cat3'
               ],
-              tags: ['tag1', 'tag2']
+              tags: ['tag1', 'tag2'],
+              source: []
             },
             {
               categories: [
                 'cat', 'cat1', 'cat3', 'cat4'
               ],
-              tags: ['tag1', 'tag2']
+              tags: ['tag1', 'tag2'],
+              source: []
             }
           ]
         };
@@ -101,19 +110,59 @@ describe.only( 'Models', () => {
               categories: [
                 'cat', 'cat2', 'cat3'
               ],
-              tags: ['tag1', 'tag2']
+              tags: ['tag1', 'tag2'],
+              source: []
             },
             {
               categories: [
                 'cat', 'cat1', 'cat3', 'cat4'
               ],
-              tags: ['tag1', 'tag2']
+              tags: ['tag1', 'tag2'],
+              source: []
             }
           ]
         };
-        model.setBody( json );
-        const validated = model.validateSchema();
-        expect( validated ).to.deep.equals( check );
+        con( json );
+        const result = VideoModel.validateSchema( json );
+        con( json );
+        expect( result.valid ).to.be.true;
+        expect( json ).to.deep.equals( check );
+      } );
+
+      it( 'should add source to units if missing', () => {
+        const json = {
+          site: 'america.gov',
+          post_id: 1,
+          type: 'video',
+          unit: [
+            {
+              title: 'English Title 1'
+            },
+            {
+              title: 'English Title 2'
+            }
+          ]
+        };
+        const check = {
+          site: 'america.gov',
+          post_id: 1,
+          type: 'video',
+          unit: [
+            {
+              title: 'English Title 1',
+              source: []
+            },
+            {
+              title: 'English Title 2',
+              source: []
+            }
+          ]
+        };
+        con( json );
+        const result = VideoModel.validateSchema( json );
+        con( json );
+        expect( result.valid ).to.be.true;
+        expect( json ).to.deep.equals( check );
       } );
 
       it( 'should iterate over and validate each item in the unit array', () => {
@@ -241,9 +290,9 @@ describe.only( 'Models', () => {
             }
           ]
         };
-        model.setBody( json );
-        const validated = model.validateSchema();
-        expect( validated ).to.deep.equals( check );
+        const result = VideoModel.validateSchema( json );
+        expect( result.valid ).to.be.true;
+        expect( json ).to.deep.equals( check );
       } );
 
       it( 'should iterate over and validate each item in the source array of unit objects', () => {
@@ -401,10 +450,9 @@ describe.only( 'Models', () => {
             }
           ]
         };
-        model.setBody( json );
-        const validated = model.validateSchema();
-        // console.log( JSON.stringify( validated, null, 2 ), JSON.stringify( check, null, 2 ) );
-        expect( validated ).to.deep.equals( check );
+        const result = VideoModel.validateSchema( json );
+        expect( result.valid ).to.be.true;
+        expect( json ).to.deep.equals( check );
       } );
     } );
   } );
