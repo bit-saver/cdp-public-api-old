@@ -10,6 +10,7 @@ class Taxonomy extends AbstractModel {
    * and an array of child terms (children).
    *
    * @param terms
+   * @param root
    * @returns {Array}
    */
   static constructTree( terms, root = null ) {
@@ -25,6 +26,24 @@ class Taxonomy extends AbstractModel {
       } else if ( term.primary ) tree.push( term );
     } );
     return ret;
+  }
+
+  async findTermByName( name ) {
+    const result = await this.client
+      .search( {
+        index: this.index,
+        type: this.type,
+        body: {
+          query: {
+            query_string: {
+              default_field: 'language.*',
+              query: name
+            }
+          }
+        }
+      } )
+      .catch( err => err );
+    return result;
   }
 }
 

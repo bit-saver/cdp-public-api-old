@@ -10,6 +10,10 @@ const controllers = {
 
   async getDocumentById( model, id ) {
     return model.findDocumentById( id ).then( parser.parseGetResult( id ) );
+  },
+
+  async findTermByName( model, name ) {
+    return model.findTermByName( name ).then( parser.parseUniqueDocExists() );
   }
 };
 
@@ -42,10 +46,17 @@ const getDocumentById = model => async ( req, res, next ) => {
     .catch( err => next( err ) );
 };
 
+const findTermByName = model => async ( req, res, next ) =>
+  controllers
+    .findTermByName( model, req.params.name )
+    .then( term => res.json( term ) )
+    .catch( err => next( err ) );
+
 const generateControllers = ( model, overrides = {} ) => {
   const defaults = {
     getAllDocuments: getAllDocuments( model ),
-    getDocumentById: getDocumentById( model )
+    getDocumentById: getDocumentById( model ),
+    findTermByName: findTermByName( model )
   };
 
   return { ...defaults, ...overrides };

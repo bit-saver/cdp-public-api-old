@@ -9,6 +9,7 @@ class AbstractModel {
   constructor( index, type ) {
     this.index = index;
     this.type = type;
+    this.client = client;
   }
 
   // TODO: add correct signature, i.e. json param
@@ -92,7 +93,7 @@ class AbstractModel {
   }
 
   async indexDocument( body ) {
-    const result = await client.index( {
+    const result = await this.client.index( {
       index: this.index,
       type: this.type,
       body
@@ -101,7 +102,7 @@ class AbstractModel {
   }
 
   async updateDocument( id, doc ) {
-    const result = await client.update( {
+    const result = await this.client.update( {
       index: this.index,
       type: this.type,
       id,
@@ -117,7 +118,7 @@ class AbstractModel {
     // Whatever document they tried to delete doesn't exist
     // and therefore is technically already 'deleted'
     if ( !id ) return {};
-    const result = await client.delete( {
+    const result = await this.client.delete( {
       index: this.index,
       type: this.type,
       id
@@ -127,7 +128,7 @@ class AbstractModel {
 
   async findDocumentById( id ) {
     console.log( 'finding doc by id', id );
-    const result = await client.get( {
+    const result = await this.client.get( {
       index: this.index,
       type: this.type,
       id
