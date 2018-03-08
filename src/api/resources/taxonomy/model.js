@@ -15,6 +15,7 @@ class Taxonomy extends AbstractModel {
   static constructTree( terms, root = null ) {
     const tree = [];
     let ret = tree;
+    if ( !terms || terms.length < 1 ) return ret;
     terms.filter( term => !term.primary ).forEach( ( term ) => {
       const found = terms.find( val => term.parents.includes( val._id ) );
       if ( found ) found.children.push( term );
