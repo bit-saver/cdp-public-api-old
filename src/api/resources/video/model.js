@@ -191,6 +191,10 @@ class Video extends AbstractModel {
   putUnit( unit ) {
     this.body.unit[unit.index].categories = unit.categories;
   }
+
+  deleteRootCategories() {
+    delete this.body.categories;
+  }
 }
 
 export default Video;

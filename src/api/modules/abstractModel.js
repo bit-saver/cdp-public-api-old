@@ -41,6 +41,15 @@ class AbstractModel {
   }
 
   /**
+   * Deletes the categories property off of the requested body if needed.
+   * Applicable only when category IDs have been translated into id,name objects and placed
+   * on the unit level.
+   */
+  // need to disable eslint rule for this method
+  // eslint-disable-next-line class-methods-use-this
+  deleteRootCategories() {}
+
+  /**
    * Set instance body parameter with argument json.
    * Mainly needed for testing.
    *

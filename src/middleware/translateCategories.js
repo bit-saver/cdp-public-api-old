@@ -6,8 +6,8 @@ const translateCategories = Model => async ( req, res, next ) => {
   const taxonomy = new TaxonomyModel();
 
   const translateCategory = async ( unit, id ) => {
-    const translated = await taxonomy.translateTermById( id, unit.locale );
-    return { id, translated };
+    const name = await taxonomy.translateTermById( id, unit.locale );
+    return { id, name };
   };
 
   const translateUnit = unit =>
@@ -18,7 +18,7 @@ const translateCategories = Model => async ( req, res, next ) => {
       } );
       Promise.all( catPromises ).then( ( results ) => {
         results.forEach( ( result ) => {
-          if ( result.translated ) unit.categories.push( result );
+          if ( result.name ) unit.categories.push( result );
         } );
         model.putUnit( unit );
         resolve();
@@ -32,7 +32,7 @@ const translateCategories = Model => async ( req, res, next ) => {
   } );
   Promise.all( promises )
     .then( () => {
-      delete req.body.categories;
+      model.deleteRootCategories();
       next();
     } )
     .catch( ( err ) => {
