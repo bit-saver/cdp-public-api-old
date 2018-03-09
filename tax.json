@@ -1,14 +1,16 @@
 {"index":{"_index":"taxonomy","_type": "term", "_id":0}}
-{"primary": true, "parents": [], "synonymMapping": [], "language": {"en": "Technology"}}
+{"primary": true, "parents": [], "synonymMapping": [], "language": {"en": "Technology", "es": "Technologica"}}
 {"index":{"_index":"taxonomy","_type": "term", "_id":1}}
-{"primary": false, "parents": ["0"], "synonymMapping": [], "language": {"en": "Development"}}
+{"primary": false, "parents": ["0", "7"], "synonymMapping": [], "language": {"en": "Development", "es": "Developmente"}}
 {"index":{"_index":"taxonomy","_type": "term", "_id":2}}
-{"primary": false, "parents": ["0"], "synonymMapping": [], "language": {"en": "Consumer"}}
+{"primary": false, "parents": ["0"], "synonymMapping": [], "language": {"en": "Consumer", "es": "Consumera"}}
 {"index":{"_index":"taxonomy","_type": "term", "_id":3}}
-{"primary": false, "parents": ["2"], "synonymMapping": [], "language": {"en": "Electronics"}}
+{"primary": false, "parents": ["2"], "synonymMapping": [], "language": {"en": "Electronics", "es": "Electronica"}}
 {"index":{"_index":"taxonomy","_type": "term", "_id":4}}
-{"primary": true, "parents": [], "synonymMapping": [], "language": {"en": "Politics"}}
+{"primary": true, "parents": [], "synonymMapping": [], "language": {"en": "Politics", "es": "Politica"}}
 {"index":{"_index":"taxonomy","_type": "term", "_id":5}}
-{"primary": false, "parents": ["4"], "synonymMapping": [], "language": {"en": "World"}}
+{"primary": false, "parents": ["4"], "synonymMapping": [], "language": {"en": "World", "es": "Globe"}}
 {"index":{"_index":"taxonomy","_type": "term", "_id":6}}
-{"primary": false, "parents": ["4"], "synonymMapping": [], "language": {"en": "America"}}
+{"primary": false, "parents": ["4"], "synonymMapping": [], "language": {"en": "America", "es": "America"}}
+{"index":{"_index":"taxonomy","_type": "term", "_id":7}}
+{"primary": true, "parents": [], "synonymMapping": [], "language": {"en": "Economy", "es": "Economico"}}

@@ -26,6 +26,20 @@ class AbstractModel {
     throw new Error( 'Method not implemented: putAsset' );
   }
 
+  // TODO: add correct signature, i.e. asset param
+  // need to disable eslint rule for this method
+  // eslint-disable-next-line class-methods-use-this
+  getUnits() {
+    throw new Error( 'Method not implemented: getUnits' );
+  }
+
+  // TODO: add correct signature, i.e. asset param
+  // need to disable eslint rule for this method
+  // eslint-disable-next-line class-methods-use-this
+  putUnit() {
+    throw new Error( 'Method not implemented: putUnit' );
+  }
+
   /**
    * Set instance body parameter with argument json.
    * Mainly needed for testing.
@@ -48,9 +62,18 @@ class AbstractModel {
     }
 
     this.reqAssets = this.getAssets( req.body );
+
     this.body = req.body;
 
     return this.reqAssets;
+  }
+
+  async prepareCategoriesForUpdate( req ) {
+    this.reqUnits = this.getUnits( req.body );
+
+    this.body = req.body;
+
+    return this.reqUnits;
   }
 
   async prepareDocumentForDelete( req ) {
@@ -93,6 +116,7 @@ class AbstractModel {
   }
 
   async indexDocument( body ) {
+    console.log( 'indexing...', JSON.stringify( body, null, 2 ) );
     const result = await this.client.index( {
       index: this.index,
       type: this.type,
@@ -102,6 +126,7 @@ class AbstractModel {
   }
 
   async updateDocument( id, doc ) {
+    console.log( 'updating...', JSON.stringify( doc, null, 2 ) );
     const result = await this.client.update( {
       index: this.index,
       type: this.type,
@@ -127,13 +152,11 @@ class AbstractModel {
   }
 
   async findDocumentById( id ) {
-    console.log( 'finding doc by id', id );
     const result = await this.client.get( {
       index: this.index,
       type: this.type,
       id
     } );
-    console.log( 'result', result );
     return result;
   }
 

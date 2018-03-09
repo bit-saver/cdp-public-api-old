@@ -1,4 +1,5 @@
 import AbstractModel from '../../modules/abstractModel';
+import parser from '../../modules/elastic/parser';
 
 class Taxonomy extends AbstractModel {
   constructor( index = 'taxonomy', type = 'term' ) {
@@ -44,6 +45,12 @@ class Taxonomy extends AbstractModel {
       } )
       .catch( err => err );
     return result;
+  }
+
+  async translateTermById( id, locale = 'en' ) {
+    const result = await this.findDocumentById( id ).then( parser.parseGetResult( id ) );
+    if ( result.language[locale] ) return result.language[locale];
+    return result.language.en;
   }
 }
 

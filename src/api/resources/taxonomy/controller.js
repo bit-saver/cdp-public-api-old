@@ -14,6 +14,10 @@ const controllers = {
 
   async findTermByName( model, name ) {
     return model.findTermByName( name ).then( parser.parseUniqueDocExists() );
+  },
+
+  async translateTermById( model, id, locale ) {
+    return model.translateTermById( id, locale );
   }
 };
 
@@ -52,11 +56,20 @@ const findTermByName = model => async ( req, res, next ) =>
     .then( term => res.json( term ) )
     .catch( err => next( err ) );
 
+const translateTermById = model => async ( req, res, next ) =>
+  controllers
+    .translateTermById( model, req.params.id, req.params.locale )
+    .then( ( name ) => {
+      res.json( name );
+    } )
+    .catch( err => next( err ) );
+
 const generateControllers = ( model, overrides = {} ) => {
   const defaults = {
     getAllDocuments: getAllDocuments( model ),
     getDocumentById: getDocumentById( model ),
-    findTermByName: findTermByName( model )
+    findTermByName: findTermByName( model ),
+    translateTermById: translateTermById( model )
   };
 
   return { ...defaults, ...overrides };
