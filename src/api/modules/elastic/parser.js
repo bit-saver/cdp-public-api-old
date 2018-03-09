@@ -73,7 +73,7 @@ export default {
     return new Promise( ( resolve ) => {
       if ( result.hits && result.hits.total > 0 ) {
         const terms = result.hits.hits.reduce( ( acc, val ) => {
-          acc.push( { _id: val._id, ...val._source, children: [] } );
+          acc.push( { _id: val._id, ...val._source } );
           return acc;
         }, [] );
         resolve( terms );

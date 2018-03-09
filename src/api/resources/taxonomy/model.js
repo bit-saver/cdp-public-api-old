@@ -17,14 +17,18 @@ class Taxonomy extends AbstractModel {
   static constructTree( terms, root = null ) {
     const tree = [];
     let ret = tree;
-    terms.filter( term => !term.primary ).forEach( ( term ) => {
-      const found = terms.find( val => term.parents.includes( val._id ) );
-      if ( found ) found.children.push( term );
-    } );
     terms.forEach( ( term ) => {
+      // eslint doesn't allow us to add the children property directly
+      // so we have to use a temp variable
+      const temp = term;
+      temp.children = [];
       if ( root ) {
         if ( root === term._id ) ret = term;
       } else if ( term.primary ) tree.push( term );
+    } );
+    terms.filter( term => !term.primary ).forEach( ( term ) => {
+      const found = terms.find( val => term.parents.includes( val._id ) );
+      if ( found ) found.children.push( term );
     } );
     return ret;
   }
