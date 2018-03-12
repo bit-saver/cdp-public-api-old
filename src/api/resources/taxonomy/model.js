@@ -17,6 +17,7 @@ class Taxonomy extends AbstractModel {
   static constructTree( terms, root = null ) {
     const tree = [];
     let ret = tree;
+
     terms.forEach( ( term ) => {
       // eslint doesn't allow us to add the children property directly
       // so we have to use a temp variable
