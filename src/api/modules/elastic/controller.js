@@ -54,7 +54,7 @@ export default {
   },
 
   getDocumentById( model, id ) {
-    return model.findDocumentById( id ).then( parser.parseGetResult() );
+    return model.findDocumentById( id ).then( parser.parseGetResult( id ) );
   },
 
   // Note, not using body id prop, if client has access to id prop use /:id route
@@ -64,5 +64,17 @@ export default {
       return doc;
     }
     throw new Error( 'Body must have both site and post_id props' );
+  },
+
+  async getAllDocuments( model ) {
+    return model.getAllDocuments().then( parser.parseAllResult );
+  },
+
+  async findTermByName( model, name ) {
+    return model.findTermByName( name ).then( parser.parseUniqueDocExists() );
+  },
+
+  async translateTermById( model, id, locale ) {
+    return model.translateTermById( id, locale );
   }
 };

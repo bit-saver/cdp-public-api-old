@@ -49,6 +49,10 @@ class AbstractModel {
   // eslint-disable-next-line class-methods-use-this
   deleteRootCategories() {}
 
+  static constructTree() {
+    throw new Error( 'Method not implemented: constructTree' );
+  }
+
   /**
    * Set instance body parameter with argument json.
    * Mainly needed for testing.

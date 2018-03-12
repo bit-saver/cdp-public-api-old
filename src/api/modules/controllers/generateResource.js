@@ -3,8 +3,8 @@
   requests against the database (currently ElasticSearch).
  */
 
-import controllers from './elastic/controller';
-import * as utils from './utils';
+import controllers from '../elastic/controller';
+import * as utils from '../utils/index';
 
 // POST v1/[resource]
 export const indexDocument = model => ( req, res, next ) => {
