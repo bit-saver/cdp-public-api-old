@@ -9,6 +9,7 @@ class AbstractModel {
   constructor( index, type ) {
     this.index = index;
     this.type = type;
+    this.client = client;
   }
 
   // TODO: add correct signature, i.e. json param
@@ -24,6 +25,29 @@ class AbstractModel {
   putAsset() {
     throw new Error( 'Method not implemented: putAsset' );
   }
+
+  // TODO: add correct signature, i.e. asset param
+  // need to disable eslint rule for this method
+  // eslint-disable-next-line class-methods-use-this
+  getUnits() {
+    throw new Error( 'Method not implemented: getUnits' );
+  }
+
+  // TODO: add correct signature, i.e. asset param
+  // need to disable eslint rule for this method
+  // eslint-disable-next-line class-methods-use-this
+  putUnit() {
+    throw new Error( 'Method not implemented: putUnit' );
+  }
+
+  /**
+   * Deletes the categories property off of the requested body if needed.
+   * Applicable only when category IDs have been translated into id,name objects and placed
+   * on the unit level.
+   */
+  // need to disable eslint rule for this method
+  // eslint-disable-next-line class-methods-use-this
+  deleteRootCategories() {}
 
   /**
    * Set instance body parameter with argument json.
@@ -47,9 +71,18 @@ class AbstractModel {
     }
 
     this.reqAssets = this.getAssets( req.body );
+
     this.body = req.body;
 
     return this.reqAssets;
+  }
+
+  async prepareCategoriesForUpdate( req ) {
+    this.reqUnits = this.getUnits( req.body );
+
+    this.body = req.body;
+
+    return this.reqUnits;
   }
 
   async prepareDocumentForDelete( req ) {
@@ -92,7 +125,8 @@ class AbstractModel {
   }
 
   async indexDocument( body ) {
-    const result = await client.index( {
+    console.log( 'indexing...', JSON.stringify( body, null, 2 ) );
+    const result = await this.client.index( {
       index: this.index,
       type: this.type,
       body
@@ -101,7 +135,8 @@ class AbstractModel {
   }
 
   async updateDocument( id, doc ) {
-    const result = await client.update( {
+    console.log( 'updating...', JSON.stringify( doc, null, 2 ) );
+    const result = await this.client.update( {
       index: this.index,
       type: this.type,
       id,
@@ -117,7 +152,7 @@ class AbstractModel {
     // Whatever document they tried to delete doesn't exist
     // and therefore is technically already 'deleted'
     if ( !id ) return {};
-    const result = await client.delete( {
+    const result = await this.client.delete( {
       index: this.index,
       type: this.type,
       id
@@ -126,13 +161,11 @@ class AbstractModel {
   }
 
   async findDocumentById( id ) {
-    console.log( 'finding doc by id', id );
-    const result = await client.get( {
+    const result = await this.client.get( {
       index: this.index,
       type: this.type,
       id
     } );
-    console.log( 'result', result );
     return result;
   }
 

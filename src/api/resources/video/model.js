@@ -169,6 +169,32 @@ class Video extends AbstractModel {
       this.body.unit[asset.unitIndex][asset.assetType].md5 = asset.md5;
     }
   }
+
+  /**
+   * Returns an array of language units retrieved by iterating over the JSON
+   *
+   * @returns {Array}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  getUnits( json ) {
+    const units = [];
+    json.unit.forEach( ( unit, index ) => {
+      units.push( {
+        index,
+        locale: unit.language.locale,
+        categories: []
+      } );
+    } );
+    return units;
+  }
+
+  putUnit( unit ) {
+    this.body.unit[unit.index].categories = unit.categories;
+  }
+
+  deleteRootCategories() {
+    delete this.body.categories;
+  }
 }
 
 export default Video;

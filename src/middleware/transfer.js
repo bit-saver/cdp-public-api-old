@@ -118,8 +118,6 @@ export const transferCtrl = Model => async ( req, res, next ) => {
       const s3FilesToDelete = model.getFilesToRemove();
       if ( s3FilesToDelete.length ) deleteAssets( s3FilesToDelete );
       else console.log( 'no s3 files to delete' );
-      console.log( 'transfer results', results );
-      console.log( 'req.body', JSON.stringify( req.body, undefined, 2 ) );
       next();
     } )
     .catch( ( err ) => {
