@@ -1,6 +1,7 @@
 # configuration
 .env
 .vscode
+.DS_Store
 
 # build folder
 build
