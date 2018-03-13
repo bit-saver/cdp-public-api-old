@@ -6,7 +6,7 @@ export const getAllDocuments = model => async ( req, res, next ) =>
     .getAllDocuments( model )
     .then( ( docs ) => {
       let ret = docs;
-      if ( 'tree' in req.query ) ret = TaxonomyModel.constructTree( docs );
+      if ( 'tree' in req.query ) ret = model.constructTree( docs );
       if ( !utils.callback( req, ret ) ) res.status( 201 ).json( ret );
     } )
     .catch( err => next( err ) );
