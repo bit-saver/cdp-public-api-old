@@ -1,4 +1,4 @@
-import { generateControllers } from '../../modules/generateControllers';
+import { generateControllers } from '../../modules/controllers/generateResource';
 import PostModel from './model';
 
 export default generateControllers( new PostModel() );

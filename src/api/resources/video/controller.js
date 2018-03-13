@@ -1,4 +1,4 @@
-import { generateControllers } from '../../modules/generateControllers';
+import { generateControllers } from '../../modules/controllers/generateResource';
 import VideoModel from './model';
 
 export default generateControllers( new VideoModel() );
