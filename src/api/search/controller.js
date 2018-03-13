@@ -17,7 +17,7 @@ export const search = async ( req, res ) => {
       _sourceExclude: req.body.exclude,
       _sourceInclude: req.body.include,
       type: req.body.type,
-      index: req.body.index || '*.gov',
+      index: req.body.index,
       sort: req.body.sort
     },
     data
