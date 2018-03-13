@@ -14,7 +14,8 @@ class Taxonomy extends AbstractModel {
    * @param root
    * @returns {Array}
    */
-  static constructTree( terms, root = null ) {
+  // eslint-disable-next-line class-methods-use-this
+  constructTree( terms, root = null ) {
     const tree = [];
     let ret = tree;
 
