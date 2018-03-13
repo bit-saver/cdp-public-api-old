@@ -153,16 +153,17 @@ class Video extends AbstractModel {
   }
 
   /**
-   * Updates an asset's downloadUrl and md5 based on the unitIndex and srcIndex
+   * Updates an asset's downloadUrl, streamUrl and md5 based on the unitIndex and srcIndex
    * stored in the asset object. This is okay since under all circumstances
    * the asset would have been iterated over using the objects obtained from
    * the getAssets method above.
    *
-   * @param asset { downloadUrl, md5, unitIndex, srcIndex, assetType }
+   * @param asset { downloadUrl, streamUrl, md5, unitIndex, srcIndex, assetType }
    */
   putAsset( asset ) {
     if ( asset.assetType === 'source' ) {
       this.body.unit[asset.unitIndex].source[asset.srcIndex].downloadUrl = asset.downloadUrl;
+      this.body.unit[asset.unitIndex].source[asset.srcIndex].streamUrl = asset.streamUrl;
       this.body.unit[asset.unitIndex].source[asset.srcIndex].md5 = asset.md5;
     } else {
       this.body.unit[asset.unitIndex][asset.assetType].srcUrl = asset.downloadUrl;

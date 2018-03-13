@@ -27,14 +27,13 @@ const checkExists = ( bucket = process.env.AWS_S3_BUCKET, key ) =>
   } );
 
 /**
- * Upload a file (referenced as a tmp object aka temporary file) to Amazon S3.
+ * Upload a file to Amazon S3.
  * If replace is false: checks for existing files first using title+ext and
- * increments the filename until finding a configuration
- * that does not exist.
+ * increments the filename until finding a configuration that does not exist.
  *
  * @param title
  * @param ext
- * @param tmpObj
+ * @param tempFile
  * @param bucket
  * @param replace
  * @returns {Promise<any>}
@@ -42,7 +41,7 @@ const checkExists = ( bucket = process.env.AWS_S3_BUCKET, key ) =>
 const upload = ( {
   title,
   ext,
-  tmpObj: tmpObj = null,
+  filePath = null,
   bucket = process.env.AWS_S3_BUCKET,
   replace = true
 } ) =>
@@ -62,7 +61,7 @@ const upload = ( {
       }
     }
 
-    const body = fs.createReadStream( tmpObj.name );
+    const body = fs.createReadStream( filePath );
 
     const params = {
       Bucket: bucket,
@@ -80,13 +79,9 @@ const upload = ( {
       } )
       .promise()
       .then( ( data ) => {
-        tmpObj.removeCallback();
         resolve( { filename: key, ...data } );
       } )
-      .catch( ( err ) => {
-        tmpObj.removeCallback();
-        return reject( err );
-      } );
+      .catch( err => reject( err ) );
   } );
 
 /**

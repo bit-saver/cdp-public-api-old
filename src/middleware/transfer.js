@@ -1,4 +1,5 @@
 import aws from '../services/amazon-aws';
+import cloudflare from '../services/cloudflare';
 import Download from '../api/modules/download';
 import * as utils from '../api/modules/utils';
 
@@ -13,9 +14,14 @@ const uploadAsset = async ( reqBody, download ) => {
   const result = await aws.upload( {
     title: `${reqBody.site}/${reqBody.type}/${reqBody.post_id}/${download.props.md5}`,
     ext: download.props.ext,
-    tmpObj: download.tmpObj
+    filePath: download.filePath
   } );
 
+  return result;
+};
+
+const uploadStream = async ( download ) => {
+  const result = await cloudflare.upload( download.filePath );
   return result;
 };
 
@@ -24,7 +30,8 @@ const updateAsset = ( model, asset, result, md5 ) => {
   // replacing the downloadUrl and adding a checksum
   model.putAsset( {
     ...asset,
-    downloadUrl: result.Location,
+    downloadUrl: result.Location || '',
+    streamUrl: result.streamUrl || '',
     md5
   } );
 };
@@ -44,9 +51,9 @@ const deleteAssets = ( assets ) => {
  * @returns {Promise<boolean>}
  */
 const isTypeAllowed = async ( url ) => {
-  const allowedTypes = utils.getContentTypes();
   const contentType = await utils.getTypeFromUrl( url );
   if ( !contentType ) return false;
+  const allowedTypes = utils.getContentTypes();
   return allowedTypes.includes( contentType );
 };
 
@@ -76,12 +83,23 @@ const transferAsset = async ( model, asset ) => {
         resolve( { message: 'Update not required.' } );
       } else {
         console.log( 'need to update' );
-        uploadAsset( model.body, download )
-          .then( ( result ) => {
+        const uploads = [];
+        uploads.push( uploadAsset( model.body, download ) );
+        if ( download.props.contentType.startsWith( 'video' ) ) uploads.push( uploadStream( download ) );
+
+        Promise.all( uploads )
+          .then( ( results ) => {
+            let result = {};
+            results.forEach( ( data ) => {
+              result = { ...result, ...data };
+            } );
             updateAsset( model, asset, result, download.props.md5 );
             resolve( result );
           } )
-          .catch( err => reject( err ) );
+          .catch( ( err ) => {
+            console.error( err );
+            return reject( err );
+          } );
       }
     } );
   }
@@ -114,7 +132,7 @@ export const transferCtrl = Model => async ( req, res, next ) => {
 
   // Once all promises resolve, pass request onto ES controller
   Promise.all( transfers )
-    .then( ( results ) => {
+    .then( () => {
       const s3FilesToDelete = model.getFilesToRemove();
       if ( s3FilesToDelete.length ) deleteAssets( s3FilesToDelete );
       else console.log( 'no s3 files to delete' );
