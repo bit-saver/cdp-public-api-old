@@ -31,7 +31,7 @@ const updateAsset = ( model, asset, result, md5 ) => {
   model.putAsset( {
     ...asset,
     downloadUrl: result.Location || '',
-    streamUrl: result.streamUrl || '',
+    stream: result.stream || { url: '', uid: '' },
     md5
   } );
 };

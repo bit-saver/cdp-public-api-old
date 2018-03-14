@@ -65,7 +65,17 @@ class Video extends AbstractModel {
                   properties: {
                     burnedInCaptions: { type: 'string' },
                     downloadUrl: { type: 'string' },
-                    streamUrl: { type: 'string' },
+                    stream: {
+                      type: 'object',
+                      default: {
+                        url: '',
+                        uid: ''
+                      },
+                      properties: {
+                        url: { type: 'string' },
+                        uid: { type: 'string' }
+                      }
+                    },
                     filetype: { type: 'string' },
                     md5: { type: 'string' },
                     size: {
@@ -163,7 +173,7 @@ class Video extends AbstractModel {
   putAsset( asset ) {
     if ( asset.assetType === 'source' ) {
       this.body.unit[asset.unitIndex].source[asset.srcIndex].downloadUrl = asset.downloadUrl;
-      this.body.unit[asset.unitIndex].source[asset.srcIndex].streamUrl = asset.streamUrl;
+      this.body.unit[asset.unitIndex].source[asset.srcIndex].stream = asset.stream;
       this.body.unit[asset.unitIndex].source[asset.srcIndex].md5 = asset.md5;
     } else {
       this.body.unit[asset.unitIndex][asset.assetType].srcUrl = asset.downloadUrl;
