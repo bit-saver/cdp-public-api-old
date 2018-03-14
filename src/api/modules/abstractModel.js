@@ -49,7 +49,9 @@ class AbstractModel {
   // eslint-disable-next-line class-methods-use-this
   deleteRootCategories() {}
 
-  static constructTree() {
+  // need to disable eslint rule for this method
+  // eslint-disable-next-line class-methods-use-this
+  constructTree() {
     throw new Error( 'Method not implemented: constructTree' );
   }
 
