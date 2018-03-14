@@ -9,9 +9,9 @@ const downloadAsset = async ( url ) => {
   return download;
 };
 
-const uploadAsset = async ( site, postId, download ) => {
+const uploadAsset = async ( reqBody, download ) => {
   const result = await aws.upload( {
-    title: `${site}/video/${postId}/${download.props.md5}`,
+    title: `${reqBody.site}/${reqBody.type}/${reqBody.post_id}/${download.props.md5}`,
     ext: download.props.ext,
     tmpObj: download.tmpObj
   } );
@@ -76,7 +76,7 @@ const transferAsset = async ( model, asset ) => {
         resolve( { message: 'Update not required.' } );
       } else {
         console.log( 'need to update' );
-        uploadAsset( model.body.site, model.body.post_id, download )
+        uploadAsset( model.body, download )
           .then( ( result ) => {
             updateAsset( model, asset, result, download.props.md5 );
             resolve( result );
