@@ -75,7 +75,7 @@ const upload = ( {
       .on( 'httpUploadProgress', ( progress ) => {
         // eslint-disable-next-line no-mixed-operators
         const percent = ( progress.loaded / progress.total * 100 ).toFixed( 0 );
-        console.info( `Uploading - ${key}: ${percent}%` );
+        console.info( `Uploading to S3 - ${key}: ${percent}%` );
       } )
       .promise()
       .then( ( data ) => {
