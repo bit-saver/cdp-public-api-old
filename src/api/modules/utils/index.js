@@ -1,5 +1,6 @@
 import Request from 'request';
 import Mime from 'mime-types';
+import fs from 'fs';
 
 export const getQueryFromUuid = ( uuid = '' ) => {
   let obj = {};

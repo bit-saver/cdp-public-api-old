@@ -3,8 +3,8 @@ import Mime from 'mime-types';
 import Path from 'path';
 import Request from 'request';
 import fs from 'fs';
-import tmp from 'tmp';
 import crypto from 'crypto';
+import tempFiles from '../../services/tempfiles';
 
 const md5hash = path =>
   new Promise( ( resolve, reject ) => {
@@ -29,9 +29,7 @@ export default function download( url ) {
     const args = URL.parse( url );
     const props = {};
 
-    tmp.setGracefulCleanup();
-
-    const tmpObj = tmp.fileSync( undefined );
+    const tmpObj = tempFiles.createTempFile();
     Request.get( {
       url,
       gzip: true
@@ -58,12 +56,10 @@ export default function download( url ) {
         }
       } )
       .on( 'end', () => {
-        // Ensure that temporary file gets deleted
-        // setTimeout( tmpObj.removeCallback, 10000 );
         md5hash( tmpObj.name )
           .then( ( result ) => {
             props.md5 = result;
-            resolve( { props, tmpObj } );
+            resolve( { props, filePath: tmpObj.name } );
           } )
           .catch( err => reject( err ) );
       } )
