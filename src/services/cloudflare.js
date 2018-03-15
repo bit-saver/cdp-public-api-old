@@ -46,6 +46,8 @@ const upload = filePath =>
         console.log( `Uploading to Cloudflare [${uid}] - ${percentage}%` );
       },
       onSuccess: () => {
+        // The video has been uploaded and will now be encoded.
+        // We will track the encoding process and resolve once/if it successfully completes.
         const streamUrl = uploadObj.url;
         const ret = { url: '', uid: '' };
         if ( streamUrl ) {
@@ -83,6 +85,7 @@ const upload = filePath =>
                   } else {
                     console.warn( `Unknown Cloudflare track status [${uid}]:`, status );
                   }
+                  // Continue tracking requests every 2 seconds.
                   setTimeout( trackEncoding, 2000 );
                 }
               }
