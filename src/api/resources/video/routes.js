@@ -18,6 +18,7 @@ router
     validate( VideoModel ),
     asyncResponse,
     transferCtrl( VideoModel ),
+    translateCategories( VideoModel ),
     cleanTempFilesCtrl,
     controller.indexDocument
   );
