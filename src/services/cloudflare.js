@@ -16,7 +16,7 @@ import Request from 'request';
  */
 const upload = filePath =>
   new Promise( ( resolve, reject ) => {
-    const maxEncodingTracks = 20; // number of tracking requests before timeout
+    const maxEncodingTracks = 100; // number of tracking requests before timeout
     const file = fs.createReadStream( filePath );
     const sizeStats = fs.statSync( filePath );
     const endpoint = `https://api.cloudflare.com/client/v4/zones/${
