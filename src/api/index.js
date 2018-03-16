@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import apiErrorHandler from './modules/errorHandler';
+import cleanTempFilesCtrl from '../middleware/cleanTempFiles';
 
 import adminRoutes from './admin/routes';
 import searchRoutes from './search/routes';
@@ -27,6 +28,8 @@ router.use( '/taxonomy', taxonomyRoutes );
 
 // test
 router.use( '/test', testRoutes );
+
+router.use( cleanTempFilesCtrl );
 
 // Catch all errors
 router.use( apiErrorHandler );

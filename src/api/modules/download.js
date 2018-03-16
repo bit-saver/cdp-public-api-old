@@ -18,18 +18,20 @@ const md5hash = path =>
 /**
  * Downloads content for the given URL.  Returns an object containing
  * properties inferred from the URL and the response's Content Type.
+ * Must include requestId so that temp files can be tracked.
  *
- * REMEMBER TO DELETE TEMP FILE! (tmpObj.removeCallback())
+ * Remember to add the cleanTempFiles middelware so that temp files are deleted.
  *
  * @param url
+ * @param requestId
  * @returns {Promise<any>}
  */
-export default function download( url ) {
+export default function download( url, requestId ) {
   return new Promise( ( resolve, reject ) => {
     const args = URL.parse( url );
     const props = {};
 
-    const tmpObj = tempFiles.createTempFile();
+    const tmpObj = tempFiles.createTempFile( requestId );
     Request.get( {
       url,
       gzip: true

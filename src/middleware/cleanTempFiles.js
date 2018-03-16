@@ -1,7 +1,7 @@
 import tempFiles from '../services/tempfiles';
 
 const cleanTempFilesCtrl = ( req, res, next ) => {
-  tempFiles.deleteTempFiles();
+  tempFiles.deleteTempFiles( req.requestId );
   next();
 };
 

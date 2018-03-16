@@ -74,7 +74,8 @@ class Video extends AbstractModel {
                       },
                       properties: {
                         url: { type: 'string' },
-                        uid: { type: 'string' }
+                        uid: { type: 'string' },
+                        thumbnail: { type: 'string' }
                       }
                     },
                     filetype: { type: 'string' },

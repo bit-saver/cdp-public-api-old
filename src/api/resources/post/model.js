@@ -1,6 +1,5 @@
 import AbstractModel from '../../modules/abstractModel';
 import Ajv from 'ajv';
-import languageSchema from '../../modules/schema/language';
 
 /**
  * Video Content Model helps in managing assets within JSON.
@@ -53,7 +52,7 @@ class Post extends AbstractModel {
    * @param asset
    */
   // eslint-disable-next-line class-methods-use-this
-  putAsset( asset ) {}
+  putAsset() {}
 }
 
 export default Post;

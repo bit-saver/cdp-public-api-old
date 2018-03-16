@@ -10,6 +10,7 @@ class AbstractModel {
     this.index = index;
     this.type = type;
     this.client = client;
+    this.requestId = -1;
   }
 
   // TODO: add correct signature, i.e. json param
@@ -65,6 +66,15 @@ class AbstractModel {
     this.body = json;
   }
 
+  /**
+   * Returns the request ID set from the original request by one of the prepare methods.
+   *
+   * @returns string
+   */
+  getRequestId() {
+    return this.requestId;
+  }
+
   async prepareDocumentForUpdate( req ) {
     if ( req.esDoc ) {
       this.esAssets = this.getAssets( req.esDoc );
@@ -79,6 +89,7 @@ class AbstractModel {
     this.reqAssets = this.getAssets( req.body );
 
     this.body = req.body;
+    this.requestId = req.requestId;
 
     return this.reqAssets;
   }
@@ -87,6 +98,7 @@ class AbstractModel {
     this.reqUnits = this.getUnits( req.body );
 
     this.body = req.body;
+    this.requestId = req.requestId;
 
     return this.reqUnits;
   }
