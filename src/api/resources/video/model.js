@@ -135,7 +135,9 @@ class Video extends AbstractModel {
       unit.source.forEach( ( src, srcIndex ) => {
         assets.push( {
           downloadUrl: src.downloadUrl,
-          md5: src.md5 ? src.md5 : null,
+          stream: src.stream || {},
+          md5: src.md5 || null,
+          size: src.size || null,
           unitIndex,
           srcIndex,
           assetType: 'source'
@@ -145,7 +147,7 @@ class Video extends AbstractModel {
         const trans = unit.transcript;
         assets.push( {
           downloadUrl: trans.srcUrl,
-          md5: trans.md5 ? trans.md5 : null,
+          md5: trans.md5 || null,
           unitIndex,
           srcIndex: -1,
           assetType: 'transcript'
@@ -154,7 +156,7 @@ class Video extends AbstractModel {
       if ( unit.srt ) {
         assets.push( {
           downloadUrl: unit.srt.srcUrl,
-          md5: unit.srt.md5 ? unit.srt.md5 : null,
+          md5: unit.srt.md5 || null,
           unitIndex,
           srcIndex: -1,
           assetType: 'srt'
@@ -177,6 +179,7 @@ class Video extends AbstractModel {
       this.body.unit[asset.unitIndex].source[asset.srcIndex].downloadUrl = asset.downloadUrl;
       this.body.unit[asset.unitIndex].source[asset.srcIndex].stream = asset.stream;
       this.body.unit[asset.unitIndex].source[asset.srcIndex].md5 = asset.md5;
+      this.body.unit[asset.unitIndex].source[asset.srcIndex].size = asset.size;
     } else {
       this.body.unit[asset.unitIndex][asset.assetType].srcUrl = asset.downloadUrl;
       this.body.unit[asset.unitIndex][asset.assetType].md5 = asset.md5;
