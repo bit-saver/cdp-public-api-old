@@ -3,8 +3,8 @@ import cloudflare from '../services/cloudflare';
 import Download from '../api/modules/download';
 import * as utils from '../api/modules/utils';
 
-const downloadAsset = async ( url ) => {
-  const download = await Download( url ).catch( ( err ) => {
+const downloadAsset = async ( url, requestId ) => {
+  const download = await Download( url, requestId ).catch( ( err ) => {
     throw err;
   } );
   return download;
@@ -72,7 +72,7 @@ const transferAsset = async ( model, asset ) => {
         if ( !updateNeeded ) return resolve( { message: 'Update not required (md5 pre match).' } );
       }
       if ( allowed ) {
-        download = await downloadAsset( asset.downloadUrl );
+        download = await downloadAsset( asset.downloadUrl, model.getRequestId() );
         model.putAsset( { ...asset, md5: download.props.md5 } );
       } else return reject( new Error( `Content type not allowed for asset: ${asset.downloadUrl}` ) );
 
@@ -138,16 +138,8 @@ export const transferCtrl = Model => async ( req, res, next ) => {
       next();
     } )
     .catch( ( err ) => {
-      console.log( 'sending transfer error', err );
-      if (
-        !utils.callback( req, {
-          error: 1,
-          message: err.message || err,
-          request: req.body
-        } )
-      ) {
-        res.status( 400 ).json( err.message || err );
-      }
+      console.log( 'caught transfer error', err );
+      next( err );
     } );
 };
 

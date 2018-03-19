@@ -5,7 +5,6 @@ import { validate } from '../../../middleware/validateSchema';
 import { transferCtrl, deleteCtrl } from '../../../middleware/transfer';
 import translateCategories from '../../../middleware/translateCategories';
 import asyncResponse from '../../../middleware/asyncResponse';
-import cleanTempFilesCtrl from '../../../middleware/cleanTempFiles';
 
 const router = new Router();
 
@@ -19,7 +18,6 @@ router
     asyncResponse,
     transferCtrl( VideoModel ),
     translateCategories( VideoModel ),
-    cleanTempFilesCtrl,
     controller.indexDocument
   );
 
@@ -31,7 +29,6 @@ router
     asyncResponse,
     transferCtrl( VideoModel ),
     translateCategories( VideoModel ),
-    cleanTempFilesCtrl,
     controller.updateDocumentById
   )
   .get( controller.getDocumentById )

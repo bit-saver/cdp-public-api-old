@@ -32,7 +32,7 @@ class Course extends AbstractModel {
    * @param asset
    */
   // eslint-disable-next-line class-methods-use-this
-  putAsset( asset ) {}
+  putAsset() {}
 }
 
 export default Course;

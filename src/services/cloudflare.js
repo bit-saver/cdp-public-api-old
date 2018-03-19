@@ -49,7 +49,7 @@ const upload = filePath =>
         // The video has been uploaded and will now be encoded.
         // We will track the encoding process and resolve once/if it successfully completes.
         const streamUrl = uploadObj.url;
-        const ret = { url: '', uid: '' };
+        const ret = { url: '', uid: '', thumbnail: '' };
         if ( streamUrl ) {
           let tracks = 0;
           const trackEncoding = () => {
@@ -77,6 +77,7 @@ const upload = filePath =>
                     console.log( `Encoding on Cloudflare [${uid}] - result`, body );
                     ret.uid = uid;
                     ret.url = body.result.preview;
+                    ret.thumbnail = body.result.thumbnail;
                     return resolve( { stream: ret } );
                   } else if ( status.state === 'queued' ) {
                     console.log( `Encoding on Cloudflare [${uid}] - queued` );
