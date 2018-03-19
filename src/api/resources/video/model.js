@@ -184,29 +184,13 @@ class Video extends AbstractModel {
   }
 
   /**
-   * Returns an array of language units retrieved by iterating over the JSON
+   * Returns an array of language units
    *
    * @returns {Array}
    */
   // eslint-disable-next-line class-methods-use-this
   getUnits( json ) {
-    const units = [];
-    json.unit.forEach( ( unit, index ) => {
-      units.push( {
-        index,
-        locale: unit.language.locale,
-        categories: []
-      } );
-    } );
-    return units;
-  }
-
-  putUnit( unit ) {
-    this.body.unit[unit.index].categories = unit.categories;
-  }
-
-  deleteRootCategories() {
-    delete this.body.categories;
+    return json.unit;
   }
 }
 
