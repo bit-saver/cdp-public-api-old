@@ -122,6 +122,8 @@ class AbstractModel {
     this.putAsset( {
       ...asset,
       downloadUrl: esAsset.downloadUrl,
+      stream: esAsset.stream || null,
+      size: esAsset.size || asset.size || null,
       md5: esAsset.md5
     } );
 
