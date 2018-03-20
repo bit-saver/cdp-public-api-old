@@ -86,7 +86,7 @@ const isTypeAllowed = async ( url ) => {
   return allowedTypes.includes( contentType );
 };
 
-const transferAsset = async ( model, asset ) => {
+const transferAsset = ( model, asset ) => {
   if ( asset.downloadUrl ) {
     return new Promise( async ( resolve, reject ) => {
       let download = null;

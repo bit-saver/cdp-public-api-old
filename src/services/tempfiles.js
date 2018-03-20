@@ -1,6 +1,6 @@
 import tmp from 'tmp';
 
-// tmp.setGracefulCleanup();
+tmp.setGracefulCleanup();
 
 const files = [];
 
