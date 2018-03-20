@@ -2,6 +2,7 @@ import aws from '../services/amazon-aws';
 import cloudflare from '../services/cloudflare';
 import Download from '../api/modules/download';
 import * as utils from '../api/modules/utils';
+import mediainfo from 'mediainfo-wrapper';
 
 const downloadAsset = async ( url, requestId ) => {
   const download = await Download( url, requestId ).catch( ( err ) => {
@@ -25,13 +26,41 @@ const uploadStream = async ( download ) => {
   return result;
 };
 
+const getSize = download =>
+  new Promise( ( resolve, reject ) => {
+    mediainfo( download.filePath )
+      .then( ( data ) => {
+        if ( data.length < 1 ) return reject( new Error( 'No media info.' ) );
+        const info = data[0];
+        const size = {
+          width: null,
+          height: null,
+          filesize: null,
+          bitrate: null
+        };
+        if ( info.general.file_size.length > 0 ) [size.filesize] = info.general.file_size;
+        if ( info.general.overall_bit_rate.length > 0 ) {
+          [size.bitrate] = info.general.overall_bit_rate;
+        }
+        if ( info.video.length > 0 ) {
+          const video = info.video[0];
+          if ( video.width.length > 0 ) [size.width] = video.width;
+          if ( video.height.length > 0 ) [size.height] = video.height;
+        }
+        console.log( 'mediainfo', JSON.stringify( size, null, 2 ) );
+        resolve( { size } );
+      } )
+      .catch( err => reject( err ) );
+  } );
+
 const updateAsset = ( model, asset, result, md5 ) => {
   // Modify the original request by:
   // replacing the downloadUrl and adding a checksum
   model.putAsset( {
     ...asset,
     downloadUrl: result.Location || '',
-    stream: result.stream || { url: '', uid: '' },
+    stream: result.stream || null,
+    size: result.size || null,
     md5
   } );
 };
@@ -85,7 +114,10 @@ const transferAsset = async ( model, asset ) => {
         console.log( 'need to update' );
         const uploads = [];
         uploads.push( uploadAsset( model.body, download ) );
-        if ( download.props.contentType.startsWith( 'video' ) ) uploads.push( uploadStream( download ) );
+        if ( download.props.contentType.startsWith( 'video' ) ) {
+          uploads.push( uploadStream( download ) );
+          uploads.push( getSize( download ) );
+        }
 
         Promise.all( uploads )
           .then( ( results ) => {
