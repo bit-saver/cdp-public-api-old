@@ -4,6 +4,7 @@ import parser from './parser';
 // It will make it easier to integrate a db if we decide to do so
 export default {
   async indexDocument( model, req ) {
+    req.indexed = true;
     if ( req.esDoc ) {
       return this.updateDocument( model, req.body, req.esDoc.id );
     }
@@ -19,6 +20,7 @@ export default {
   },
 
   updateDocumentById( model, req ) {
+    req.indexed = true;
     if ( req.esDoc ) {
       return this.updateDocument( model, req.body, req.esDoc.id );
     }
