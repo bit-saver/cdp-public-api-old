@@ -58,6 +58,8 @@ export default function download( url, requestId ) {
         }
       } )
       .on( 'end', () => {
+        const exists = fs.existsSync( tmpObj.name );
+        console.log( `download complete and ${tmpObj.name} exists:`, exists );
         md5hash( tmpObj.name )
           .then( ( result ) => {
             props.md5 = result;
