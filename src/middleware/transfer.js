@@ -50,7 +50,10 @@ const getSize = download =>
         console.log( 'mediainfo', JSON.stringify( size, null, 2 ) );
         resolve( { size } );
       } )
-      .catch( err => reject( err ) );
+      .catch( ( err ) => {
+        console.error( 'MEDIAINFO ENCOUNTERED AN ERROR', '\r\n', err );
+        resolve( null );
+      } );
   } );
 
 const updateAsset = ( model, asset, result, md5 ) => {
@@ -123,7 +126,7 @@ const transferAsset = ( model, asset ) => {
           .then( ( results ) => {
             let result = {};
             results.forEach( ( data ) => {
-              result = { ...result, ...data };
+              if ( data ) result = { ...result, ...data };
             } );
             updateAsset( model, asset, result, download.props.md5 );
             resolve( result );
