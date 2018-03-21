@@ -44,6 +44,7 @@ class Taxonomy extends AbstractModel {
           query: {
             query_string: {
               default_field: 'language.*',
+              analyzer: 'keyword',
               query: name
             }
           }
