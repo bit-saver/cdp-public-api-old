@@ -8,7 +8,8 @@ import * as utils from '../utils/index';
 
 // POST v1/[resource]
 export const indexDocument = model => ( req, res, next ) => {
-  controllers
+  console.log( 'INDEX DOCUMENT', req.requestId );
+  return controllers
     .indexDocument( model, req )
     .then( ( doc ) => {
       if ( !utils.callback( req, { doc } ) ) res.status( 201 ).json( doc );

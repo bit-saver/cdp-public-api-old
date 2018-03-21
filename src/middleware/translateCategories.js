@@ -1,6 +1,7 @@
 import TaxonomyModel from '../api/resources/taxonomy/model';
 
 const translateCategories = Model => async ( req, res, next ) => {
+  console.log( 'TRANSLATING CATEGORIES INIT', req.requestId );
   const model = new Model();
 
   const taxonomy = new TaxonomyModel();

@@ -145,6 +145,7 @@ const transferAsset = ( model, asset ) => {
  * @param Model AbstractModel
  */
 export const transferCtrl = Model => async ( req, res, next ) => {
+  console.log( 'TRANSFER CONTROLLER INIT', req.requestId );
   let reqAssets = [];
   const transfers = []; // Promise array (holds all download/upload processes)
 
@@ -167,6 +168,7 @@ export const transferCtrl = Model => async ( req, res, next ) => {
     .then( () => {
       const s3FilesToDelete = model.getFilesToRemove();
       if ( s3FilesToDelete.length ) deleteAssets( s3FilesToDelete );
+      console.log( 'TRANSFER CTRL NEXT', req.requestId );
       next();
     } )
     .catch( ( err ) => {
