@@ -163,7 +163,7 @@ export const transferCtrl = Model => async ( req, res, next ) => {
   } );
 
   // Once all promises resolve, pass request onto ES controller
-  Promise.all( transfers )
+  await Promise.all( transfers )
     .then( () => {
       const s3FilesToDelete = model.getFilesToRemove();
       if ( s3FilesToDelete.length ) deleteAssets( s3FilesToDelete );
