@@ -6,7 +6,7 @@ export default {
   async indexDocument( model, req ) {
     req.indexed = true;
     if ( req.esDoc ) {
-      return this.updateDocument( model, req.body, req.esDoc.id );
+      return this.updateDocument( model, req.body, req.esDoc._id );
     }
     const doc = await this.findDocument( model, req.body );
     if ( doc && doc._id ) {
@@ -22,7 +22,7 @@ export default {
   updateDocumentById( model, req ) {
     req.indexed = true;
     if ( req.esDoc ) {
-      return this.updateDocument( model, req.body, req.esDoc.id );
+      return this.updateDocument( model, req.body, req.esDoc._id );
     }
     return this.updateDocument( model, req.body, req.params.id );
   },
@@ -33,7 +33,7 @@ export default {
 
   async deleteDocumentByQuery( model, req ) {
     if ( req.esDoc ) {
-      return this.deleteDocumentById( model, req.esDoc.id );
+      return this.deleteDocumentById( model, req.esDoc._id );
     }
     // could use client.deleteByQuery but that would delete all that match the query
     // prefer to have check for unique value before deleting
@@ -45,8 +45,8 @@ export default {
   },
 
   deleteDocumentById( model, req ) {
-    if ( req.esDoc && req.esDoc.id ) {
-      return this.deleteDocument( model, req.esDoc.id );
+    if ( req.esDoc && req.esDoc._id ) {
+      return this.deleteDocument( model, req.esDoc._id );
     }
     throw new Error( `Document not found with UUID: ${req.params.uuid}` );
   },
