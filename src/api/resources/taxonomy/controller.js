@@ -30,7 +30,7 @@ const bulkImport = model => async ( req, res, next ) => {
   }
   let parent = null;
 
-  const createUpdateTerm = async ( name, syns, isParent = true ) => {
+  const createUpdateTerm = async ( name, syns, isParent ) => {
     let term = await controllers.findTermByName( model, name );
     if ( !term ) {
       console.log( 'term not found' );
@@ -72,12 +72,14 @@ const bulkImport = model => async ( req, res, next ) => {
             } );
           }
           if ( cols[0] ) {
+            // This is a primary category
             const term = await createUpdateTerm( cols[0], syns, true );
             const ret = { ...terms };
             ret[cols[0].toLowerCase()] = term;
             parent = term;
             return ret;
           } else if ( cols[1] ) {
+            // This is a child category
             const term = await createUpdateTerm( cols[1], syns, false );
             const ret = { ...terms };
             ret[cols[1].toLowerCase()] = term;
@@ -93,11 +95,11 @@ const bulkImport = model => async ( req, res, next ) => {
 
   const csv = req.files.terms.data;
 
-  const rows = parse( csv, { from: 1 } );
-  if ( rows instanceof Array !== true ) {
-    return next( new Error( 'Error parsing CSV.' ) );
-  }
   try {
+    const rows = parse( csv, { from: 1 } );
+    if ( rows instanceof Array !== true ) {
+      return next( new Error( 'Error parsing CSV.' ) );
+    }
     await processRows( rows );
   } catch ( err ) {
     return next( err );
