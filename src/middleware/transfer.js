@@ -33,7 +33,6 @@ const getSize = download =>
         console.error( 'MEDIAINFO ENCOUNTERED AN ERROR', '\r\n', err );
         return resolve( null );
       }
-      console.log( JSON.stringify( result, null, 2 ) );
       if ( result.media.track.length < 1 ) return reject( new Error( 'No media info.' ) );
       const size = {
         width: null,
