@@ -20,16 +20,42 @@ const translateTermById = model => async ( req, res, next ) =>
     } )
     .catch( err => next( err ) );
 
+/**
+ * Allows the bulk import of taxonomy terms.
+ * A CSV is required in the post keyed with name 'terms'.
+ * A header is assumed.
+ * The CSV has 1 term per row. A name in col 1 is primary.
+ * A name in col 2 is a child of the last seen primary (parent).
+ * Col 3 are synonyms.
+ *
+ * @param model
+ * @returns {function(*=, *=, *=)}
+ */
 const bulkImport = model => async ( req, res, next ) => {
   if ( !req.files.length < 1 || !req.files.terms ) {
     return res.json( { error: 1, message: 'No CSV file provided.' } );
   }
   let parent = null;
 
-  const createUpdateTerm = async ( name, syns, isParent ) => {
-    let term = await controllers.findTermByName( model, name );
+  /**
+   * Indexes a taxonomy term.
+   * If the term was previously indexed it is represented by existingTerm.
+   * If not, we will try to find an existing term in ES.
+   * Finally, we will update the existing or create a new term with the
+   * provided synonyms and potential [new] parent.
+   *
+   * @param name
+   * @param syns
+   * @param isParent
+   * @param existingTerm
+   * @returns {Promise<*>}
+   */
+  const createUpdateTerm = async ( name, syns, isParent, existingTerm ) => {
+    let term = existingTerm;
+    // If no existingTerm provided, search ES
+    if ( !term ) term = await controllers.findTermByName( model, name );
+    // If still no term, then create one
     if ( !term ) {
-      console.log( 'term not found' );
       const body = {
         primary: isParent,
         parents: isParent ? [] : [parent._id],
@@ -41,7 +67,7 @@ const bulkImport = model => async ( req, res, next ) => {
       term = await model.indexDocument( body ).then( parser.parseCreateResult( body ) );
       return term;
     }
-    console.log( 'found term', term );
+    // We DO have an existing term so let's update the parents and synonyms
     if ( !isParent && !term.parents.includes( parent._id ) ) term.parents.push( parent._id );
     syns.forEach( ( syn ) => {
       if ( !term.synonymMapping.includes( syn ) ) term.synonymMapping.push( syn );
@@ -60,32 +86,35 @@ const bulkImport = model => async ( req, res, next ) => {
       async ( termsP, cols ) =>
         termsP.then( async ( terms ) => {
           // Col 1 (Parent), Col 2 (Child), Col 3 (Syns)
-          console.log( 'inside loop' );
           const syns = [];
           if ( cols.length > 2 && cols[2] ) {
             cols[2].split( ' | ' ).forEach( ( syn ) => {
               if ( !syns.includes( syn ) ) syns.push( syn );
             } );
           }
+          let existingTerm = null;
           if ( cols[0] ) {
             // This is a primary category
-            const term = await createUpdateTerm( cols[0], syns, true );
-            const ret = { ...terms };
-            ret[cols[0].toLowerCase()] = term;
+            if ( terms[cols[0].toLowerCase()] ) {
+              existingTerm = terms[cols[0].toLowerCase()];
+            }
+            const term = await createUpdateTerm( cols[0], syns, true, existingTerm );
             parent = term;
-            return ret;
+            return { ...terms, [cols[0].toLowerCase()]: term };
           } else if ( cols[1] ) {
             // This is a child category
-            const term = await createUpdateTerm( cols[1], syns, false );
+            if ( terms[cols[1].toLowerCase()] ) {
+              existingTerm = terms[cols[1].toLowerCase()];
+            }
+            const term = await createUpdateTerm( cols[1], syns, false, existingTerm );
             const ret = { ...terms };
             ret[cols[1].toLowerCase()] = term;
-            return ret;
+            return { ...terms, [cols[1].toLowerCase()]: term };
           }
           return { ...terms };
         } ),
       Promise.resolve( {} )
     );
-    console.log( 'loop done' );
     return seen;
   };
 
