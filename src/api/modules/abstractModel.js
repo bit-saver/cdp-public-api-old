@@ -144,7 +144,9 @@ class AbstractModel {
     return filesToRemove;
   }
 
-  async indexDocument( body ) {
+  async indexDocument( doc ) {
+    const body = doc;
+    delete body._id;
     console.log( 'indexing...', JSON.stringify( body, null, 2 ) );
     const result = await this.client.index( {
       index: this.index,
@@ -155,13 +157,15 @@ class AbstractModel {
   }
 
   async updateDocument( id, doc ) {
-    console.log( 'updating...', JSON.stringify( doc, null, 2 ) );
+    const body = doc;
+    delete body._id;
+    console.log( 'updating...', JSON.stringify( body, null, 2 ) );
     const result = await this.client.update( {
       index: this.index,
       type: this.type,
       id,
       body: {
-        doc
+        doc: body
       }
     } );
     return result;

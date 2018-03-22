@@ -17,7 +17,7 @@ export default {
             const hit = result.hits.hits[0];
             return resolve( { _id: hit._id, ...hit._source } );
           }
-          reject( new Error( 'Multiple results exist.' ) );
+          reject( new Error( `Multiple results exist. Results:\r\n${JSON.stringify( result.hits, null, 2 )}` ) );
         } else {
           resolve( null );
         }

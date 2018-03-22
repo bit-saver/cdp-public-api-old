@@ -4,10 +4,6 @@ import { generateControllers, getAllDocuments } from '../../modules/controllers/
 import parse from 'csv-parse/lib/sync';
 import parser from '../../modules/elastic/parser';
 
-const jsonl = ( json ) => {
-  console.log( JSON.stringify( json, null, 2 ) );
-};
-
 const taxModel = new TaxonomyModel();
 
 const findTermByName = model => async ( req, res, next ) =>
@@ -36,7 +32,7 @@ const bulkImport = model => async ( req, res, next ) => {
       console.log( 'term not found' );
       const body = {
         primary: isParent,
-        parents: isParent ? [] : [parent.id],
+        parents: isParent ? [] : [parent._id],
         synonymMapping: syns,
         language: {
           en: name
@@ -46,11 +42,11 @@ const bulkImport = model => async ( req, res, next ) => {
       return term;
     }
     console.log( 'found term', term );
-    if ( !isParent && !term.parents.includes( parent.id ) ) term.parents.push( parent.id );
+    if ( !isParent && !term.parents.includes( parent._id ) ) term.parents.push( parent._id );
     syns.forEach( ( syn ) => {
       if ( !term.synonymMapping.includes( syn ) ) term.synonymMapping.push( syn );
     } );
-    term = await controllers.updateDocument( model, term, term.id );
+    term = await controllers.updateDocument( model, term, term._id );
     return term;
   };
 
