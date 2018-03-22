@@ -2,7 +2,7 @@ import aws from '../services/amazon-aws';
 import cloudflare from '../services/cloudflare';
 import Download from '../api/modules/download';
 import * as utils from '../api/modules/utils';
-import mediainfo from 'mediainfo-wrapper';
+import { exec as mediainfo } from 'mediainfo-parser';
 
 const downloadAsset = async ( url, requestId ) => {
   const download = await Download( url, requestId ).catch( ( err ) => {
@@ -28,32 +28,31 @@ const uploadStream = async ( download ) => {
 
 const getSize = download =>
   new Promise( ( resolve, reject ) => {
-    mediainfo( download.filePath )
-      .then( ( data ) => {
-        if ( data.length < 1 ) return reject( new Error( 'No media info.' ) );
-        const info = data[0];
-        const size = {
-          width: null,
-          height: null,
-          filesize: null,
-          bitrate: null
-        };
-        if ( info.general.file_size.length > 0 ) [size.filesize] = info.general.file_size;
-        if ( info.general.overall_bit_rate.length > 0 ) {
-          [size.bitrate] = info.general.overall_bit_rate;
-        }
-        if ( info.video.length > 0 ) {
-          const video = info.video[0];
-          if ( video.width.length > 0 ) [size.width] = video.width;
-          if ( video.height.length > 0 ) [size.height] = video.height;
-        }
-        console.log( 'mediainfo', JSON.stringify( size, null, 2 ) );
-        resolve( { size } );
-      } )
-      .catch( ( err ) => {
+    mediainfo( download.filePath, ( err, result ) => {
+      if ( err ) {
         console.error( 'MEDIAINFO ENCOUNTERED AN ERROR', '\r\n', err );
-        resolve( null );
+        return resolve( null );
+      }
+      console.log( JSON.stringify( result, null, 2 ) );
+      if ( result.media.track.length < 1 ) return reject( new Error( 'No media info.' ) );
+      const size = {
+        width: null,
+        height: null,
+        filesize: null,
+        bitrate: null
+      };
+      result.media.track.forEach( ( data ) => {
+        if ( data._type === 'General' ) {
+          size.filesize = data.filesize;
+          size.bitrate = data.overallbitrate;
+        } else if ( data._type === 'Video' ) {
+          size.width = data.width;
+          size.height = data.height;
+        }
       } );
+      console.log( 'mediainfo', JSON.stringify( size, null, 2 ) );
+      resolve( { size } );
+    } );
   } );
 
 const updateAsset = ( model, asset, result, md5 ) => {
