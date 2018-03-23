@@ -196,6 +196,7 @@ export const transferCtrl = Model => async ( req, res, next ) => {
 export const asyncTransferCtrl = Model => async ( req, res, next ) => {
   console.log( 'ASYNC TRANSFER CONTROLLER INIT', req.requestId );
   if ( !req.asyncTransfers || req.asyncTransfers.length < 1 ) return null;
+  let updated = false;
   const model = new Model();
 
   await Promise.all( req.asyncTransfers ).then( async ( results ) => {
@@ -215,9 +216,10 @@ export const asyncTransferCtrl = Model => async ( req, res, next ) => {
           unitIndex: null,
           srcIndex: null
         } );
+        updated = true;
       }
     } );
-    next();
+    if ( updated ) next();
   } );
 };
 

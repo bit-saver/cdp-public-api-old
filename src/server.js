@@ -15,7 +15,7 @@ app.use( '/v1', routes );
 // Probably need to add a "route not found" error or something like
 // that to let clients know when a process failed, i.e. DELETE /v1/video
 app.all( '*', ( req, res ) => {
-  res.json( { ok: true } );
+  if ( !res.headersSent ) res.json( { ok: true } );
 } );
 
 export default app;
