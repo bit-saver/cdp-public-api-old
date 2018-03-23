@@ -36,6 +36,7 @@ export const callback = ( req, data ) => {
       },
       () => {}
     );
+    req.headers.callback = false;
     return true;
   }
   return false;

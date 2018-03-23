@@ -26,6 +26,19 @@ const uploadStream = async ( download ) => {
   return result;
 };
 
+const uploadStreamAsync = ( download, asset ) =>
+  new Promise( ( resolve ) => {
+    cloudflare
+      .upload( download.filePath )
+      .then( ( result ) => {
+        resolve( { asset, ...result } );
+      } )
+      .catch( ( err ) => {
+        console.error( 'uploadStreamSync error', err );
+        resolve( null );
+      } );
+  } );
+
 const getSize = download =>
   new Promise( ( resolve, reject ) => {
     mediainfo( download.filePath, ( err, result ) => {
@@ -116,7 +129,9 @@ const transferAsset = ( model, asset ) => {
         const uploads = [];
         uploads.push( uploadAsset( model.body, download ) );
         if ( download.props.contentType.startsWith( 'video' ) ) {
-          uploads.push( uploadStream( download ) );
+          if ( /^true/.test( process.env.CF_STREAM_ASYNC || 'true' ) ) {
+            model.putAsyncTransfer( uploadStreamAsync( download, asset ) );
+          } else uploads.push( uploadStream( download ) );
           uploads.push( getSize( download ) );
         }
 
@@ -176,6 +191,34 @@ export const transferCtrl = Model => async ( req, res, next ) => {
       console.log( 'caught transfer error', err );
       next( err );
     } );
+};
+
+export const asyncTransferCtrl = Model => async ( req, res, next ) => {
+  console.log( 'ASYNC TRANSFER CONTROLLER INIT', req.requestId );
+  if ( !req.asyncTransfers || req.asyncTransfers.length < 1 ) return null;
+  const model = new Model();
+
+  await Promise.all( req.asyncTransfers ).then( async ( results ) => {
+    try {
+      await model.prepareDocumentForPatch( req );
+    } catch ( err ) {
+      console.error( err );
+      return null;
+    }
+    results.forEach( ( result ) => {
+      if ( result ) {
+        // Let's nullify unitIndex and srcIndex so that putAsset has to rely on md5
+        // in case this document changed.
+        model.putAsset( {
+          ...result.asset,
+          stream: result.stream,
+          unitIndex: null,
+          srcIndex: null
+        } );
+      }
+    } );
+    next();
+  } );
 };
 
 export const deleteCtrl = Model => async ( req, res, next ) => {
