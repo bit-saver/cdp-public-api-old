@@ -38,6 +38,15 @@ const bulkImport = model => async ( req, res, next ) => {
   let parent = null;
 
   /**
+   * Capitalize letters after spaces and periods.
+   *
+   * @param str
+   * @returns {void|*|string}
+   */
+  const toTitleCase = str =>
+    str.replace( /[\w.]+\S*/g, txt => txt.charAt( 0 ).toUpperCase() + txt.substr( 1 ) );
+
+  /**
    * Indexes a taxonomy term.
    * If the term was previously indexed it is represented by existingTerm.
    * If not, we will try to find an existing term in ES.
@@ -61,7 +70,7 @@ const bulkImport = model => async ( req, res, next ) => {
         parents: isParent ? [] : [parent._id],
         synonymMapping: syns,
         language: {
-          en: name
+          en: toTitleCase( name )
         }
       };
       term = await model.indexDocument( body ).then( parser.parseCreateResult( body ) );
@@ -76,7 +85,17 @@ const bulkImport = model => async ( req, res, next ) => {
     return term;
   };
 
-  const processRows = async ( rows ) => {
+  /**
+   * Iterate the rows using reduce creating terms as needed. Store terms in an object
+   * to check before creating new terms. Reuse term if found and update.
+   * Property identify each column using the head object which contains indices
+   * as the values.
+   *
+   * @param head
+   * @param rows
+   * @returns {Promise<*>}
+   */
+  const processRows = async ( head, rows ) => {
     // In order keep this synchronous, we have to get really tricky
     // with reduce and promises. Essentially, we return a promise on each reduce
     // iteration which we then extract content from using .then
@@ -85,31 +104,39 @@ const bulkImport = model => async ( req, res, next ) => {
     const seen = await rows.reduce(
       async ( termsP, cols ) =>
         termsP.then( async ( terms ) => {
-          // Col 1 (Parent), Col 2 (Child), Col 3 (Syns)
+          // If this is a skip row, then just return the accumulated terms
+          if ( head.skip && cols[head.skip] ) return { ...terms };
+
           const syns = [];
-          if ( cols.length > 2 && cols[2] ) {
-            cols[2].split( ' | ' ).forEach( ( syn ) => {
-              if ( !syns.includes( syn ) ) syns.push( syn );
-            } );
+          if ( head.synonyms && cols[head.synonyms] ) {
+            cols[head.synonyms]
+              .replace( /[\r\n]+/g, '' )
+              .split( ' | ' )
+              .forEach( ( syn ) => {
+                if ( !syns.includes( syn ) ) syns.push( syn );
+              } );
           }
           let existingTerm = null;
-          if ( cols[0] ) {
+          let termName = '';
+          if ( cols[head.parent] ) {
+            termName = cols[head.parent];
             // This is a primary category
-            if ( terms[cols[0].toLowerCase()] ) {
-              existingTerm = terms[cols[0].toLowerCase()];
+            if ( terms[termName.toLowerCase()] ) {
+              existingTerm = terms[termName.toLowerCase()];
             }
-            const term = await createUpdateTerm( cols[0], syns, true, existingTerm );
+            const term = await createUpdateTerm( termName, syns, true, existingTerm );
             parent = term;
-            return { ...terms, [cols[0].toLowerCase()]: term };
-          } else if ( cols[1] ) {
+            return { ...terms, [termName.toLowerCase()]: term };
+          } else if ( cols[head.child] ) {
+            termName = cols[head.child];
             // This is a child category
-            if ( terms[cols[1].toLowerCase()] ) {
-              existingTerm = terms[cols[1].toLowerCase()];
+            if ( terms[termName.toLowerCase()] ) {
+              existingTerm = terms[termName.toLowerCase()];
             }
-            const term = await createUpdateTerm( cols[1], syns, false, existingTerm );
+            const term = await createUpdateTerm( termName, syns, false, existingTerm );
             const ret = { ...terms };
-            ret[cols[1].toLowerCase()] = term;
-            return { ...terms, [cols[1].toLowerCase()]: term };
+            ret[termName.toLowerCase()] = term;
+            return { ...terms, [termName.toLowerCase()]: term };
           }
           return { ...terms };
         } ),
@@ -121,11 +148,31 @@ const bulkImport = model => async ( req, res, next ) => {
   const csv = req.files.terms.data;
 
   try {
-    const rows = parse( csv, { from: 1 } );
+    /** @type array */
+    let rows = parse( csv );
     if ( rows instanceof Array !== true ) {
       return next( new Error( 'Error parsing CSV.' ) );
     }
-    await processRows( rows );
+    const first = rows[0];
+    const head = {
+      parent: null,
+      child: null,
+      synonyms: null,
+      skip: null
+    };
+    first.forEach( ( col, idx ) => {
+      const title = col.toLowerCase();
+      console.log( 'title', title );
+      if ( title.indexOf( 'parent' ) === 0 ) head.parent = idx;
+      else if ( title.indexOf( 'child' ) === 0 ) head.child = idx;
+      else if ( title.indexOf( 'synonyms' ) === 0 ) head.synonyms = idx;
+      else if ( title.indexOf( 'skip' ) === 0 ) head.skip = idx;
+    } );
+    if ( head.parent === null || head.child === null ) {
+      return next( new Error( 'CSV is missing header or missing the required columns of Parent and Child.' ) );
+    }
+    rows = rows.splice( 1 );
+    await processRows( head, rows );
   } catch ( err ) {
     return next( err );
   }
