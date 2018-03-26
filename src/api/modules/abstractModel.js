@@ -34,22 +34,6 @@ class AbstractModel {
     throw new Error( 'Method not implemented: getUnits' );
   }
 
-  // TODO: add correct signature, i.e. asset param
-  // need to disable eslint rule for this method
-  // eslint-disable-next-line class-methods-use-this
-  putUnit() {
-    throw new Error( 'Method not implemented: putUnit' );
-  }
-
-  /**
-   * Deletes the categories property off of the requested body if needed.
-   * Applicable only when category IDs have been translated into id,name objects and placed
-   * on the unit level.
-   */
-  // need to disable eslint rule for this method
-  // eslint-disable-next-line class-methods-use-this
-  deleteRootCategories() {}
-
   // need to disable eslint rule for this method
   // eslint-disable-next-line class-methods-use-this
   constructTree() {
@@ -95,11 +79,23 @@ class AbstractModel {
   }
 
   async prepareCategoriesForUpdate( req ) {
-    this.reqUnits = this.getUnits( req.body );
-
     this.body = req.body;
+    // Obtain the category ID list if available
+    const categoryIds =
+      req.body.categories && req.body.categories.length > 0 ? req.body.categories.slice( 0 ) : [];
+    // Remove the categories property so that we can replace it with translated version
+    delete req.body.categories;
+    // Set requestId for temp files (if needed in future)
     this.requestId = req.requestId;
-
+    // Iterate the units and create a category translation array for each
+    this.reqUnits = this.getUnits( req.body );
+    this.reqUnits.forEach( ( u ) => {
+      const unit = u;
+      unit.categories = [];
+      categoryIds.forEach( ( catId ) => {
+        unit.categories.push( { id: catId, name: '' } );
+      } );
+    } );
     return this.reqUnits;
   }
 

@@ -53,6 +53,11 @@ class Post extends AbstractModel {
    */
   // eslint-disable-next-line class-methods-use-this
   putAsset() {}
+
+  // eslint-disable-next-line class-methods-use-this
+  getUnits( json ) {
+    return [json];
+  }
 }
 
 export default Post;
