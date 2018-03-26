@@ -30,6 +30,13 @@ class AbstractModel {
   // TODO: add correct signature, i.e. asset param
   // need to disable eslint rule for this method
   // eslint-disable-next-line class-methods-use-this
+  pubAssetByHash() {
+    throw new Error( 'Method not implemented: putAssetByHash' );
+  }
+
+  // TODO: add correct signature, i.e. asset param
+  // need to disable eslint rule for this method
+  // eslint-disable-next-line class-methods-use-this
   getUnits() {
     throw new Error( 'Method not implemented: getUnits' );
   }
@@ -59,6 +66,26 @@ class AbstractModel {
     return this.requestId;
   }
 
+  putAsyncTransfer( transfer ) {
+    this.asyncTransfers.push( transfer );
+  }
+
+  async prepareDocumentForPatch( req ) {
+    const docFromES = await this.findDocumentByQuery( req.body ).then( parser.parseUniqueDocExists() ); // eslint-disable-line max-len
+    if ( docFromES ) {
+      this.esAssets = this.getAssets( docFromES );
+      req.esDoc = docFromES;
+      req.body = docFromES;
+    }
+
+    this.reqAssets = this.getAssets( req.body );
+
+    this.body = req.body;
+    this.requestId = req.requestId;
+
+    return this.reqAssets;
+  }
+
   async prepareDocumentForUpdate( req ) {
     if ( req.esDoc ) {
       this.esAssets = this.getAssets( req.esDoc );
@@ -74,6 +101,9 @@ class AbstractModel {
 
     this.body = req.body;
     this.requestId = req.requestId;
+
+    req.asyncTransfers = [];
+    this.asyncTransfers = req.asyncTransfers;
 
     return this.reqAssets;
   }

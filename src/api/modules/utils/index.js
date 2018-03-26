@@ -23,7 +23,7 @@ export const getQueryFromUuid = ( uuid = '' ) => {
  * @returns {boolean}
  */
 export const callback = ( req, data ) => {
-  if ( req.headers.callback ) {
+  if ( req.headers.callback && !req.callbackSent ) {
     console.log( 'sending callback', req.headers.callback );
     Request.post(
       {
@@ -36,6 +36,7 @@ export const callback = ( req, data ) => {
       },
       () => {}
     );
+    req.callbackSent = true;
     return true;
   }
   return false;

@@ -18,6 +18,7 @@ const apiErrorHandler = ( err, req, res, next ) => {
       },
       () => {}
     );
+    req.callbackSent = true;
   }
   if ( !res.headersSent ) {
     console.log( 'no headers sent, sending error' );

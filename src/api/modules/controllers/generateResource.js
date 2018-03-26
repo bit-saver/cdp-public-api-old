@@ -12,7 +12,9 @@ export const indexDocument = model => ( req, res, next ) => {
   return controllers
     .indexDocument( model, req )
     .then( ( doc ) => {
-      if ( !utils.callback( req, { doc } ) ) res.status( 201 ).json( doc );
+      req.esDoc = doc;
+      if ( !utils.callback( req, { doc } ) && !res.headersSent ) res.status( 201 ).json( doc );
+      next();
     } )
     .catch( error => next( error ) );
 };
@@ -22,7 +24,9 @@ export const updateDocumentById = model => async ( req, res, next ) =>
   controllers
     .updateDocumentById( model, req )
     .then( ( doc ) => {
-      if ( !utils.callback( req, { doc } ) ) res.status( 201 ).json( doc );
+      req.esDoc = doc;
+      if ( !utils.callback( req, { doc } ) && !res.headersSent ) res.status( 201 ).json( doc );
+      next();
     } )
     .catch( err => next( err ) );
 

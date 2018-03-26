@@ -176,10 +176,24 @@ class Video extends AbstractModel {
    */
   putAsset( asset ) {
     if ( asset.assetType === 'source' ) {
-      this.body.unit[asset.unitIndex].source[asset.srcIndex].downloadUrl = asset.downloadUrl;
-      this.body.unit[asset.unitIndex].source[asset.srcIndex].stream = asset.stream;
-      this.body.unit[asset.unitIndex].source[asset.srcIndex].md5 = asset.md5;
-      this.body.unit[asset.unitIndex].source[asset.srcIndex].size = asset.size;
+      if ( asset.unitIndex !== null && asset.srcIndex !== null ) {
+        const source = this.body.unit[asset.unitIndex].source[asset.srcIndex];
+        source.downloadUrl = asset.downloadUrl;
+        source.stream = asset.stream;
+        source.md5 = asset.md5;
+        source.size = asset.size;
+      } else {
+        console.log( 'attempting to update asset via hash' );
+        this.body.unit.forEach( ( unit ) => {
+          unit.source.forEach( ( src ) => {
+            const temp = src;
+            if ( src.md5 === asset.md5 ) {
+              console.log( 'found match, updating stream', asset.stream );
+              temp.stream = asset.stream;
+            }
+          } );
+        } );
+      }
     } else {
       this.body.unit[asset.unitIndex][asset.assetType].srcUrl = asset.downloadUrl;
       this.body.unit[asset.unitIndex][asset.assetType].md5 = asset.md5;

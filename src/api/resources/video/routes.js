@@ -2,7 +2,7 @@ import { Router } from 'express';
 import controller from './controller';
 import VideoModel from './model';
 import { validate } from '../../../middleware/validateSchema';
-import { transferCtrl, deleteCtrl } from '../../../middleware/transfer';
+import { transferCtrl, deleteCtrl, asyncTransferCtrl } from '../../../middleware/transfer';
 import translateCategories from '../../../middleware/translateCategories';
 import asyncResponse from '../../../middleware/asyncResponse';
 
@@ -18,6 +18,8 @@ router
     asyncResponse,
     transferCtrl( VideoModel ),
     translateCategories( VideoModel ),
+    controller.indexDocument,
+    asyncTransferCtrl( VideoModel ),
     controller.indexDocument
   );
 
