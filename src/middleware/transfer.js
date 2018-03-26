@@ -26,6 +26,14 @@ const uploadStream = async ( download ) => {
   return result;
 };
 
+/**
+ * Same as uploadStream but always resolves instead of rejecting due to errors.
+ * Errors are reported in console.
+ *
+ * @param download
+ * @param asset
+ * @returns {Promise<any>}
+ */
 const uploadStreamAsync = ( download, asset ) =>
   new Promise( ( resolve ) => {
     cloudflare
@@ -85,7 +93,7 @@ const deleteAssets = ( assets ) => {
   } );
 };
 
-/** //Test
+/**
  * Uses the Content-Type defined in the header of a response
  * from the provided URL. If the Content-Type found in the header
  * is in the list of allowed content types then true is returned.
@@ -100,6 +108,17 @@ const isTypeAllowed = async ( url ) => {
   return allowedTypes.includes( contentType );
 };
 
+/**
+ * If a downloadUrl is present, return a Promise that contains the process
+ * for uploading an asset to S3 as well as Cloudflare Stream (if video).
+ * If the env variable CF_STREAM_ASYNC is true, the Cloudflare stream process will
+ * be placed into the request property asyncTransfers so that it can complete
+ * after the response is sent (in case of errors and prolonged process time).
+ *
+ * @param model
+ * @param asset
+ * @returns {Promise<any>}
+ */
 const transferAsset = ( model, asset ) => {
   if ( asset.downloadUrl ) {
     return new Promise( async ( resolve, reject ) => {
@@ -129,6 +148,7 @@ const transferAsset = ( model, asset ) => {
         const uploads = [];
         uploads.push( uploadAsset( model.body, download ) );
         if ( download.props.contentType.startsWith( 'video' ) ) {
+          // Test the env variable for true or if not set, assume true
           if ( /^true/.test( process.env.CF_STREAM_ASYNC || 'true' ) ) {
             model.putAsyncTransfer( uploadStreamAsync( download, asset ) );
           } else uploads.push( uploadStream( download ) );
@@ -193,6 +213,16 @@ export const transferCtrl = Model => async ( req, res, next ) => {
     } );
 };
 
+/**
+ * Generates a second transfer middleware that finishes any transfers that were
+ * set aside for processing AFTER the request response was sent. Mainly this is
+ * for Cloudflare Stream uploads since it isn't as reliable (currently in beta).
+ * If there are transfers, it will update each asset and then pass it to a 2nd
+ * index controller.
+ *
+ * @param Model
+ * @returns {function(*=, *, *)}
+ */
 export const asyncTransferCtrl = Model => async ( req, res, next ) => {
   console.log( 'ASYNC TRANSFER CONTROLLER INIT', req.requestId );
   if ( !req.asyncTransfers || req.asyncTransfers.length < 1 ) return null;
