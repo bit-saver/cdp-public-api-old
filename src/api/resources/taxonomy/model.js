@@ -18,7 +18,8 @@ class Taxonomy extends AbstractModel {
   constructTree( terms, root = null ) {
     const tree = [];
     let ret = tree;
-
+    if ( !terms || terms instanceof Array !== true ) return ret;
+    terms.sort( ( a, b ) => a.language.en.localeCompare( b.language.en ) );
     terms.forEach( ( term ) => {
       // eslint doesn't allow us to add the children property directly
       // so we have to use a temp variable
@@ -35,16 +36,24 @@ class Taxonomy extends AbstractModel {
     return ret;
   }
 
-  async findTermByName( name ) {
+  /**
+   * Searches Elasticsearch for a term that has an exact match for the
+   * name provided. It will default to language.en (english) unless a different
+   * locale is provided.
+   *
+   * @param name
+   * @param locale
+   * @returns {Promise<*>}
+   */
+  async findTermByName( name, locale = 'en' ) {
     const result = await this.client
       .search( {
         index: this.index,
         type: this.type,
         body: {
           query: {
-            query_string: {
-              default_field: 'language.*',
-              query: name
+            term: {
+              [`language.${locale}.keyword`]: name
             }
           }
         }

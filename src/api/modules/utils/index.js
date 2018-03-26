@@ -89,14 +89,15 @@ export const getContentTypes = () => {
  */
 export const getTypeFromUrl = async ( url ) => {
   const result = await new Promise( ( resolve ) => {
-    Request.head( url, ( error, response ) => {
-      if ( response && response.headers && response.headers['content-type'] ) {
+    Request.head( encodeURI( url ), ( error, response ) => {
+      if ( !error && response && response.headers && response.headers['content-type'] ) {
         if ( response.headers['content-type'].toLowerCase() === 'application/octet-stream' ) {
           // Missing legitimate content type so use extension instead
-          return resolve( Mime.lookup( url ) || null );
+          return resolve( Mime.lookup( encodeURI( url ) ) || null );
         }
         return resolve( response.headers['content-type'] );
       }
+      if ( error ) console.error( error );
       resolve( null );
     } );
   } );

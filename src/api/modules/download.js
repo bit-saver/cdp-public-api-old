@@ -33,7 +33,7 @@ export default function download( url, requestId ) {
 
     const tmpObj = tempFiles.createTempFile( requestId );
     Request.get( {
-      url,
+      url: encodeURI( url ),
       gzip: true
     } )
       .on( 'error', error => reject( error ) )

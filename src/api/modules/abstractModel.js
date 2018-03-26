@@ -140,7 +140,9 @@ class AbstractModel {
     return filesToRemove;
   }
 
-  async indexDocument( body ) {
+  async indexDocument( doc ) {
+    const body = doc;
+    delete body._id;
     console.log( 'indexing...', JSON.stringify( body, null, 2 ) );
     const result = await this.client.index( {
       index: this.index,
@@ -151,13 +153,15 @@ class AbstractModel {
   }
 
   async updateDocument( id, doc ) {
-    console.log( 'updating...', JSON.stringify( doc, null, 2 ) );
+    const body = doc;
+    delete body._id;
+    console.log( 'updating...', JSON.stringify( body, null, 2 ) );
     const result = await this.client.update( {
       index: this.index,
       type: this.type,
       id,
       body: {
-        doc
+        doc: body
       }
     } );
     return result;
@@ -197,12 +201,43 @@ class AbstractModel {
   }
 
   async getAllDocuments() {
+    const size = 100;
+    let count = 0;
     const result = await client
       .search( {
         index: this.index,
-        type: this.type
+        type: this.type,
+        sort: '_uid',
+        size
       } )
       .catch( err => err );
+
+    // Since we can only fetch a max of 1000 docs at once
+    // we have to collect them a chunk at a time.
+    // NOTE: This may lose accuracy since we only have offset
+    // available and not the search_from property.
+    if ( result.hits && result.hits.total > size ) {
+      count += result.hits.hits.length;
+      const collectHits = async () => {
+        const next = await client
+          .search( {
+            index: this.index,
+            type: this.type,
+            size,
+            sort: '_uid',
+            from: count
+          } )
+          .catch( err => err );
+        if ( next.hits.hits.length > 0 ) {
+          count += next.hits.hits.length;
+          result.hits.hits = result.hits.hits.concat( next.hits.hits );
+          if ( count < next.hits.total ) {
+            await collectHits();
+          }
+        }
+      };
+      await collectHits();
+    }
     return result;
   }
 }
