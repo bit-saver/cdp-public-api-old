@@ -18,6 +18,7 @@
     "aws-sdk": "^2.209.0",
     "body-parser": "^1.18.2",
     "bodybuilder": "^2.2.8",
+    "compression": "^1.7.2",
     "cors": "^2.8.4",
     "cuid": "^2.1.0",
     "dotenv": "^4.0.0",

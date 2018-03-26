@@ -1,10 +1,9 @@
 import morgan from 'morgan';
+import compression from 'compression';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import helmet from 'helmet';
 import cuid from 'cuid';
-
-// var compression = require('compression')
 
 const addRequestId = ( req, res, next ) => {
   req.requestId = cuid();
@@ -12,8 +11,8 @@ const addRequestId = ( req, res, next ) => {
 };
 
 const middlewareSetup = ( app ) => {
+  app.use( compression() );
   app.use( addRequestId );
-  // app.use(compression())
   app.use( helmet() );
   app.use( cors() );
   app.use( bodyParser.json() );
