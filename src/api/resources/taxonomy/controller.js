@@ -38,15 +38,6 @@ const bulkImport = model => async ( req, res, next ) => {
   let parent = null;
 
   /**
-   * Capitalize letters after spaces and periods.
-   *
-   * @param str
-   * @returns {void|*|string}
-   */
-  const toTitleCase = str =>
-    str.replace( /[\w.]+\S*/g, txt => txt.charAt( 0 ).toUpperCase() + txt.substr( 1 ) );
-
-  /**
    * Indexes a taxonomy term.
    * If the term was previously indexed it is represented by existingTerm.
    * If not, we will try to find an existing term in ES.
@@ -70,7 +61,7 @@ const bulkImport = model => async ( req, res, next ) => {
         parents: isParent ? [] : [parent._id],
         synonymMapping: syns,
         language: {
-          en: toTitleCase( name )
+          en: name.toLowerCase()
         }
       };
       term = await model.indexDocument( body ).then( parser.parseCreateResult( body ) );
@@ -110,6 +101,7 @@ const bulkImport = model => async ( req, res, next ) => {
           const syns = [];
           if ( head.synonyms && cols[head.synonyms] ) {
             cols[head.synonyms]
+              .toLowerCase()
               .replace( /[\r\n]+/g, '' )
               .split( ' | ' )
               .forEach( ( syn ) => {
@@ -119,24 +111,24 @@ const bulkImport = model => async ( req, res, next ) => {
           let existingTerm = null;
           let termName = '';
           if ( cols[head.parent] ) {
-            termName = cols[head.parent];
+            termName = cols[head.parent].toLowerCase();
             // This is a primary category
-            if ( terms[termName.toLowerCase()] ) {
-              existingTerm = terms[termName.toLowerCase()];
+            if ( terms[termName] ) {
+              existingTerm = terms[termName];
             }
             const term = await createUpdateTerm( termName, syns, true, existingTerm );
             parent = term;
-            return { ...terms, [termName.toLowerCase()]: term };
+            return { ...terms, [termName]: term };
           } else if ( cols[head.child] ) {
-            termName = cols[head.child];
+            termName = cols[head.child].toLowerCase();
             // This is a child category
-            if ( terms[termName.toLowerCase()] ) {
-              existingTerm = terms[termName.toLowerCase()];
+            if ( terms[termName] ) {
+              existingTerm = terms[termName];
             }
             const term = await createUpdateTerm( termName, syns, false, existingTerm );
             const ret = { ...terms };
-            ret[termName.toLowerCase()] = term;
-            return { ...terms, [termName.toLowerCase()]: term };
+            ret[termName] = term;
+            return { ...terms, [termName]: term };
           }
           return { ...terms };
         } ),

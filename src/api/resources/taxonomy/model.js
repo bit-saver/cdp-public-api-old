@@ -53,7 +53,7 @@ class Taxonomy extends AbstractModel {
         body: {
           query: {
             term: {
-              [`language.${locale}.keyword`]: name
+              [`language.${locale}.keyword`]: name.toLowerCase()
             }
           }
         }
