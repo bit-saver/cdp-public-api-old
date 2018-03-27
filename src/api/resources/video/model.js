@@ -185,8 +185,16 @@ class Video extends AbstractModel {
       } else {
         console.log( 'attempting to update asset via hash' );
         this.body.unit.forEach( ( unit ) => {
+          console.log( '---- UNIT ----' );
+          console.dir( unit );
+          console.log( '-----------' );
           unit.source.forEach( ( src ) => {
+            console.log( '---- SRC ----' );
+            console.dir( src );
+            console.log( '-----------' );
             const temp = src;
+            console.log( `----src.md5 ${src.md5}` );
+            console.log( `----asset.md5 ${asset.md5}` );
             if ( src.md5 === asset.md5 ) {
               console.log( 'found match, updating stream', asset.stream );
               temp.stream = asset.stream;
