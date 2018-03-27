@@ -175,6 +175,8 @@ class Video extends AbstractModel {
    * @param asset { downloadUrl, streamUrl, md5, unitIndex, srcIndex, assetType }
    */
   putAsset( asset ) {
+    console.log( ' ----  putAsset ----' );
+    console.dir( asset );
     if ( asset.assetType === 'source' ) {
       if ( asset.unitIndex !== null && asset.srcIndex !== null ) {
         const source = this.body.unit[asset.unitIndex].source[asset.srcIndex];
@@ -185,13 +187,7 @@ class Video extends AbstractModel {
       } else {
         console.log( 'attempting to update asset via hash' );
         this.body.unit.forEach( ( unit ) => {
-          console.log( '---- UNIT ----' );
-          console.dir( unit );
-          console.log( '-----------' );
           unit.source.forEach( ( src ) => {
-            console.log( '---- SRC ----' );
-            console.dir( src );
-            console.log( '-----------' );
             const temp = src;
             console.log( `----src.md5 ${src.md5}` );
             console.log( `----asset.md5 ${asset.md5}` );
