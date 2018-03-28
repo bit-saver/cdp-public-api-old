@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "ajv": "^6.2.1",
-    "aws-sdk": "^2.209.0",
+    "aws-sdk": "^2.215.1",
     "body-parser": "^1.18.2",
     "bodybuilder": "^2.2.8",
     "compression": "^1.7.2",
