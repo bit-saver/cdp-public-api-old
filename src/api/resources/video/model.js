@@ -175,9 +175,10 @@ class Video extends AbstractModel {
    * @param asset { downloadUrl, streamUrl, md5, unitIndex, srcIndex, assetType }
    */
   putAsset( asset ) {
-    console.log( ' ----  putAsset ----' );
-    console.dir( asset );
     if ( asset.assetType === 'source' ) {
+      console.log( '=========== PUT ASSET ===========' );
+      console.dir( asset );
+      console.log( '=========== END PUT ASSET ===========' );
       if ( asset.unitIndex !== null && asset.srcIndex !== null ) {
         const source = this.body.unit[asset.unitIndex].source[asset.srcIndex];
         source.downloadUrl = asset.downloadUrl;
@@ -189,8 +190,6 @@ class Video extends AbstractModel {
         this.body.unit.forEach( ( unit ) => {
           unit.source.forEach( ( src ) => {
             const temp = src;
-            console.log( `----src.md5 ${src.md5}` );
-            console.log( `----asset.md5 ${asset.md5}` );
             if ( src.md5 === asset.md5 ) {
               console.log( 'found match, updating stream', asset.stream );
               temp.stream = asset.stream;
