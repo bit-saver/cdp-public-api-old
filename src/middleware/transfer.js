@@ -157,7 +157,7 @@ const transferAsset = ( model, asset ) => {
         if ( download.props.contentType.startsWith( 'video' ) ) {
           // Test the env variable for true or if not set, assume true
           if ( /^true/.test( process.env.CF_STREAM_ASYNC || 'true' ) ) {
-            model.putAsyncTransfer( uploadStreamAsync( download, asset ) );
+            model.putAsyncTransfer( uploadStreamAsync( download, { ...asset, md5: download.props.md5 } ) ); // eslint-disable-line max-len
           } else uploads.push( uploadStream( download ) );
           uploads.push( getSize( download ) );
         }
