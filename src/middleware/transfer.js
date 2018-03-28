@@ -240,9 +240,6 @@ export const asyncTransferCtrl = Model => async ( req, res, next ) => {
       if ( result ) {
         // Let's nullify unitIndex and srcIndex so that putAsset has to rely on md5
         // in case this document changed.
-        console.log( '=========== ASYC SEND TO PUT  ===========' );
-        console.dir( result );
-        console.log( '=========== END ASYC ===========' );
         model.putAsset( {
           ...result.asset,
           stream: result.stream,

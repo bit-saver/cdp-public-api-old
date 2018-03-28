@@ -176,9 +176,6 @@ class Video extends AbstractModel {
    */
   putAsset( asset ) {
     if ( asset.assetType === 'source' ) {
-      console.log( '=========== PUT ASSET ===========' );
-      console.dir( asset );
-      console.log( '=========== END PUT ASSET ===========' );
       if ( asset.unitIndex !== null && asset.srcIndex !== null ) {
         const source = this.body.unit[asset.unitIndex].source[asset.srcIndex];
         source.downloadUrl = asset.downloadUrl;
