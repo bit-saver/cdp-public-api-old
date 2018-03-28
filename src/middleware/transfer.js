@@ -34,8 +34,14 @@ const uploadStream = async ( download ) => {
  * @param asset
  * @returns {Promise<any>}
  */
-const uploadStreamAsync = ( download, asset ) =>
-  new Promise( ( resolve ) => {
+const uploadStreamAsync = ( download, asset ) => {
+  console.log(
+    'uploadStreamAsync download and asset',
+    '\r\n',
+    JSON.stringify( download, null, 2 ),
+    JSON.stringify( asset, null, 2 )
+  );
+  return new Promise( ( resolve ) => {
     cloudflare
       .upload( download.filePath )
       .then( ( result ) => {
@@ -46,6 +52,7 @@ const uploadStreamAsync = ( download, asset ) =>
         resolve( null );
       } );
   } );
+};
 
 const getSize = download =>
   new Promise( ( resolve, reject ) => {
