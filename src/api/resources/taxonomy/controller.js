@@ -6,9 +6,9 @@ import parser from '../../modules/elastic/parser';
 
 const taxModel = new TaxonomyModel();
 
-const findTermByName = model => async ( req, res, next ) =>
+const findDocByTerm = model => async ( req, res, next ) =>
   controllers
-    .findTermByName( model, req.params.name )
+    .findDocByTerm( model, req.params.name )
     .then( term => res.json( term ) )
     .catch( err => next( err ) );
 
@@ -22,7 +22,7 @@ const translateTermById = model => async ( req, res, next ) =>
 
 /**
  * Allows the bulk import of taxonomy terms.
- * A CSV is required in the post keyed with name 'terms'.
+ * A CSV is required in the post keyed with name 'csv'.
  * A header is assumed.
  * The CSV has 1 term per row. A name in col 1 is primary.
  * A name in col 2 is a child of the last seen primary (parent).
@@ -32,7 +32,7 @@ const translateTermById = model => async ( req, res, next ) =>
  * @returns {function(*=, *=, *=)}
  */
 const bulkImport = model => async ( req, res, next ) => {
-  if ( !req.files.length < 1 || !req.files.terms ) {
+  if ( !req.files.length < 1 || !req.files.csv ) {
     return res.json( { error: 1, message: 'No CSV file provided.' } );
   }
   let parent = null;
@@ -62,7 +62,7 @@ const bulkImport = model => async ( req, res, next ) => {
   const createUpdateTerm = async ( name, syns, isParent, existingTerm ) => {
     let term = existingTerm;
     // If no existingTerm provided, search ES
-    if ( !term ) term = await controllers.findTermByName( model, name );
+    if ( !term ) term = await controllers.findDocByTerm( model, name );
     // If still no term, then create one
     if ( !term ) {
       const body = {
@@ -145,7 +145,7 @@ const bulkImport = model => async ( req, res, next ) => {
     return seen;
   };
 
-  const csv = req.files.terms.data;
+  const csv = req.files.csv.data;
 
   try {
     /** @type array */
@@ -180,7 +180,7 @@ const bulkImport = model => async ( req, res, next ) => {
 };
 
 const overrides = {
-  findTermByName: findTermByName( taxModel ),
+  findDocByTerm: findDocByTerm( taxModel ),
   translateTermById: translateTermById( taxModel ),
   bulkImport: bulkImport( taxModel )
 };

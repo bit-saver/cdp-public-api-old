@@ -45,7 +45,7 @@ class Taxonomy extends AbstractModel {
    * @param locale
    * @returns {Promise<*>}
    */
-  async findTermByName( name, locale = 'en' ) {
+  async findDocByTerm( name, locale = 'en' ) {
     const result = await this.client
       .search( {
         index: this.index,
