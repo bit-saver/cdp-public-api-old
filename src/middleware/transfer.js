@@ -54,7 +54,7 @@ const uploadStreamAsync = ( download, asset ) => {
   } );
 };
 
-const getSize = download =>
+const getVideoProperties = download =>
   new Promise( ( resolve, reject ) => {
     mediainfo( download.filePath, ( err, result ) => {
       if ( err ) {
@@ -62,23 +62,27 @@ const getSize = download =>
         return resolve( null );
       }
       if ( result.media.track.length < 1 ) return reject( new Error( 'No media info.' ) );
-      const size = {
-        width: null,
-        height: null,
-        filesize: null,
-        bitrate: null
+      const props = {
+        size: {
+          width: null,
+          height: null,
+          filesize: null,
+          bitrate: null
+        },
+        duration: null
       };
       result.media.track.forEach( ( data ) => {
         if ( data._type === 'General' ) {
-          size.filesize = data.filesize;
-          size.bitrate = data.overallbitrate;
+          props.size.filesize = data.filesize;
+          props.size.bitrate = data.overallbitrate;
+          props.duration = data.duration;
         } else if ( data._type === 'Video' ) {
-          size.width = data.width;
-          size.height = data.height;
+          props.size.width = data.width;
+          props.size.height = data.height;
         }
       } );
-      console.log( 'mediainfo', JSON.stringify( size, null, 2 ) );
-      resolve( { size } );
+      console.log( 'mediainfo', JSON.stringify( props, null, 2 ) );
+      resolve( props );
     } );
   } );
 
@@ -90,6 +94,7 @@ const updateAsset = ( model, asset, result, md5 ) => {
     downloadUrl: result.Location || '',
     stream: result.stream || null,
     size: result.size || null,
+    duration: result.duration || null,
     md5
   } );
 };
@@ -159,7 +164,7 @@ const transferAsset = ( model, asset ) => {
           if ( /^true/.test( process.env.CF_STREAM_ASYNC || 'true' ) ) {
             model.putAsyncTransfer( uploadStreamAsync( download, { ...asset, md5: download.props.md5 } ) ); // eslint-disable-line max-len
           } else uploads.push( uploadStream( download ) );
-          uploads.push( getSize( download ) );
+          uploads.push( getVideoProperties( download ) );
         }
 
         Promise.all( uploads )

@@ -88,6 +88,9 @@ class Video extends AbstractModel {
                         filesize: { type: 'number' },
                         bitrate: { type: 'number' }
                       }
+                    },
+                    duration: {
+                      type: 'string'
                     }
                   }
                 }
@@ -138,6 +141,7 @@ class Video extends AbstractModel {
           stream: src.stream || {},
           md5: src.md5 || null,
           size: src.size || null,
+          duration: src.duration || null,
           unitIndex,
           srcIndex,
           assetType: 'source'
@@ -182,6 +186,7 @@ class Video extends AbstractModel {
         source.stream = asset.stream;
         source.md5 = asset.md5;
         source.size = asset.size;
+        source.duration = asset.duration;
       } else {
         console.log( 'attempting to update asset via hash' );
         this.body.unit.forEach( ( unit ) => {
