@@ -19,13 +19,10 @@ const bulkImport = model => async ( req, res, next ) => {
    * @returns {Promise<*>}
    */
   const createLanguage = async ( language ) => {
-    console.log( 'creating language', JSON.stringify( language, null, 2 ) );
     let foundLang = await controllers.findDocByTerm( model, language.locale );
     // If term not found, then create one
     if ( !foundLang ) {
       foundLang = await model.indexDocument( language ).then( parser.parseCreateResult( language ) ); // eslint-disable-line max-len
-    } else {
-      console.log( 'found language', JSON.stringify( foundLang, null, 2 ) );
     }
     return foundLang;
   };
@@ -76,7 +73,7 @@ const bulkImport = model => async ( req, res, next ) => {
             const language = await createLanguage( lang );
             return { ...langs, [language.locale]: language };
           }
-          console.error( 'Invalid lang' );
+          console.error( 'Invalid lang', JSON.stringify( lang, null, 2 ) );
 
           return langs;
         } ),
