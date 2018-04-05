@@ -72,8 +72,8 @@ export default {
     return model.getAllDocuments().then( parser.parseAllResult );
   },
 
-  async findTermByName( model, name ) {
-    return model.findTermByName( name ).then( parser.parseUniqueDocExists() );
+  async findDocByTerm( model, name ) {
+    return model.findDocByTerm( name ).then( parser.parseUniqueDocExists() );
   },
 
   async translateTermById( model, id, locale ) {
