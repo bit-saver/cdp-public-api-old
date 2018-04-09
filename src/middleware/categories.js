@@ -1,4 +1,5 @@
 import TaxonomyModel from '../api/resources/taxonomy/model';
+import controllers from '../api/modules/elastic/controller';
 
 /**
  * Adds a categories array property to each locale unit by translating
@@ -10,7 +11,7 @@ import TaxonomyModel from '../api/resources/taxonomy/model';
  * @param Model
  * @returns {function(*=, *, *)}
  */
-const translateCategories = Model => async ( req, res, next ) => {
+export const translateCategories = Model => async ( req, res, next ) => {
   console.log( 'TRANSLATING CATEGORIES INIT', req.requestId );
   const model = new Model();
 
@@ -56,4 +57,35 @@ const translateCategories = Model => async ( req, res, next ) => {
     } );
 };
 
-export default translateCategories;
+export const keywordCategories = async ( req, res, next ) => {
+  const model = new TaxonomyModel();
+  const body = req.body; // eslint-disable-line prefer-destructuring
+  if ( 'keywords' in body !== true ) return next();
+  const keywords = [];
+  const terms = body.categories || [];
+  body.keywords = body.keywords.map( kw => kw.toLowerCase() );
+  await body.keywords.reduce(
+    async ( accumP, keyword ) =>
+      accumP.then( async () => {
+        await controllers
+          .findTermByName( model, keyword )
+          .then( ( result ) => {
+            if ( !result ) {
+              console.log( 'no term for', keyword );
+              keywords.push( keyword );
+            } else if ( !terms.includes( result._id ) ) {
+              terms.push( result._id );
+            }
+          } )
+          .catch( () => {
+            console.log( 'no term for', keyword );
+            keywords.push( keyword );
+          } );
+        return {};
+      } ),
+    Promise.resolve( {} )
+  );
+  body.keywords = keywords;
+  body.categories = terms;
+  next();
+};

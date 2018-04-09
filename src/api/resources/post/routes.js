@@ -4,7 +4,7 @@ import PostModel from './model';
 import { transferCtrl, deleteCtrl } from '../../../middleware/transfer';
 import asyncResponse from '../../../middleware/asyncResponse';
 import cleanTempFilesCtrl from '../../../middleware/cleanTempFiles';
-import translateCategories from '../../../middleware/translateCategories';
+import { translateCategories, keywordCategories } from '../../../middleware/categories';
 
 const router = new Router();
 
@@ -16,6 +16,7 @@ router
   .post(
     asyncResponse,
     transferCtrl( PostModel ),
+    keywordCategories,
     translateCategories( PostModel ),
     controller.indexDocument
   );
