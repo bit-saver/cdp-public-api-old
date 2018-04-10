@@ -64,6 +64,61 @@ The Dockerfiles bring up a multi container network housing a Node server for the
 
 ## Routes
 
+### `/v1/language`
+
+Bulk import languages from a CSV file.
+
+#### Request
+
+Must include a CSV file in the POST keyed by `csv`.
+CSV must contain a header with at least `Language Code`, `Display Name`, and `Native Name`. It may also include: `Locale` and `Text Direction` (ltr or rtl).
+
+```http
+POST /v1/language HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+{
+  "csv": BinaryFile
+}
+```
+
+### `/v1/taxonomy`
+
+Bulk import of taxonomy terms.
+
+#### Request
+
+Must include a CSV file in the POST keyed by `csv`.
+CSV must contain a header with at least `Parent` and `Child` columns. May also contain `Synonyms` which is a ` | ` delineated list of synonym mapping keywords. A `Skip` column may also be used to forcefully ignore the entire row.
+Terms will be created in sequential order where children are associated with the last seen parent row above it.
+
+```http
+POST /v1/taxonomy HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+{
+  "csv": BinaryFile
+}
+```
+
+### `/v1/owner/bulk`
+
+Bulk import of owners.
+
+### Request
+
+Must include a CSV file in the POST keyed by `csv`.
+The CSV is simply a list of owner names.
+
+```http
+POST /v1/owner/bulk HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+{
+  "csv": BinaryFile
+}
+```
+
 ### `/v1/search`
 
 Search request to CDP [`AWS`|`localhost`].
