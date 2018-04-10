@@ -1,6 +1,15 @@
 import controllers from '../elastic/controller';
 import * as utils from '../utils/index';
 
+// POST v1/[resource]
+export const indexDocument = model => ( req, res, next ) => controllers
+  .indexDocument( model, req )
+  .then( ( doc ) => {
+    res.status( 201 ).json( doc );
+    next();
+  } )
+  .catch( error => next( error ) );
+
 export const getAllDocuments = model => async ( req, res, next ) =>
   controllers
     .getAllDocuments( model )
@@ -31,6 +40,7 @@ export const getDocumentById = model => async ( req, res, next ) => {
 
 export const generateControllers = ( model, overrides = {} ) => {
   const defaults = {
+    indexDocument: indexDocument( model ),
     getAllDocuments: getAllDocuments( model ),
     getDocumentById: getDocumentById( model )
   };

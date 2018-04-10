@@ -1,25 +1,31 @@
 # cdp-public-api 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-* [Getting Started](#getting-started)
-  * [Configuration](#configuration)
-  * [Using Docker](#docker)
-  * [Scripts](#scripts)
-* [Routes](#routes)
-  * [`/v1/search`](#v1search)
-    * [Request](#request)
-    * [Response](#response)
-    * [API Properties](#api-properties)
-  * [`/v1/get`](#v1get)
-    * [Request](#request-1)
-    * [Response](#response-1)
-    * [API Properties](#api-properties-1)
-  * [`/v1/getsource`](#v1getsource)
-    * [Request](#request-2)
-    * [Response](#response-2)
-    * [API Properties](#api-properties-2)
+- [Getting Started](#getting-started)
+  - [Configuration](#configuration)
+  - [Using Docker](#using-docker)
+  - [Scripts](#scripts)
+- [Routes](#routes)
+  - [`/v1/language`](#v1language)
+    - [Request](#request)
+  - [`/v1/taxonomy`](#v1taxonomy)
+    - [Request](#request-1)
+  - [`/v1/owner/bulk`](#v1ownerbulk)
+    - [Request](#request-2)
+  - [`/v1/search`](#v1search)
+    - [Request](#request-3)
+    - [Response](#response)
+    - [API Properties](#api-properties)
+  - [`/v1/get`](#v1get)
+    - [Request](#request-4)
+    - [Response](#response-1)
+    - [API Properties](#api-properties-1)
+  - [`/v1/getsource`](#v1getsource)
+    - [Request](#request-5)
+    - [Response](#response-2)
+    - [API Properties](#api-properties-2)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -64,7 +70,7 @@ The Dockerfiles bring up a multi container network housing a Node server for the
 
 ## Routes
 
-### `/v1/language`
+### `/v1/language/bulk`
 
 Bulk import languages from a CSV file.
 
@@ -74,7 +80,7 @@ Must include a CSV file in the POST keyed by `csv`.
 CSV must contain a header with at least `Language Code`, `Display Name`, and `Native Name`. It may also include: `Locale` and `Text Direction` (ltr or rtl).
 
 ```http
-POST /v1/language HTTP/1.1
+POST /v1/language/bulk HTTP/1.1
 Host: localhost:8080
 Content-Type: application/json
 {
@@ -82,7 +88,7 @@ Content-Type: application/json
 }
 ```
 
-### `/v1/taxonomy`
+### `/v1/taxonomy/bulk`
 
 Bulk import of taxonomy terms.
 
@@ -93,7 +99,7 @@ CSV must contain a header with at least `Parent` and `Child` columns. May also c
 Terms will be created in sequential order where children are associated with the last seen parent row above it.
 
 ```http
-POST /v1/taxonomy HTTP/1.1
+POST /v1/taxonomy/bulk HTTP/1.1
 Host: localhost:8080
 Content-Type: application/json
 {
@@ -105,7 +111,7 @@ Content-Type: application/json
 
 Bulk import of owners.
 
-### Request
+#### Request
 
 Must include a CSV file in the POST keyed by `csv`.
 The CSV is simply a list of owner names.
