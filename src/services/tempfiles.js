@@ -28,7 +28,11 @@ const deleteTempFiles = ( requestId ) => {
   const totalFiles = reqFiles.tempFiles.length;
   while ( reqFiles.tempFiles.length > 0 ) {
     const tmpObj = reqFiles.tempFiles.pop();
-    tmpObj.removeCallback();
+    try {
+      tmpObj.removeCallback();
+    } catch ( err ) {
+      console.warn( 'Catch temp file delete error' );
+    }
   }
   console.log( `deleted ${requestId} - ${totalFiles} files` );
 };

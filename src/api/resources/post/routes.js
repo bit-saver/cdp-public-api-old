@@ -3,7 +3,6 @@ import controller from './controller';
 import PostModel from './model';
 import { transferCtrl, deleteCtrl } from '../../../middleware/transfer';
 import asyncResponse from '../../../middleware/asyncResponse';
-import cleanTempFilesCtrl from '../../../middleware/cleanTempFiles';
 import { translateCategories, keywordCategories } from '../../../middleware/categories';
 
 const router = new Router();

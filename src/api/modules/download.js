@@ -60,6 +60,9 @@ export default function download( url, requestId ) {
       .on( 'end', () => {
         const exists = fs.existsSync( tmpObj.name );
         console.log( `download complete and ${tmpObj.name} exists:`, exists );
+        if ( !exists ) {
+          return reject( new Error( 'File created from download does not exist.' ) );
+        }
         md5hash( tmpObj.name )
           .then( ( result ) => {
             props.md5 = result;

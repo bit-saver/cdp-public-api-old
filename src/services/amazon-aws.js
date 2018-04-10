@@ -82,6 +82,11 @@ const upload = ( {
         resolve( { filename: key, ...data } );
       } )
       .catch( err => reject( err ) );
+    body.on( 'error', ( err ) => {
+      console.error( 'Caught S3 upload file read error' );
+      manager.abort();
+      reject( err );
+    } );
   } );
 
 /**

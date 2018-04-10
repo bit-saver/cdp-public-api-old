@@ -5,9 +5,7 @@ import * as utils from '../api/modules/utils';
 import { exec as mediainfo } from 'mediainfo-parser';
 
 const downloadAsset = async ( url, requestId ) => {
-  const download = await Download( url, requestId ).catch( ( err ) => {
-    throw err;
-  } );
+  const download = await Download( url, requestId );
   return download;
 };
 
@@ -146,7 +144,12 @@ const transferAsset = ( model, asset ) => {
         if ( !updateNeeded ) return resolve( { message: 'Update not required (md5 pre match).' } );
       }
       if ( allowed ) {
-        download = await downloadAsset( asset.downloadUrl, model.getRequestId() );
+        // eslint-disable-next-line max-len
+        download = await downloadAsset( asset.downloadUrl, model.getRequestId() ).catch( ( err ) => {
+          console.error( err );
+          return err;
+        } );
+        if ( download instanceof Error ) return reject( download );
         model.putAsset( { ...asset, md5: download.props.md5 } );
       } else return reject( new Error( `Content type not allowed for asset: ${asset.downloadUrl}` ) );
 

@@ -1,6 +1,7 @@
 import fs from 'fs';
 import tus from 'tus-js-client';
 import Request from 'request';
+import Stream from 'stream';
 
 /**
  * Upload the video at the provided filePath to Cloudflare Stream.
@@ -17,7 +18,8 @@ import Request from 'request';
 const upload = filePath =>
   new Promise( ( resolve, reject ) => {
     const maxEncodingTracks = 300; // number of tracking requests before timeout
-    const file = fs.createReadStream( filePath );
+    const pass = new Stream.PassThrough();
+    fs.createReadStream( filePath ).pipe( pass );
     const sizeStats = fs.statSync( filePath );
     const endpoint = `https://api.cloudflare.com/client/v4/zones/${
       process.env.CF_STREAM_ZONE
@@ -27,7 +29,7 @@ const upload = filePath =>
       'X-Auth-Email': process.env.CF_STREAM_EMAIL || '',
       'Content-Type': 'application/json'
     };
-    const uploadObj = new tus.Upload( file, {
+    const uploadObj = new tus.Upload( pass, {
       endpoint,
       headers,
       chunkSize: 5242880 * 2, // 10 mb
@@ -36,7 +38,7 @@ const upload = filePath =>
       ],
       uploadSize: sizeStats.size,
       onError: ( error ) => {
-        console.log( `${error}` );
+        console.log( 'cf error', `${error}` );
         reject( new Error( error ) );
       },
       onProgress: ( bytesUploaded, bytesTotal ) => {
@@ -98,7 +100,18 @@ const upload = filePath =>
         }
       }
     } );
-    uploadObj.start();
+    try {
+      uploadObj.start();
+    } catch ( err ) {
+      console.error( 'Caught Cloudflare upload error', '\r\n', JSON.stringify( err, null, 2 ) );
+      if ( uploadObj ) {
+        uploadObj.abort();
+        console.info( 'Aborted uploadObj' );
+      } else {
+        console.info( 'uploadObj could not be aborted due to null' );
+      }
+      reject( err );
+    }
   } );
 
 const cloudflare = {
