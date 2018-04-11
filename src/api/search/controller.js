@@ -1,7 +1,12 @@
 import client from '../../services/elasticsearch';
 import * as validate from '../modules/validate';
 
-export const search = async ( req, res ) => {
+// TODO: implement multisearch query
+const multiSearch = async ( req, res ) => {
+  console.log( `EXECUTE msearch ${res}` );
+};
+
+const singleSearch = async ( req, res ) => {
   let data = {
     options: {
       ignoreUnavailable: true,
@@ -52,4 +57,11 @@ export const search = async ( req, res ) => {
       message
     } );
   }
+};
+
+export const search = async ( req, res ) => {
+  if ( req.query.m ) {
+    return multiSearch( req, res );
+  }
+  return singleSearch( req, res );
 };
