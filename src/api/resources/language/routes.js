@@ -6,6 +6,8 @@ const router = new Router();
 router
   .route( '/' )
   .get( controller.getAllDocuments )
-  .post( controller.bulkImport );
+  .post( controller.indexDocument );
+
+router.route( '/bulk' ).post( controller.bulkImport );
 
 export default router;
